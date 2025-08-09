@@ -35,13 +35,10 @@ jobs:
     - name: Run tests with coverage
       run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
     
-    - name: Install gosec
+    - name: Install and run gosec
       run: |
-        curl -sfL https://raw.githubusercontent.com/securecodewarrior/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin latest
-        echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
-    
-    - name: Run security analysis
-      run: gosec -fmt sarif -out results.sarif ./...
+        curl -sfL https://raw.githubusercontent.com/securecodewarrior/gosec/master/install.sh | sh -s -- -b /tmp latest
+        /tmp/gosec -fmt sarif -out results.sarif ./...
     
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v2
