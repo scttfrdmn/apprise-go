@@ -8,26 +8,6 @@ import (
 
 // Stub implementations for services that aren't implemented yet
 
-func NewSlackService() Service {
-	return &stubService{id: "slack"}
-}
-
-func NewTelegramService() Service {
-	return &stubService{id: "telegram"}
-}
-
-func NewEmailService() Service {
-	return &stubService{id: "email"}
-}
-
-func NewWebhookService() Service {
-	return &stubService{id: "webhook"}
-}
-
-func NewJSONService() Service {
-	return &stubService{id: "json"}
-}
-
 func NewGotifyService() Service {
 	return &stubService{id: "gotify"}
 }

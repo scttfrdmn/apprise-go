@@ -39,8 +39,21 @@ func main() {
 
 ## Supported Services
 
-- Discord
-- (More services coming soon...)
+### ✅ Fully Implemented
+- **Discord** - Webhook notifications with rich embeds
+- **Slack** - Webhook and bot API support
+- **Telegram** - Bot API with multiple chat support
+- **Email (SMTP)** - Full SMTP support with TLS/STARTTLS
+- **Webhook/JSON** - Generic HTTP webhooks with custom templates
+- **Pushover** - Mobile push notifications
+
+### 🚧 Coming Soon
+- Microsoft Teams
+- Twilio SMS
+- AWS SNS
+- Pushbullet
+- Gotify
+- And many more...
 
 ## License
 

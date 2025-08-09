@@ -276,16 +276,28 @@ func extractScheme(serviceURL string) string {
 
 // registerBuiltinServices registers all built-in notification services
 func registerBuiltinServices(registry *ServiceRegistry) {
-	// We'll implement these in separate files
+	// Messaging/Chat platforms
 	registry.Register("discord", func() Service { return NewDiscordService() })
 	registry.Register("slack", func() Service { return NewSlackService() })
 	registry.Register("telegram", func() Service { return NewTelegramService() })
 	registry.Register("tgram", func() Service { return NewTelegramService() })
+	
+	// Email services
 	registry.Register("mailto", func() Service { return NewEmailService() })
 	registry.Register("mailtos", func() Service { return NewEmailService() })
+	
+	// Webhook services
+	registry.Register("webhook", func() Service { return NewWebhookService() })
 	registry.Register("webhooks", func() Service { return NewWebhookService() })
 	registry.Register("json", func() Service { return NewJSONService() })
+	
+	// Push notification services
+	registry.Register("pushover", func() Service { return NewPushoverService() })
+	registry.Register("pover", func() Service { return NewPushoverService() })
+	
+	// Self-hosted services
 	registry.Register("gotify", func() Service { return NewGotifyService() })
 	registry.Register("gotifys", func() Service { return NewGotifyService() })
+	
 	// Add more services as needed...
 }

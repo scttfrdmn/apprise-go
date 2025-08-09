@@ -33,16 +33,19 @@ func basicExample() {
 	app := apprise.New()
 
 	// Add notification services
-	err := app.Add("discord://webhook_id/webhook_token")
-	if err != nil {
-		log.Printf("Error adding Discord service: %v", err)
-		return
+	services := []string{
+		"discord://webhook_id/webhook_token",
+		"slack://TokenA/TokenB/TokenC/general",
+		"tgram://bot_token/chat_id",
+		"mailto://user:password@smtp.gmail.com/recipient@email.com",
+		"pushover://token@userkey",
+		"webhook://api.example.com/notify",
 	}
 
-	err = app.Add("mailto://user:password@smtp.gmail.com/recipient@email.com")
-	if err != nil {
-		log.Printf("Error adding email service: %v", err)
-		return
+	for _, serviceURL := range services {
+		if err := app.Add(serviceURL); err != nil {
+			log.Printf("Error adding service %s: %v", serviceURL, err)
+		}
 	}
 
 	// Send notification

@@ -8,10 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial project setup with Go module
-- BSD-2-Clause license matching original Apprise project
-- Git repository initialization
-- Basic project structure
+- Slack notification service with webhook and bot API support
+- Telegram Bot API integration with multi-chat support
+- Email (SMTP) service with TLS/STARTTLS support
+- Generic Webhook/JSON service with custom templates
+- Pushover mobile push notification service
+- Enhanced service registry with proper categorization
+- Comprehensive URL format support for all services
+- Rich formatting support (HTML, Markdown, plain text)
+- Notification type-based emoji and color coding
 
 ## [0.1.0] - 2025-08-09
 
