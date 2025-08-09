@@ -23,10 +23,10 @@ func TestPushoverService_GetDefaultPort(t *testing.T) {
 
 func TestPushoverService_ParseURL(t *testing.T) {
 	testCases := []struct {
-		name        string
-		url         string
-		expectError bool
-		expectedToken string
+		name            string
+		url             string
+		expectError     bool
+		expectedToken   string
 		expectedUserKey string
 	}{
 		{
@@ -101,7 +101,7 @@ func TestPushoverService_ParseURL(t *testing.T) {
 
 func TestPushoverService_ParseURL_QueryParams(t *testing.T) {
 	testURL := "pushover://token@userkey?priority=2&sound=cosmic&retry=60&expire=3600"
-	
+
 	service := NewPushoverService().(*PushoverService)
 	parsedURL, err := url.Parse(testURL)
 	if err != nil {
@@ -132,7 +132,7 @@ func TestPushoverService_ParseURL_QueryParams(t *testing.T) {
 
 func TestPushoverService_ParseURL_Devices(t *testing.T) {
 	testURL := "pushover://token@userkey/device1/device2"
-	
+
 	service := NewPushoverService().(*PushoverService)
 	parsedURL, err := url.Parse(testURL)
 	if err != nil {
@@ -204,7 +204,7 @@ func TestPushoverService_Properties(t *testing.T) {
 
 func TestPushoverService_Send_InvalidConfig(t *testing.T) {
 	service := NewPushoverService().(*PushoverService)
-	
+
 	// Service without proper configuration should fail
 	req := NotificationRequest{
 		Title:      "Test",
@@ -223,8 +223,8 @@ func TestPushoverService_Send_InvalidConfig(t *testing.T) {
 
 func TestPushoverService_PriorityValidation(t *testing.T) {
 	testCases := []struct {
-		name           string
-		priority       string
+		name             string
+		priority         string
 		expectedPriority int
 	}{
 		{"Valid priority -2", "-2", -2},
@@ -232,14 +232,14 @@ func TestPushoverService_PriorityValidation(t *testing.T) {
 		{"Valid priority 0", "0", 0},
 		{"Valid priority 1", "1", 1},
 		{"Valid priority 2", "2", 2},
-		{"Invalid priority 3", "3", 0}, // Should default to 0
+		{"Invalid priority 3", "3", 0},   // Should default to 0
 		{"Invalid priority -3", "-3", 0}, // Should default to 0
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			testURL := "pushover://token@userkey?priority=" + tc.priority
-			
+
 			service := NewPushoverService().(*PushoverService)
 			parsedURL, err := url.Parse(testURL)
 			if err != nil {
@@ -261,7 +261,7 @@ func TestPushoverService_PriorityValidation(t *testing.T) {
 func TestPushoverService_EmergencyPriorityDefaults(t *testing.T) {
 	// Test emergency priority (2) with default retry/expire
 	testURL := "pushover://token@userkey?priority=2"
-	
+
 	service := NewPushoverService().(*PushoverService)
 	parsedURL, err := url.Parse(testURL)
 	if err != nil {
@@ -289,7 +289,7 @@ func TestPushoverService_EmergencyPriorityDefaults(t *testing.T) {
 func TestPushoverService_RetryExpireOnlyForEmergency(t *testing.T) {
 	// Test that retry/expire are only set for emergency priority (2)
 	testURL := "pushover://token@userkey?priority=1&retry=30&expire=1800"
-	
+
 	service := NewPushoverService().(*PushoverService)
 	parsedURL, err := url.Parse(testURL)
 	if err != nil {

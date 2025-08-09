@@ -176,7 +176,7 @@ func (e *EmailService) Send(ctx context.Context, req NotificationRequest) error 
 	if err != nil {
 		return fmt.Errorf("failed to connect to SMTP server: %w", err)
 	}
-	defer client.Close()
+	defer func() { _ = client.Close() }()
 
 	// Authenticate if credentials provided
 	if e.username != "" && e.password != "" {
@@ -243,7 +243,7 @@ func (e *EmailService) connectSMTP(ctx context.Context) (*smtp.Client, error) {
 
 	client, err := smtp.NewClient(conn, e.smtpHost)
 	if err != nil {
-		conn.Close()
+		_ = conn.Close()
 		return nil, err
 	}
 
@@ -255,7 +255,7 @@ func (e *EmailService) connectSMTP(ctx context.Context) (*smtp.Client, error) {
 		}
 
 		if err := client.StartTLS(tlsConfig); err != nil {
-			client.Close()
+			_ = client.Close()
 			return nil, err
 		}
 	}

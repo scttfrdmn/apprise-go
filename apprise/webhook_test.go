@@ -23,11 +23,11 @@ func TestWebhookService_GetDefaultPort(t *testing.T) {
 
 func TestWebhookService_ParseURL(t *testing.T) {
 	testCases := []struct {
-		name        string
-		url         string
-		expectError bool
+		name          string
+		url           string
+		expectError   bool
 		expectedHTTPS bool
-		expectedURL string
+		expectedURL   string
 	}{
 		{
 			name:          "Basic webhook HTTP",
@@ -87,7 +87,7 @@ func TestWebhookService_ParseURL(t *testing.T) {
 
 func TestWebhookService_ParseURL_QueryParams(t *testing.T) {
 	testURL := "webhook://api.example.com/notify?method=PUT&content_type=text/plain&header_Authorization=Bearer%20token"
-	
+
 	service := NewWebhookService().(*WebhookService)
 	parsedURL, err := url.Parse(testURL)
 	if err != nil {
@@ -159,7 +159,7 @@ func TestWebhookService_Properties(t *testing.T) {
 
 func TestWebhookService_Send_InvalidConfig(t *testing.T) {
 	service := NewWebhookService().(*WebhookService)
-	
+
 	// Service without proper configuration should fail
 	req := NotificationRequest{
 		Title:      "Test",

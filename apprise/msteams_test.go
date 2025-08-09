@@ -100,7 +100,7 @@ func TestMSTeamsService_ParseURL(t *testing.T) {
 
 func TestMSTeamsService_ParseURL_QueryParams(t *testing.T) {
 	testURL := "msteams://team_name/token_a/token_b/token_c?image=no"
-	
+
 	service := NewMSTeamsService().(*MSTeamsService)
 	parsedURL, err := url.Parse(testURL)
 	if err != nil {
@@ -290,7 +290,7 @@ func TestMSTeamsService_CreateSummary(t *testing.T) {
 
 func TestMSTeamsService_Send_InvalidConfig(t *testing.T) {
 	service := NewMSTeamsService().(*MSTeamsService)
-	
+
 	// Service without proper configuration should fail
 	req := NotificationRequest{
 		Title:      "Test",

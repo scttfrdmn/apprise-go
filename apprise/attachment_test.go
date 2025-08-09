@@ -405,10 +405,10 @@ func TestHTTPAttachment_Methods(t *testing.T) {
 
 func TestAttachmentManager_SetTimeout(t *testing.T) {
 	mgr := NewAttachmentManager()
-	
+
 	// Test setting timeout
 	mgr.SetTimeout(10 * time.Second)
-	
+
 	// The timeout is internal, but we can verify it doesn't error
 	if mgr.timeout != 10*time.Second {
 		t.Errorf("Expected timeout 10s, got %v", mgr.timeout)
@@ -417,13 +417,13 @@ func TestAttachmentManager_SetTimeout(t *testing.T) {
 
 func TestAttachmentManager_DataURL(t *testing.T) {
 	mgr := NewAttachmentManager()
-	
+
 	// Test adding data URL
 	err := mgr.Add("data:text/plain;base64,SGVsbG8gV29ybGQ=") // "Hello World"
 	if err != nil {
 		t.Errorf("Failed to add data URL: %v", err)
 	}
-	
+
 	if mgr.Count() != 1 {
 		t.Errorf("Expected 1 attachment, got %d", mgr.Count())
 	}
@@ -432,7 +432,7 @@ func TestAttachmentManager_DataURL(t *testing.T) {
 func TestAttachmentManager_HTTPTimeout(t *testing.T) {
 	mgr := NewAttachmentManager()
 	mgr.SetTimeout(1 * time.Millisecond) // Very short timeout
-	
+
 	// This should fail due to timeout, but exercises the HTTP code path
 	err := mgr.Add("http://httpbin.org/delay/10") // Long delay URL
 	// We don't care if it fails, just that it exercises the code

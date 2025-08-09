@@ -23,12 +23,12 @@ func TestPushbulletService_GetDefaultPort(t *testing.T) {
 
 func TestPushbulletService_ParseURL(t *testing.T) {
 	testCases := []struct {
-		name            string
-		url             string
-		expectError     bool
-		expectedToken   string
-		expectedDevices []string
-		expectedEmails  []string
+		name             string
+		url              string
+		expectError      bool
+		expectedToken    string
+		expectedDevices  []string
+		expectedEmails   []string
 		expectedChannels []string
 	}{
 		{
@@ -146,7 +146,7 @@ func TestPushbulletService_ParseURL(t *testing.T) {
 
 func TestPushbulletService_ParseURL_QueryParams(t *testing.T) {
 	testURL := "pushbullet://access_token?device=device1,device2&email=user1@example.com,user2@example.com&channel=channel1,channel2"
-	
+
 	service := NewPushbulletService().(*PushbulletService)
 	parsedURL, err := url.Parse(testURL)
 	if err != nil {
@@ -227,7 +227,7 @@ func TestPushbulletService_Properties(t *testing.T) {
 
 func TestPushbulletService_Send_InvalidConfig(t *testing.T) {
 	service := NewPushbulletService().(*PushbulletService)
-	
+
 	// Service without proper configuration should fail
 	req := NotificationRequest{
 		Title:      "Test",
@@ -268,10 +268,10 @@ func TestPushbulletService_ParseTargetPath(t *testing.T) {
 			channels: []string{"mychannel"},
 		},
 		{
-			name:    "Mixed targets",
-			path:    "/device1/user@email.com/#channel1/device2",
-			devices: []string{"device1", "device2"},
-			emails:  []string{"user@email.com"},
+			name:     "Mixed targets",
+			path:     "/device1/user@email.com/#channel1/device2",
+			devices:  []string{"device1", "device2"},
+			emails:   []string{"user@email.com"},
 			channels: []string{"channel1"},
 		},
 		{
@@ -284,7 +284,7 @@ func TestPushbulletService_ParseTargetPath(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			service := NewPushbulletService().(*PushbulletService)
 			service.accessToken = "test_token" // Set required token
-			
+
 			// Create a URL with the test path
 			fullURL := "pushbullet://test_token" + tc.path
 			parsedURL, err := url.Parse(fullURL)

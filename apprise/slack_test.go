@@ -69,7 +69,6 @@ func TestSlackService_ParseURL_Errors(t *testing.T) {
 	}
 }
 
-
 func TestSlackService_TestURL(t *testing.T) {
 	service := NewSlackService()
 
@@ -140,7 +139,7 @@ func TestSlackService_getColorForNotifyType(t *testing.T) {
 
 func TestSlackService_Send_InvalidConfig(t *testing.T) {
 	service := NewSlackService().(*SlackService)
-	
+
 	// Service without proper configuration should fail
 	req := NotificationRequest{
 		Title:      "Test",

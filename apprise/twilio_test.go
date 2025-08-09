@@ -23,27 +23,27 @@ func TestTwilioService_GetDefaultPort(t *testing.T) {
 
 func TestTwilioService_ParseURL(t *testing.T) {
 	testCases := []struct {
-		name              string
-		url               string
-		expectError       bool
+		name               string
+		url                string
+		expectError        bool
 		expectedAccountSID string
 		expectedAuthToken  string
 		expectedFromPhone  string
 		expectedToPhones   []string
 	}{
 		{
-			name:              "Basic format",
-			url:               "twilio://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543",
-			expectError:       false,
+			name:               "Basic format",
+			url:                "twilio://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543",
+			expectError:        false,
 			expectedAccountSID: "ACCOUNT_SID",
 			expectedAuthToken:  "AUTH_TOKEN",
 			expectedFromPhone:  "+15551234567",
 			expectedToPhones:   []string{"+15559876543"},
 		},
 		{
-			name:              "Multiple recipients",
-			url:               "twilio://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543/+15551111111",
-			expectError:       false,
+			name:               "Multiple recipients",
+			url:                "twilio://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543/+15551111111",
+			expectError:        false,
 			expectedAccountSID: "ACCOUNT_SID",
 			expectedAuthToken:  "AUTH_TOKEN",
 			expectedFromPhone:  "+15551234567",
@@ -128,7 +128,7 @@ func TestTwilioService_ParseURL(t *testing.T) {
 
 func TestTwilioService_ParseURL_QueryParams(t *testing.T) {
 	testURL := "twilio://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543?apikey=test_key"
-	
+
 	service := NewTwilioService().(*TwilioService)
 	parsedURL, err := url.Parse(testURL)
 	if err != nil {
@@ -150,7 +150,7 @@ func TestTwilioService_TestURL(t *testing.T) {
 
 	validURLs := []string{
 		"twilio://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543",
-		"twilio://SID:TOKEN@15551234567/15559876543", // US numbers without +
+		"twilio://SID:TOKEN@15551234567/15559876543",                             // US numbers without +
 		"twilio://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543/+15551111111", // Multiple recipients
 	}
 
@@ -165,7 +165,7 @@ func TestTwilioService_TestURL(t *testing.T) {
 
 	invalidURLs := []string{
 		"http://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543",
-		"twilio://+15551234567/+15559876543", // Missing credentials
+		"twilio://+15551234567/+15559876543",            // Missing credentials
 		"twilio://ACCOUNT_SID:AUTH_TOKEN@/+15559876543", // Missing from phone
 	}
 
@@ -217,13 +217,13 @@ func TestTwilioService_NormalizePhoneNumber(t *testing.T) {
 
 func TestTwilioService_Send_InvalidConfig(t *testing.T) {
 	service := NewTwilioService().(*TwilioService)
-	
+
 	// Service with minimal but invalid configuration should fail
 	service.accountSID = "test_sid"
 	service.authToken = "test_token"
 	service.fromPhone = "+15551234567"
 	service.toPhones = []string{"+15559876543"}
-	
+
 	req := NotificationRequest{
 		Title:      "Test",
 		Body:       "Test message",

@@ -215,7 +215,7 @@ func (f *FileAttachment) Base64() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 
 	data, err := io.ReadAll(reader)
 	if err != nil {
@@ -230,7 +230,7 @@ func (f *FileAttachment) Hash() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 
 	hash := md5.New()
 	if _, err := io.Copy(hash, reader); err != nil {
@@ -267,7 +267,7 @@ func NewHTTPAttachment(url string, timeout time.Duration) (*HTTPAttachment, erro
 			exists: false,
 		}, nil // Don't error on network issues, check with Exists()
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	mimeType := resp.Header.Get("Content-Type")
 	if mimeType == "" {
@@ -324,7 +324,7 @@ func (h *HTTPAttachment) Open() (io.ReadCloser, error) {
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		return nil, fmt.Errorf("HTTP error %d for %s", resp.StatusCode, h.url)
 	}
 
@@ -336,7 +336,7 @@ func (h *HTTPAttachment) Base64() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 
 	data, err := io.ReadAll(reader)
 	if err != nil {
@@ -351,7 +351,7 @@ func (h *HTTPAttachment) Hash() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 
 	hash := md5.New()
 	if _, err := io.Copy(hash, reader); err != nil {

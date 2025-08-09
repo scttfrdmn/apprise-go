@@ -11,11 +11,6 @@
 [![GitHub Issues](https://img.shields.io/github/issues/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/issues)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/pulls)
 
-[![GitHub Stars](https://img.shields.io/github/stars/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/network/members)
-[![GitHub Contributors](https://img.shields.io/github/contributors/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/graphs/contributors)
-[![GitHub Last Commit](https://img.shields.io/github/last-commit/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/commits)
-
 A Go port of the [Apprise notification library](https://github.com/caronc/apprise) by [Chris Caron](https://github.com/caronc). Apprise allows you to send a notification to almost all of the most popular notification services available to us today such as: Telegram, Discord, Slack, Amazon SNS, Gotify, etc.
 
 > **Upstream Project**: This is a Go implementation inspired by the original [Apprise v1.9.4](https://github.com/caronc/apprise/releases/tag/v1.9.4) (⭐ 14,186) Python library. While maintaining API compatibility and feature parity, this Go version offers improved performance, static compilation, and native cross-platform support.

@@ -23,31 +23,31 @@ func TestEmailService_GetDefaultPort(t *testing.T) {
 
 func TestEmailService_ParseURL(t *testing.T) {
 	testCases := []struct {
-		name        string
-		url         string
-		expectError bool
-		expectedTLS bool
+		name         string
+		url          string
+		expectError  bool
+		expectedTLS  bool
 		expectedPort int
 	}{
 		{
-			name:        "Basic mailto",
-			url:         "mailto://user:pass@smtp.gmail.com/to@domain.com",
-			expectError: false,
-			expectedTLS: false,
+			name:         "Basic mailto",
+			url:          "mailto://user:pass@smtp.gmail.com/to@domain.com",
+			expectError:  false,
+			expectedTLS:  false,
 			expectedPort: 587,
 		},
 		{
-			name:        "Secure mailtos",
-			url:         "mailtos://user:pass@smtp.gmail.com/to@domain.com",
-			expectError: false,
-			expectedTLS: true,
+			name:         "Secure mailtos",
+			url:          "mailtos://user:pass@smtp.gmail.com/to@domain.com",
+			expectError:  false,
+			expectedTLS:  true,
 			expectedPort: 465,
 		},
 		{
-			name:        "With port",
-			url:         "mailto://user:pass@smtp.server.com:2525/to@domain.com",
-			expectError: false,
-			expectedTLS: false,
+			name:         "With port",
+			url:          "mailto://user:pass@smtp.server.com:2525/to@domain.com",
+			expectError:  false,
+			expectedTLS:  false,
 			expectedPort: 2525,
 		},
 		{
@@ -101,7 +101,7 @@ func TestEmailService_ParseURL(t *testing.T) {
 
 func TestEmailService_ParseURL_QueryParams(t *testing.T) {
 	testURL := "mailto://user:pass@smtp.server.com/to@domain.com?from=sender@domain.com&cc=cc@domain.com&bcc=bcc@domain.com&subject=Test&skip_verify=true&no_tls=true"
-	
+
 	service := NewEmailService().(*EmailService)
 	parsedURL, err := url.Parse(testURL)
 	if err != nil {
@@ -185,7 +185,7 @@ func TestEmailService_Properties(t *testing.T) {
 
 func TestEmailService_Send_InvalidConfig(t *testing.T) {
 	service := NewEmailService().(*EmailService)
-	
+
 	// Service without proper configuration should fail
 	req := NotificationRequest{
 		Title:      "Test",
