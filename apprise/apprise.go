@@ -294,6 +294,14 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	// Push notification services
 	registry.Register("pushover", func() Service { return NewPushoverService() })
 	registry.Register("pover", func() Service { return NewPushoverService() })
+	registry.Register("pushbullet", func() Service { return NewPushbulletService() })
+	registry.Register("pball", func() Service { return NewPushbulletService() })
+	
+	// Enterprise messaging
+	registry.Register("msteams", func() Service { return NewMSTeamsService() })
+	
+	// SMS services
+	registry.Register("twilio", func() Service { return NewTwilioService() })
 	
 	// Self-hosted services
 	registry.Register("gotify", func() Service { return NewGotifyService() })

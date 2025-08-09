@@ -45,14 +45,17 @@ func main() {
 - **Telegram** - Bot API with multiple chat support
 - **Email (SMTP)** - Full SMTP support with TLS/STARTTLS
 - **Webhook/JSON** - Generic HTTP webhooks with custom templates
-- **Pushover** - Mobile push notifications
+- **Microsoft Teams** - Enterprise messaging with adaptive cards
+- **Pushover** - Mobile push notifications with priority levels
+- **Pushbullet** - Cross-platform push notifications
+- **Twilio SMS** - SMS/MMS messaging with rate limiting
 
 ### 🚧 Coming Soon
-- Microsoft Teams
-- Twilio SMS
 - AWS SNS
-- Pushbullet
 - Gotify
+- Matrix
+- Signal
+- WhatsApp Business
 - And many more...
 
 ## License

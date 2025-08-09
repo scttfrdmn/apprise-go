@@ -143,6 +143,35 @@ webhook://api.example.com/notify?method=PUT&content_type=text/plain
 - Authentication support (Basic, Bearer)
 - Custom headers
 
+### Microsoft Teams
+
+Enterprise messaging with rich card formatting and theme colors.
+
+**URL Formats:**
+```
+# Modern format (recommended)
+msteams://team_name/token_a/token_b/token_c
+
+# Version 3 format
+msteams://team_name/token_a/token_b/token_c/token_d
+
+# Legacy format
+msteams://token_a/token_b/token_c
+
+# With options
+msteams://team_name/token_a/token_b/token_c?image=no
+```
+
+**Query Parameters:**
+- `image=yes/no` - Include activity images in notifications
+
+**Features:**
+- MessageCard format with rich styling
+- Color-coded notifications by type
+- Activity images for visual context
+- Support for all Teams webhook versions
+- Markdown text formatting support
+
 ### Pushover
 
 Mobile push notifications with priority levels and custom sounds.
@@ -167,6 +196,53 @@ pushover://token@userkey?priority=2&retry=60&expire=3600
 - Device targeting
 - Emergency notifications with retry/expire
 - Rich formatting with emojis
+
+### Pushbullet
+
+Cross-platform push notifications to devices, emails, and channels.
+
+**URL Formats:**
+```
+pball://access_token
+pushbullet://access_token/device_id
+pball://access_token/user@email.com
+pball://access_token/#channel_name
+pball://access_token?device=device1,device2&email=user@domain.com
+```
+
+**Query Parameters:**
+- `device=id1,id2` - Target specific devices (comma-separated)
+- `email=user@domain.com` - Send to email addresses  
+- `channel=channel1,channel2` - Send to channels (comma-separated)
+
+**Features:**
+- Multi-device targeting
+- Email and channel support
+- File attachment support
+- Cross-platform compatibility
+- Emoji indicators by notification type
+
+### Twilio SMS
+
+SMS/MMS messaging with rate limiting and phone number normalization.
+
+**URL Formats:**
+```
+twilio://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543
+twilio://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543/+15551111111
+twilio://ACCOUNT_SID:AUTH_TOKEN@15551234567/15559876543
+twilio://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543?apikey=KEY
+```
+
+**Query Parameters:**
+- `apikey=KEY` - Optional API key for authentication
+
+**Features:**
+- Automatic phone number normalization (E.164 format)
+- Rate limiting (0.2 requests/second)
+- Multiple recipient support
+- US/Canada number auto-formatting
+- SMS message length optimization
 
 ## Configuration Files
 

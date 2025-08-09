@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Email (SMTP) service with TLS/STARTTLS support
 - Generic Webhook/JSON service with custom templates
 - Pushover mobile push notification service
+- Microsoft Teams enterprise messaging with MessageCard format
+- Pushbullet cross-platform push notifications
+- Twilio SMS service with rate limiting and phone normalization
 - Enhanced service registry with proper categorization
 - Comprehensive URL format support for all services
 - Rich formatting support (HTML, Markdown, plain text)

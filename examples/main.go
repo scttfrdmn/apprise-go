@@ -39,6 +39,9 @@ func basicExample() {
 		"tgram://bot_token/chat_id",
 		"mailto://user:password@smtp.gmail.com/recipient@email.com",
 		"pushover://token@userkey",
+		"msteams://team_name/tokenA/tokenB/tokenC",
+		"pball://access_token/device_id",
+		"twilio://SID:TOKEN@+15551234567/+15559876543",
 		"webhook://api.example.com/notify",
 	}
 
