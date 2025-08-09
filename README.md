@@ -4,24 +4,17 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/scttfrdmn/apprise-go.svg)](https://pkg.go.dev/github.com/scttfrdmn/apprise-go)
 [![License](https://img.shields.io/github/license/scttfrdmn/apprise-go)](LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/releases)
-[![GitHub Tag](https://img.shields.io/github/v/tag/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/tags)
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/scttfrdmn/apprise-go)](https://goreportcard.com/report/github.com/scttfrdmn/apprise-go)
 [![codecov](https://codecov.io/gh/scttfrdmn/apprise-go/branch/main/graph/badge.svg)](https://codecov.io/gh/scttfrdmn/apprise-go)
-[![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)](apprise)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/scttfrdmn/apprise-go/ci.yml?branch=main)](https://github.com/scttfrdmn/apprise-go/actions)
-
 [![GitHub Issues](https://img.shields.io/github/issues/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/issues)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/pulls)
+
 [![GitHub Stars](https://img.shields.io/github/stars/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/network/members)
 [![GitHub Contributors](https://img.shields.io/github/contributors/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/graphs/contributors)
-
-[![GitHub Commits](https://img.shields.io/github/commit-activity/m/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/commits)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/commits)
-[![GitHub Repo Size](https://img.shields.io/github/repo-size/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go)
-[![GitHub Language Count](https://img.shields.io/github/languages/count/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go)
-[![GitHub Top Language](https://img.shields.io/github/languages/top/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go)
 
 A Go port of the [Apprise notification library](https://github.com/caronc/apprise) by [Chris Caron](https://github.com/caronc). Apprise allows you to send a notification to almost all of the most popular notification services available to us today such as: Telegram, Discord, Slack, Amazon SNS, Gotify, etc.
 
