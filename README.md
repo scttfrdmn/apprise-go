@@ -1,4 +1,8 @@
-# Apprise Go
+<div align="center">
+  <img src="docs/apprise-go.png" alt="Apprise Go Logo" width="200"/>
+  
+  # Apprise Go
+</div>
 
 [![Go Version](https://img.shields.io/github/go-mod/go-version/scttfrdmn/apprise-go)](https://golang.org/)
 [![Go Reference](https://pkg.go.dev/badge/github.com/scttfrdmn/apprise-go.svg)](https://pkg.go.dev/github.com/scttfrdmn/apprise-go)

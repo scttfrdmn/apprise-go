@@ -68,7 +68,7 @@ func (d *DiscordService) ParseURL(serviceURL *url.URL) error {
 	}
 
 	if d.webhookID == "" || d.webhookToken == "" {
-		return fmt.Errorf("Discord webhook ID and token are required")
+		return fmt.Errorf("discord webhook ID and token are required")
 	}
 
 	return nil
@@ -164,12 +164,12 @@ func (d *DiscordService) Send(ctx context.Context, req NotificationRequest) erro
 	if err != nil {
 		return fmt.Errorf("failed to send Discord notification: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Check response status
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("Discord API error (status %d): %s", resp.StatusCode, string(body))
+		return fmt.Errorf("discord API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	return nil

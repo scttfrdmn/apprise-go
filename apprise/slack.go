@@ -234,7 +234,7 @@ func (s *SlackService) sendPayload(ctx context.Context, webhookURL string, paylo
 	if err != nil {
 		return fmt.Errorf("failed to send Slack notification: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Check response status
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
@@ -271,7 +271,7 @@ func (s *SlackService) sendBotPayload(ctx context.Context, apiURL string, payloa
 	if err != nil {
 		return fmt.Errorf("failed to send Slack bot notification: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse response for bot API
 	var result struct {

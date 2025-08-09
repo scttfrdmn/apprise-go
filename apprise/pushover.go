@@ -54,7 +54,7 @@ func (p *PushoverService) ParseURL(serviceURL *url.URL) error {
 
 	// Extract token and user key
 	if serviceURL.User == nil {
-		return fmt.Errorf("Pushover token and user key are required")
+		return fmt.Errorf("pushover token and user key are required")
 	}
 
 	p.token = serviceURL.User.Username()
@@ -217,7 +217,7 @@ func (p *PushoverService) sendToDevice(ctx context.Context, apiURL, device strin
 	if err != nil {
 		return fmt.Errorf("failed to send Pushover notification: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse response
 	body, err := io.ReadAll(resp.Body)

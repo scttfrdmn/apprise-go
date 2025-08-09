@@ -65,7 +65,7 @@ func main() {
 				fmt.Printf("Warning: %v\n", err)
 			}
 		}
-		config.ApplyToApprise()
+		_ = config.ApplyToApprise()
 	}
 
 	// Add URLs from command line

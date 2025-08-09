@@ -113,7 +113,7 @@ func TestParseFlagsCommaSeparatedValues(t *testing.T) {
 	oldArgs := os.Args
 	defer func() { os.Args = oldArgs }()
 
-	os.Args = []string{"apprise", 
+	os.Args = []string{"apprise",
 		"-config", "config1.yaml,config2.yaml",
 		"-tag", "production,alerts",
 		"-url", "discord://token1,slack://token2",

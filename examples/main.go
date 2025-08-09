@@ -87,12 +87,12 @@ func configExample() {
 		app.Add("discord://webhook_id/webhook_token")
 	} else {
 		// Apply configuration to Apprise instance
-		config.ApplyToApprise()
+		_ = config.ApplyToApprise()
 	}
 
 	// Load default configurations
-	config.LoadDefaultConfigs()
-	config.ApplyToApprise()
+	_ = config.LoadDefaultConfigs()
+	_ = config.ApplyToApprise()
 
 	fmt.Printf("Loaded %d services from configuration\n", app.Count())
 
@@ -233,68 +233,6 @@ func errorHandlingExample() {
 
 // Additional utility functions and examples
 
-// customServiceExample shows how to create a custom notification service
-func customServiceExample() {
-	fmt.Println("=== Custom Service Example ===")
-
-	// This would require implementing the Service interface
-	// See the Discord service implementation as a reference
-
-	app := apprise.New()
-
-	// Register custom service
-	// registry := app.GetRegistry() // You'd need to expose this
-	// registry.Register("custom", func() apprise.Service {
-	//     return NewCustomService()
-	// })
-
-	// Use custom service
-	err := app.Add("custom://custom_config_here")
-	if err != nil {
-		fmt.Printf("Error adding custom service: %v\n", err)
-		return
-	}
-
-	app.Notify(
-		"Custom Service Test",
-		"Testing custom notification service",
-		apprise.NotifyTypeInfo,
-	)
-
-	fmt.Println()
-}
-
-// bulkNotificationExample demonstrates sending bulk notifications efficiently
-func bulkNotificationExample() {
-	fmt.Println("=== Bulk Notification Example ===")
-
-	app := apprise.New()
-	app.Add("discord://webhook_id/webhook_token")
-
-	// Send multiple notifications
-	notifications := []struct {
-		title string
-		body  string
-		nType apprise.NotifyType
-	}{
-		{"Server 1", "Server 1 is healthy", apprise.NotifyTypeSuccess},
-		{"Server 2", "Server 2 has high CPU usage", apprise.NotifyTypeWarning},
-		{"Server 3", "Server 3 is down", apprise.NotifyTypeError},
-	}
-
-	for _, notif := range notifications {
-		responses := app.Notify(notif.title, notif.body, notif.nType)
-		for _, response := range responses {
-			if response.Success {
-				fmt.Printf("✓ Sent: %s\n", notif.title)
-			} else {
-				fmt.Printf("✗ Failed: %s - %v\n", notif.title, response.Error)
-			}
-		}
-	}
-
-	fmt.Println()
-}
 
 /* Example configuration files:
 

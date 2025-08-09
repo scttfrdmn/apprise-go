@@ -51,7 +51,7 @@ func (p *PushbulletService) ParseURL(serviceURL *url.URL) error {
 	// Extract access token from host
 	p.accessToken = serviceURL.Host
 	if p.accessToken == "" {
-		return fmt.Errorf("Pushbullet access token is required")
+		return fmt.Errorf("pushbullet access token is required")
 	}
 
 	// Extract targets from path
@@ -263,7 +263,7 @@ func (p *PushbulletService) sendPush(ctx context.Context, apiURL string, req Not
 	if err != nil {
 		return fmt.Errorf("failed to send Pushbullet notification: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Read response
 	body, err := io.ReadAll(resp.Body)
@@ -279,11 +279,11 @@ func (p *PushbulletService) sendPush(ctx context.Context, apiURL string, req Not
 
 	// Check for errors
 	if result.Error != nil {
-		return fmt.Errorf("Pushbullet API error: %s - %s", result.Error.Code, result.Error.Message)
+		return fmt.Errorf("pushbullet API error: %s - %s", result.Error.Code, result.Error.Message)
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("Pushbullet API error (status %d): %s", resp.StatusCode, string(body))
+		return fmt.Errorf("pushbullet API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	return nil

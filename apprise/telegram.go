@@ -178,7 +178,7 @@ func (t *TelegramService) sendToChat(ctx context.Context, chatID, message string
 	if err != nil {
 		return fmt.Errorf("failed to send Telegram notification: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Parse response
 	body, err := io.ReadAll(resp.Body)
@@ -210,15 +210,16 @@ func (t *TelegramService) formatMessage(title, body string, notifyType NotifyTyp
 
 	// Add title if present
 	if title != "" {
-		if t.parseMode == "HTML" {
+		switch t.parseMode {
+		case "HTML":
 			message.WriteString(fmt.Sprintf("<b>%s</b>\n", title))
-		} else if t.parseMode == "Markdown" || t.parseMode == "MarkdownV2" {
-			if t.parseMode == "MarkdownV2" {
-				// Escape special characters for MarkdownV2
-				title = t.escapeMarkdownV2(title)
-			}
+		case "Markdown":
 			message.WriteString(fmt.Sprintf("*%s*\n", title))
-		} else {
+		case "MarkdownV2":
+			// Escape special characters for MarkdownV2
+			title = t.escapeMarkdownV2(title)
+			message.WriteString(fmt.Sprintf("*%s*\n", title))
+		default:
 			message.WriteString(fmt.Sprintf("%s\n", title))
 		}
 	}

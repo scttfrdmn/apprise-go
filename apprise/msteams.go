@@ -183,18 +183,18 @@ func (m *MSTeamsService) Send(ctx context.Context, req NotificationRequest) erro
 	if err != nil {
 		return fmt.Errorf("failed to send Teams notification: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Check response status
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("Teams API error (status %d): %s", resp.StatusCode, string(body))
+		return fmt.Errorf("teams API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	// Teams typically returns "1" for success
 	body, _ := io.ReadAll(resp.Body)
 	if strings.TrimSpace(string(body)) != "1" {
-		return fmt.Errorf("Teams webhook error: %s", string(body))
+		return fmt.Errorf("teams webhook error: %s", string(body))
 	}
 
 	return nil

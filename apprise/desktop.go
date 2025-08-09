@@ -374,10 +374,10 @@ func (g *GotifyService) Send(ctx context.Context, req NotificationRequest) error
 	if err != nil {
 		return fmt.Errorf("failed to send Gotify notification: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("Gotify API error: %s", resp.Status)
+		return fmt.Errorf("gotify API error: %s", resp.Status)
 	}
 
 	return nil

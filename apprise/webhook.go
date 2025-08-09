@@ -175,7 +175,7 @@ func (w *WebhookService) Send(ctx context.Context, req NotificationRequest) erro
 	if err != nil {
 		return fmt.Errorf("failed to send webhook notification: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Check response status
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
@@ -327,8 +327,8 @@ func (j *JSONService) GetMaxBodyLength() int {
 // encodeBasicAuth encodes username and password for Basic authentication
 func encodeBasicAuth(username, password string) string {
 	auth := username + ":" + password
-	return strings.TrimRight(strings.Replace(
-		strings.Replace(auth, "+", "-", -1), "/", "_", -1), "=")
+	return strings.TrimRight(strings.ReplaceAll(
+		strings.ReplaceAll(auth, "+", "-"), "/", "_"), "=")
 }
 
 // Example usage and URL formats:

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"strings"
 	"sync"
 	"time"
 )
@@ -301,13 +300,6 @@ func WithBodyFormat(format string) NotifyOption {
 	}
 }
 
-// Helper function to extract scheme from URL
-func extractScheme(serviceURL string) string {
-	if idx := strings.Index(serviceURL, "://"); idx != -1 {
-		return serviceURL[:idx]
-	}
-	return ""
-}
 
 // registerBuiltinServices registers all built-in notification services
 func registerBuiltinServices(registry *ServiceRegistry) {
