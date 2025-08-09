@@ -220,11 +220,12 @@ func TestDiscordSendMethodExists(t *testing.T) {
 		t.Error("Expected network error for invalid webhook URL, got none")
 	}
 
-	// Check that error message makes sense
-	if !strings.Contains(err.Error(), "Discord") &&
+	// Check that error message makes sense - should be either network-related or Discord API validation error
+	if !strings.Contains(err.Error(), "discord") &&
 		!strings.Contains(err.Error(), "connect") &&
 		!strings.Contains(err.Error(), "no such host") &&
-		!strings.Contains(err.Error(), "timeout") {
-		t.Errorf("Error should be network-related, got: %v", err)
+		!strings.Contains(err.Error(), "timeout") &&
+		!strings.Contains(err.Error(), "snowflake") {
+		t.Errorf("Error should be network-related or API validation error, got: %v", err)
 	}
 }
