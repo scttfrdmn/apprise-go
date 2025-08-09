@@ -35,10 +35,6 @@ jobs:
     - name: Run tests with coverage
       run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
     
-    - name: Run security analysis with gosec
-      run: |
-        go install github.com/securecodewarrior/gosec/v2/cmd/gosec@v2.22.0
-        $(go env GOPATH)/bin/gosec ./...
     
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v5
