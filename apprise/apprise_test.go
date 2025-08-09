@@ -220,3 +220,78 @@ func TestAppriseAddService(t *testing.T) {
 		t.Errorf("Expected 0 services after clear, got %d", app.Count())
 	}
 }
+
+func TestAppriseSetTags(t *testing.T) {
+	app := New()
+	
+	// Test setting tags
+	app.SetTags("production", "critical")
+	
+	// Tags are internal, but we can test via notification
+	if app.Count() != 0 {
+		t.Errorf("Tags shouldn't affect service count, got %d", app.Count())
+	}
+}
+
+func TestAppriseAddAttachment(t *testing.T) {
+	app := New()
+	
+	// Test AddAttachment function - should not fail for non-existent files (handled by attachment manager)
+	err := app.AddAttachment("nonexistent.txt")
+	if err != nil {
+		t.Errorf("AddAttachment should not fail for non-existent file: %v", err)
+	}
+	
+	if app.AttachmentCount() != 1 {
+		t.Errorf("Expected 1 attachment after adding, got %d", app.AttachmentCount())
+	}
+}
+
+func TestAppriseGetAttachmentManager(t *testing.T) {
+	app := New()
+	
+	mgr := app.GetAttachmentManager()
+	if mgr == nil {
+		t.Error("GetAttachmentManager should return a non-nil manager")
+	}
+	
+	if mgr.Count() != 0 {
+		t.Errorf("New attachment manager should have 0 attachments, got %d", mgr.Count())
+	}
+}
+
+func TestNotifyOptions(t *testing.T) {
+	// Test WithAttachments option
+	option := WithAttachments()
+	req := NotificationRequest{}
+	option(&req)
+	// Should not panic or error
+	
+	// Test WithTags option
+	option = WithTags("test", "production")
+	req = NotificationRequest{}
+	option(&req)
+	
+	if len(req.Tags) != 2 {
+		t.Errorf("Expected 2 tags, got %d", len(req.Tags))
+	}
+	
+	if req.Tags[0] != "test" || req.Tags[1] != "production" {
+		t.Errorf("Expected tags [test, production], got %v", req.Tags)
+	}
+}
+
+func TestNotifyWithOptions(t *testing.T) {
+	app := New()
+	
+	// Test notification with options (won't actually send without services)
+	responses := app.Notify("Test", "Body", NotifyTypeInfo, 
+		WithTags("test"),
+		WithBodyFormat("html"),
+	)
+	
+	// Should return empty responses since no services
+	if len(responses) != 0 {
+		t.Errorf("Expected 0 responses with no services, got %d", len(responses))
+	}
+}
