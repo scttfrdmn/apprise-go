@@ -233,7 +233,7 @@ func (p *PushbulletService) sendPush(ctx context.Context, apiURL string, req Not
 	// Set headers
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Access-Token", p.accessToken)
-	httpReq.Header.Set("User-Agent", "Go-Apprise/1.0")
+	httpReq.Header.Set("User-Agent", GetUserAgent())
 
 	// Send request
 	resp, err := p.client.Do(httpReq)

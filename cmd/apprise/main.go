@@ -30,8 +30,7 @@ type CLIOptions struct {
 }
 
 const (
-	AppVersion = "1.0.0"
-	AppName    = "go-apprise"
+	AppName = "apprise-cli"
 )
 
 func main() {
@@ -43,7 +42,8 @@ func main() {
 	}
 
 	if opts.Version {
-		fmt.Printf("%s version %s\n", AppName, AppVersion)
+		versionInfo := apprise.GetVersionInfo()
+		fmt.Printf("%s %s\n", AppName, versionInfo.String())
 		os.Exit(0)
 	}
 

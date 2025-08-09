@@ -228,7 +228,7 @@ func (s *SlackService) sendPayload(ctx context.Context, webhookURL string, paylo
 	}
 
 	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("User-Agent", "Go-Apprise/1.0")
+	httpReq.Header.Set("User-Agent", GetUserAgent())
 
 	resp, err := s.client.Do(httpReq)
 	if err != nil {
@@ -265,7 +265,7 @@ func (s *SlackService) sendBotPayload(ctx context.Context, apiURL string, payloa
 
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", s.botToken))
-	httpReq.Header.Set("User-Agent", "Go-Apprise/1.0")
+	httpReq.Header.Set("User-Agent", GetUserAgent())
 
 	resp, err := s.client.Do(httpReq)
 	if err != nil {

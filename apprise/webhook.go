@@ -161,7 +161,7 @@ func (w *WebhookService) Send(ctx context.Context, req NotificationRequest) erro
 
 	// Set headers
 	httpReq.Header.Set("Content-Type", w.contentType)
-	httpReq.Header.Set("User-Agent", "Go-Apprise/1.0")
+	httpReq.Header.Set("User-Agent", GetUserAgent())
 	
 	for key, value := range w.headers {
 		httpReq.Header.Set(key, value)

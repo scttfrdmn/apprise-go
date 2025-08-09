@@ -244,6 +244,72 @@ twilio://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543?apikey=KEY
 - US/Canada number auto-formatting
 - SMS message length optimization
 
+### Desktop Notifications
+
+Cross-platform desktop notifications using native OS notification systems.
+
+**URL Formats:**
+```
+# Generic (auto-detects platform)
+desktop://
+
+# Platform-specific
+macosx://                          # macOS via terminal-notifier
+windows://                         # Windows system tray notifications
+linux://                           # Linux via notify-send
+
+# Linux-specific DBus notifications
+dbus://                            # Auto-detect DBus interface
+qt://                              # Force QT interface
+kde://                             # KDE desktop environment
+glib://                            # GLib interface
+gnome://                           # Gnome desktop environment
+
+# With parameters
+macosx://?sound=default&image=/path/to/icon.png
+windows://?duration=10             # Display for 10 seconds
+desktop://?image=/path/to/image.png
+```
+
+**Query Parameters:**
+- `sound=name` - System sound name (macOS only)
+- `duration=seconds` - Display duration in seconds (Windows only, default: 12)
+- `image=path` - Path to image file for notification icon
+
+**Platform Requirements:**
+- **macOS:** Requires `terminal-notifier` - install with: `brew install terminal-notifier`
+- **Windows:** Uses PowerShell and system tray notifications (no extra dependencies)
+- **Linux:** Requires one of: `notify-send`, `zenity`, or `kdialog`
+
+**Features:**
+- Cross-platform compatibility with native OS integration
+- Message length automatically limited to 250 characters
+- Platform-specific notification styling and behavior
+- Support for custom sounds and images
+- Graceful fallbacks when notification tools are unavailable
+
+### Gotify
+
+Self-hosted push notification server for sending messages to devices and applications.
+
+**URL Formats:**
+```
+gotify://hostname:port/app_token
+gotifys://secure.example.com/app_token          # HTTPS
+gotify://192.168.1.100:8080/ABCDefGHijkL?priority=5
+```
+
+**Query Parameters:**
+- `priority=0-10` - Message priority level (default: 5)
+
+**Features:**
+- Self-hosted push notification solution
+- Color-coded messages based on notification type
+- Customizable priority levels (0-10)
+- HTTP and HTTPS support
+- JSON-based API integration
+- Supports rich notification metadata via "extras"
+
 ## Configuration Files
 
 ### YAML Format
@@ -476,6 +542,8 @@ app.ClearAttachments()
 | Pushover | ✅ Images | Image attachments only |
 | Webhook/JSON | ❌ Not supported | Use base64 encoding in payload |
 | Twilio SMS | ❌ Not supported | SMS doesn't support attachments |
+| Desktop Notifications | ❌ Not supported | Images via image parameter only |
+| Gotify | ❌ Not supported | Text-only notifications |
 
 ### Attachment Security
 

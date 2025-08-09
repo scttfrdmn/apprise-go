@@ -171,7 +171,7 @@ func (t *TwilioService) sendToPhone(ctx context.Context, toPhone, message string
 
 	// Set headers
 	httpReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	httpReq.Header.Set("User-Agent", "Go-Apprise/1.0")
+	httpReq.Header.Set("User-Agent", GetUserAgent())
 
 	// Set authentication
 	auth := t.accountSID + ":" + t.authToken

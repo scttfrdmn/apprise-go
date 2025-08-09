@@ -342,5 +342,16 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("gotify", func() Service { return NewGotifyService() })
 	registry.Register("gotifys", func() Service { return NewGotifyService() })
 	
+	// Desktop notification services
+	registry.Register("desktop", func() Service { return NewDesktopService() })
+	registry.Register("macosx", func() Service { return NewDesktopService() })
+	registry.Register("windows", func() Service { return NewDesktopService() })
+	registry.Register("linux", func() Service { return NewDesktopService() })
+	registry.Register("dbus", func() Service { return NewLinuxDBusService() })
+	registry.Register("gnome", func() Service { return NewLinuxDBusService() })
+	registry.Register("kde", func() Service { return NewLinuxDBusService() })
+	registry.Register("glib", func() Service { return NewLinuxDBusService() })
+	registry.Register("qt", func() Service { return NewLinuxDBusService() })
+	
 	// Add more services as needed...
 }

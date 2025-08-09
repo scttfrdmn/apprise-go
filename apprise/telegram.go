@@ -172,7 +172,7 @@ func (t *TelegramService) sendToChat(ctx context.Context, chatID, message string
 	}
 
 	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("User-Agent", "Go-Apprise/1.0")
+	httpReq.Header.Set("User-Agent", GetUserAgent())
 
 	resp, err := t.client.Do(httpReq)
 	if err != nil {

@@ -8,9 +8,6 @@ import (
 
 // Stub implementations for services that aren't implemented yet
 
-func NewGotifyService() Service {
-	return &stubService{id: "gotify"}
-}
 
 // stubService is a placeholder implementation for services not yet implemented
 type stubService struct {

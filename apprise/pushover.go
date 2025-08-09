@@ -211,7 +211,7 @@ func (p *PushoverService) sendToDevice(ctx context.Context, apiURL, device strin
 	}
 
 	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("User-Agent", "Go-Apprise/1.0")
+	httpReq.Header.Set("User-Agent", GetUserAgent())
 
 	resp, err := p.client.Do(httpReq)
 	if err != nil {

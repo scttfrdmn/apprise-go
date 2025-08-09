@@ -303,7 +303,7 @@ func (e *EmailService) createMessage(req NotificationRequest) (string, error) {
 	message.WriteString(fmt.Sprintf("Content-Type: %s\r\n", contentType))
 	
 	message.WriteString(fmt.Sprintf("Date: %s\r\n", time.Now().Format(time.RFC1123Z)))
-	message.WriteString(fmt.Sprintf("X-Mailer: Go-Apprise/1.0\r\n"))
+	message.WriteString(fmt.Sprintf("X-Mailer: GetUserAgent()\r\n"))
 	
 	// Empty line separating headers from body
 	message.WriteString("\r\n")

@@ -176,7 +176,7 @@ func (m *MSTeamsService) Send(ctx context.Context, req NotificationRequest) erro
 	}
 
 	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("User-Agent", "Go-Apprise/1.0")
+	httpReq.Header.Set("User-Agent", GetUserAgent())
 
 	// Send request
 	resp, err := m.client.Do(httpReq)
