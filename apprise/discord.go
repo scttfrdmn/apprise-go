@@ -76,10 +76,10 @@ func (d *DiscordService) ParseURL(serviceURL *url.URL) error {
 
 // DiscordWebhookPayload represents the Discord webhook payload structure
 type DiscordWebhookPayload struct {
-	Content   string                   `json:"content,omitempty"`
-	Username  string                   `json:"username,omitempty"`
-	AvatarURL string                   `json:"avatar_url,omitempty"`
-	Embeds    []DiscordEmbed          `json:"embeds,omitempty"`
+	Content   string         `json:"content,omitempty"`
+	Username  string         `json:"username,omitempty"`
+	AvatarURL string         `json:"avatar_url,omitempty"`
+	Embeds    []DiscordEmbed `json:"embeds,omitempty"`
 }
 
 // DiscordEmbed represents a Discord embed object

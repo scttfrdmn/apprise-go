@@ -14,21 +14,21 @@ import (
 
 // PushoverService implements Pushover push notifications
 type PushoverService struct {
-	token     string
-	userKey   string
-	devices   []string
-	priority  int
-	sound     string
-	retry     int
-	expire    int
-	client    *http.Client
+	token    string
+	userKey  string
+	devices  []string
+	priority int
+	sound    string
+	retry    int
+	expire   int
+	client   *http.Client
 }
 
 // NewPushoverService creates a new Pushover service instance
 func NewPushoverService() Service {
 	return &PushoverService{
 		client:   &http.Client{},
-		priority: 0, // Normal priority
+		priority: 0,          // Normal priority
 		sound:    "pushover", // Default sound
 	}
 }
@@ -82,17 +82,17 @@ func (p *PushoverService) ParseURL(serviceURL *url.URL) error {
 
 	// Parse query parameters
 	query := serviceURL.Query()
-	
+
 	if priority := query.Get("priority"); priority != "" {
 		if prio, err := strconv.Atoi(priority); err == nil && prio >= -2 && prio <= 2 {
 			p.priority = prio
 		}
 	}
-	
+
 	if sound := query.Get("sound"); sound != "" {
 		p.sound = sound
 	}
-	
+
 	if retry := query.Get("retry"); retry != "" && p.priority == 2 {
 		if r, err := strconv.Atoi(retry); err == nil && r >= 30 {
 			p.retry = r
@@ -100,7 +100,7 @@ func (p *PushoverService) ParseURL(serviceURL *url.URL) error {
 			p.retry = 60 // Default retry for emergency priority
 		}
 	}
-	
+
 	if expire := query.Get("expire"); expire != "" && p.priority == 2 {
 		if e, err := strconv.Atoi(expire); err == nil && e <= 10800 {
 			p.expire = e
@@ -139,10 +139,10 @@ type PushoverPayload struct {
 
 // PushoverResponse represents the Pushover API response
 type PushoverResponse struct {
-	Status   int      `json:"status"`
-	Request  string   `json:"request"`
-	Errors   []string `json:"errors,omitempty"`
-	Receipt  string   `json:"receipt,omitempty"`
+	Status  int      `json:"status"`
+	Request string   `json:"request"`
+	Errors  []string `json:"errors,omitempty"`
+	Receipt string   `json:"receipt,omitempty"`
 }
 
 // Send sends a notification to Pushover

@@ -14,20 +14,20 @@ import (
 
 // TelegramService implements Telegram Bot API notifications
 type TelegramService struct {
-	botToken       string
-	chatIDs        []string
-	silent         bool
-	preview        bool
-	parseMode      string
-	threadID       string
-	client         *http.Client
+	botToken  string
+	chatIDs   []string
+	silent    bool
+	preview   bool
+	parseMode string
+	threadID  string
+	client    *http.Client
 }
 
 // NewTelegramService creates a new Telegram service instance
 func NewTelegramService() Service {
 	return &TelegramService{
 		client:    &http.Client{},
-		preview:   true, // Enable web page preview by default
+		preview:   true,       // Enable web page preview by default
 		parseMode: "Markdown", // Default to Markdown parsing
 	}
 }
@@ -77,15 +77,15 @@ func (t *TelegramService) ParseURL(serviceURL *url.URL) error {
 
 	// Parse query parameters
 	query := serviceURL.Query()
-	
+
 	if silent := query.Get("silent"); silent != "" {
 		t.silent = strings.ToLower(silent) == "yes" || strings.ToLower(silent) == "true"
 	}
-	
+
 	if preview := query.Get("preview"); preview != "" {
 		t.preview = strings.ToLower(preview) == "yes" || strings.ToLower(preview) == "true"
 	}
-	
+
 	if parseMode := query.Get("format"); parseMode != "" {
 		switch strings.ToLower(parseMode) {
 		case "html":
@@ -98,7 +98,7 @@ func (t *TelegramService) ParseURL(serviceURL *url.URL) error {
 			t.parseMode = "" // No parsing
 		}
 	}
-	
+
 	if threadID := query.Get("thread"); threadID != "" {
 		t.threadID = threadID
 	}
@@ -256,12 +256,12 @@ func (t *TelegramService) escapeMarkdownV2(text string) string {
 	specialChars := []string{
 		"_", "*", "[", "]", "(", ")", "~", "`", ">", "#", "+", "-", "=", "|", "{", "}", ".", "!",
 	}
-	
+
 	result := text
 	for _, char := range specialChars {
 		result = strings.ReplaceAll(result, char, "\\"+char)
 	}
-	
+
 	return result
 }
 
@@ -291,15 +291,15 @@ func (t *TelegramService) validateChatID(chatID string) bool {
 	// - Numeric (positive or negative)
 	// - Username starting with @
 	// - Channel username
-	
+
 	if strings.HasPrefix(chatID, "@") {
 		return len(chatID) > 1
 	}
-	
+
 	if _, err := strconv.ParseInt(chatID, 10, 64); err == nil {
 		return true
 	}
-	
+
 	return false
 }
 

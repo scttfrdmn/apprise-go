@@ -8,7 +8,6 @@ import (
 
 // Stub implementations for services that aren't implemented yet
 
-
 // stubService is a placeholder implementation for services not yet implemented
 type stubService struct {
 	id string

@@ -15,20 +15,20 @@ import (
 
 // EmailService implements SMTP email notifications
 type EmailService struct {
-	smtpHost     string
-	smtpPort     int
-	username     string
-	password     string
-	fromEmail    string
-	fromName     string
-	toEmails     []string
-	ccEmails     []string
-	bccEmails    []string
-	subject      string
-	useTLS       bool
-	useSTARTTLS  bool
-	skipVerify   bool
-	timeout      time.Duration
+	smtpHost    string
+	smtpPort    int
+	username    string
+	password    string
+	fromEmail   string
+	fromName    string
+	toEmails    []string
+	ccEmails    []string
+	bccEmails   []string
+	subject     string
+	useTLS      bool
+	useSTARTTLS bool
+	skipVerify  bool
+	timeout     time.Duration
 }
 
 // NewEmailService creates a new email service instance
@@ -108,15 +108,15 @@ func (e *EmailService) ParseURL(serviceURL *url.URL) error {
 
 	// Parse query parameters
 	query := serviceURL.Query()
-	
+
 	if from := query.Get("from"); from != "" && e.isValidEmail(from) {
 		e.fromEmail = from
 	}
-	
+
 	if fromName := query.Get("name"); fromName != "" {
 		e.fromName = fromName
 	}
-	
+
 	if cc := query.Get("cc"); cc != "" {
 		ccEmails := strings.Split(cc, ",")
 		for _, email := range ccEmails {
@@ -126,7 +126,7 @@ func (e *EmailService) ParseURL(serviceURL *url.URL) error {
 			}
 		}
 	}
-	
+
 	if bcc := query.Get("bcc"); bcc != "" {
 		bccEmails := strings.Split(bcc, ",")
 		for _, email := range bccEmails {
@@ -136,15 +136,15 @@ func (e *EmailService) ParseURL(serviceURL *url.URL) error {
 			}
 		}
 	}
-	
+
 	if subject := query.Get("subject"); subject != "" {
 		e.subject = subject
 	}
-	
+
 	if skipVerify := query.Get("skip_verify"); skipVerify == "true" || skipVerify == "yes" {
 		e.skipVerify = true
 	}
-	
+
 	if noTLS := query.Get("no_tls"); noTLS == "true" || noTLS == "yes" {
 		e.useSTARTTLS = false
 	}
@@ -218,7 +218,7 @@ func (e *EmailService) Send(ctx context.Context, req NotificationRequest) error 
 // connectSMTP establishes connection to SMTP server
 func (e *EmailService) connectSMTP(ctx context.Context) (*smtp.Client, error) {
 	address := fmt.Sprintf("%s:%d", e.smtpHost, e.smtpPort)
-	
+
 	var conn net.Conn
 	var err error
 
@@ -228,7 +228,7 @@ func (e *EmailService) connectSMTP(ctx context.Context) (*smtp.Client, error) {
 			ServerName:         e.smtpHost,
 			InsecureSkipVerify: e.skipVerify,
 		}
-		
+
 		dialer := &net.Dialer{Timeout: e.timeout}
 		conn, err = tls.DialWithDialer(dialer, "tcp", address, tlsConfig)
 	} else {
@@ -253,7 +253,7 @@ func (e *EmailService) connectSMTP(ctx context.Context) (*smtp.Client, error) {
 			ServerName:         e.smtpHost,
 			InsecureSkipVerify: e.skipVerify,
 		}
-		
+
 		if err := client.StartTLS(tlsConfig); err != nil {
 			client.Close()
 			return nil, err
@@ -294,17 +294,17 @@ func (e *EmailService) createMessage(req NotificationRequest) (string, error) {
 
 	// Additional headers
 	message.WriteString("MIME-Version: 1.0\r\n")
-	
+
 	// Determine content type based on body format
 	contentType := "text/plain; charset=UTF-8"
 	if req.BodyFormat == "html" {
 		contentType = "text/html; charset=UTF-8"
 	}
 	message.WriteString(fmt.Sprintf("Content-Type: %s\r\n", contentType))
-	
+
 	message.WriteString(fmt.Sprintf("Date: %s\r\n", time.Now().Format(time.RFC1123Z)))
 	message.WriteString(fmt.Sprintf("X-Mailer: GetUserAgent()\r\n"))
-	
+
 	// Empty line separating headers from body
 	message.WriteString("\r\n")
 
@@ -322,18 +322,18 @@ func (e *EmailService) formatMessageBody(title, body string, notifyType NotifyTy
 	if format == "html" {
 		// HTML format
 		result.WriteString("<html><body>\r\n")
-		
+
 		if title != "" {
 			emoji := e.getEmojiForNotifyType(notifyType)
 			result.WriteString(fmt.Sprintf("<h2>%s %s</h2>\r\n", emoji, title))
 		}
-		
+
 		if body != "" {
 			// Convert line breaks to <br> for HTML
 			htmlBody := strings.ReplaceAll(body, "\n", "<br>\r\n")
 			result.WriteString(fmt.Sprintf("<p>%s</p>\r\n", htmlBody))
 		}
-		
+
 		result.WriteString(fmt.Sprintf("<hr><small>Notification Type: %s</small>\r\n", notifyType.String()))
 		result.WriteString("</body></html>\r\n")
 	} else {
@@ -342,11 +342,11 @@ func (e *EmailService) formatMessageBody(title, body string, notifyType NotifyTy
 			emoji := e.getEmojiForNotifyType(notifyType)
 			result.WriteString(fmt.Sprintf("%s %s\r\n\r\n", emoji, title))
 		}
-		
+
 		if body != "" {
 			result.WriteString(body + "\r\n")
 		}
-		
+
 		result.WriteString(fmt.Sprintf("\r\n---\r\nNotification Type: %s\r\n", notifyType.String()))
 	}
 

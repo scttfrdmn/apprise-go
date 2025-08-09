@@ -8,10 +8,10 @@ import (
 const (
 	// Version of this Go port
 	Version = "1.9.4-1"
-	
+
 	// UpstreamVersion is the version of the original Apprise project this port is based on
 	UpstreamVersion = "1.9.4"
-	
+
 	// PortVersion is the Go port revision number for this upstream version
 	PortVersion = "1"
 )
@@ -50,7 +50,7 @@ func GetUpstreamVersion() string {
 
 // GetUserAgent returns a user agent string for HTTP requests
 func GetUserAgent() string {
-	return fmt.Sprintf("Apprise-Go/%s (Go %s; %s/%s) based-on-Apprise/%s", 
+	return fmt.Sprintf("Apprise-Go/%s (Go %s; %s/%s) based-on-Apprise/%s",
 		Version, runtime.Version(), runtime.GOOS, runtime.GOARCH, UpstreamVersion)
 }
 

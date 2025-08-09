@@ -14,19 +14,19 @@ import (
 
 // CLIOptions holds command line options
 type CLIOptions struct {
-	Title         string
-	Body          string
-	NotifyType    string
-	ConfigPaths   []string
-	URLs          []string
-	Tags          []string
-	Attachments   []string
-	BodyFormat    string
-	Verbose       int
-	DryRun        bool
-	Timeout       time.Duration
-	Version       bool
-	Help          bool
+	Title       string
+	Body        string
+	NotifyType  string
+	ConfigPaths []string
+	URLs        []string
+	Tags        []string
+	Attachments []string
+	BodyFormat  string
+	Verbose     int
+	DryRun      bool
+	Timeout     time.Duration
+	Version     bool
+	Help        bool
 }
 
 const (
@@ -139,7 +139,7 @@ func main() {
 		apprise.WithTags(opts.Tags...),
 		apprise.WithBodyFormat(opts.BodyFormat),
 	}
-	
+
 	if len(attachments) > 0 {
 		options = append(options, apprise.WithAttachments(attachments...))
 	}

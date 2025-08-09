@@ -83,7 +83,7 @@ func (w *WebhookService) ParseURL(serviceURL *url.URL) error {
 
 	// Determine if HTTPS should be used
 	useHTTPS := scheme == "webhooks" || scheme == "json"
-	
+
 	// Construct the full webhook URL
 	if useHTTPS {
 		w.webhookURL = fmt.Sprintf("https://%s%s", serviceURL.Host, serviceURL.Path)
@@ -93,15 +93,15 @@ func (w *WebhookService) ParseURL(serviceURL *url.URL) error {
 
 	// Parse query parameters
 	query := serviceURL.Query()
-	
+
 	if method := query.Get("method"); method != "" {
 		w.method = strings.ToUpper(method)
 	}
-	
+
 	if contentType := query.Get("content_type"); contentType != "" {
 		w.contentType = contentType
 	}
-	
+
 	if template := query.Get("template"); template != "" {
 		w.template = template
 	}
@@ -119,7 +119,7 @@ func (w *WebhookService) ParseURL(serviceURL *url.URL) error {
 		username := serviceURL.User.Username()
 		if password, hasPassword := serviceURL.User.Password(); hasPassword {
 			// Basic auth
-			w.headers["Authorization"] = fmt.Sprintf("Basic %s", 
+			w.headers["Authorization"] = fmt.Sprintf("Basic %s",
 				encodeBasicAuth(username, password))
 		} else {
 			// Bearer token
@@ -162,7 +162,7 @@ func (w *WebhookService) Send(ctx context.Context, req NotificationRequest) erro
 	// Set headers
 	httpReq.Header.Set("Content-Type", w.contentType)
 	httpReq.Header.Set("User-Agent", GetUserAgent())
-	
+
 	for key, value := range w.headers {
 		httpReq.Header.Set(key, value)
 	}
@@ -252,15 +252,15 @@ func (w *WebhookService) createFormPayload(req NotificationRequest) (io.Reader, 
 // createTextPayload creates a plain text payload
 func (w *WebhookService) createTextPayload(req NotificationRequest) (io.Reader, error) {
 	var text strings.Builder
-	
+
 	if req.Title != "" {
 		text.WriteString(fmt.Sprintf("Title: %s\n", req.Title))
 	}
-	
+
 	text.WriteString(fmt.Sprintf("Message: %s\n", req.Body))
 	text.WriteString(fmt.Sprintf("Type: %s\n", req.NotifyType.String()))
 	text.WriteString(fmt.Sprintf("Timestamp: %s\n", time.Now().Format(time.RFC3339)))
-	
+
 	if len(req.Tags) > 0 {
 		text.WriteString(fmt.Sprintf("Tags: %s\n", strings.Join(req.Tags, ", ")))
 	}
@@ -272,14 +272,14 @@ func (w *WebhookService) createTextPayload(req NotificationRequest) (io.Reader, 
 func (w *WebhookService) createTemplatedPayload(req NotificationRequest) (io.Reader, error) {
 	// Simple template substitution (can be enhanced with proper templating)
 	template := w.template
-	
+
 	template = strings.ReplaceAll(template, "{{title}}", req.Title)
 	template = strings.ReplaceAll(template, "{{message}}", req.Body)
 	template = strings.ReplaceAll(template, "{{body}}", req.Body)
 	template = strings.ReplaceAll(template, "{{type}}", req.NotifyType.String())
 	template = strings.ReplaceAll(template, "{{timestamp}}", time.Now().Format(time.RFC3339))
 	template = strings.ReplaceAll(template, "{{format}}", req.BodyFormat)
-	
+
 	if len(req.Tags) > 0 {
 		template = strings.ReplaceAll(template, "{{tags}}", strings.Join(req.Tags, ","))
 	} else {

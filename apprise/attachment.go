@@ -26,25 +26,25 @@ const (
 type AttachmentInterface interface {
 	// GetName returns the attachment name
 	GetName() string
-	
+
 	// GetMimeType returns the MIME type of the attachment
 	GetMimeType() string
-	
+
 	// GetSize returns the size of the attachment in bytes
 	GetSize() int64
-	
+
 	// Exists checks if the attachment is available
 	Exists() bool
-	
+
 	// Open returns a reader for the attachment content
 	Open() (io.ReadCloser, error)
-	
+
 	// Base64 returns the attachment content as base64 string
 	Base64() (string, error)
-	
+
 	// Hash returns an MD5 hash of the attachment
 	Hash() (string, error)
-	
+
 	// GetType returns the attachment type
 	GetType() AttachmentType
 }
@@ -61,7 +61,7 @@ func NewAttachmentManager() *AttachmentManager {
 	return &AttachmentManager{
 		attachments: make([]AttachmentInterface, 0),
 		maxSize:     100 * 1024 * 1024, // 100MB default max size
-		timeout:     30 * time.Second,   // 30 second default timeout
+		timeout:     30 * time.Second,  // 30 second default timeout
 	}
 }
 
@@ -79,7 +79,7 @@ func (am *AttachmentManager) SetTimeout(timeout time.Duration) {
 func (am *AttachmentManager) Add(source string, name ...string) error {
 	var attachment AttachmentInterface
 	var err error
-	
+
 	if strings.HasPrefix(source, "http://") || strings.HasPrefix(source, "https://") {
 		attachment, err = NewHTTPAttachment(source, am.timeout)
 	} else if strings.HasPrefix(source, "data:") {
@@ -88,11 +88,11 @@ func (am *AttachmentManager) Add(source string, name ...string) error {
 		// Assume it's a file path
 		attachment, err = NewFileAttachment(source)
 	}
-	
+
 	if err != nil {
 		return err
 	}
-	
+
 	// Set custom name if provided
 	if len(name) > 0 && name[0] != "" {
 		if fa, ok := attachment.(*FileAttachment); ok {
@@ -103,13 +103,13 @@ func (am *AttachmentManager) Add(source string, name ...string) error {
 			ma.customName = name[0]
 		}
 	}
-	
+
 	// Check size limit
 	if attachment.GetSize() > am.maxSize {
-		return fmt.Errorf("attachment size (%d bytes) exceeds maximum (%d bytes)", 
+		return fmt.Errorf("attachment size (%d bytes) exceeds maximum (%d bytes)",
 			attachment.GetSize(), am.maxSize)
 	}
-	
+
 	am.attachments = append(am.attachments, attachment)
 	return nil
 }
@@ -117,12 +117,12 @@ func (am *AttachmentManager) Add(source string, name ...string) error {
 // AddData adds a memory attachment from raw data
 func (am *AttachmentManager) AddData(data []byte, filename, mimeType string) error {
 	attachment := NewMemoryAttachment(data, filename, mimeType)
-	
+
 	if attachment.GetSize() > am.maxSize {
-		return fmt.Errorf("attachment size (%d bytes) exceeds maximum (%d bytes)", 
+		return fmt.Errorf("attachment size (%d bytes) exceeds maximum (%d bytes)",
 			attachment.GetSize(), am.maxSize)
 	}
-	
+
 	am.attachments = append(am.attachments, attachment)
 	return nil
 }
@@ -169,13 +169,13 @@ func NewFileAttachment(path string) (*FileAttachment, error) {
 			exists: false,
 		}, nil // Don't error on non-existent files, check with Exists()
 	}
-	
+
 	// Detect MIME type
 	mimeType := mime.TypeByExtension(filepath.Ext(path))
 	if mimeType == "" {
 		mimeType = "application/octet-stream"
 	}
-	
+
 	return &FileAttachment{
 		path:     path,
 		mimeType: mimeType,
@@ -216,12 +216,12 @@ func (f *FileAttachment) Base64() (string, error) {
 		return "", err
 	}
 	defer reader.Close()
-	
+
 	data, err := io.ReadAll(reader)
 	if err != nil {
 		return "", err
 	}
-	
+
 	return base64.StdEncoding.EncodeToString(data), nil
 }
 
@@ -231,12 +231,12 @@ func (f *FileAttachment) Hash() (string, error) {
 		return "", err
 	}
 	defer reader.Close()
-	
+
 	hash := md5.New()
 	if _, err := io.Copy(hash, reader); err != nil {
 		return "", err
 	}
-	
+
 	return fmt.Sprintf("%x", hash.Sum(nil)), nil
 }
 
@@ -257,7 +257,7 @@ type HTTPAttachment struct {
 // NewHTTPAttachment creates a new HTTP attachment
 func NewHTTPAttachment(url string, timeout time.Duration) (*HTTPAttachment, error) {
 	client := &http.Client{Timeout: timeout}
-	
+
 	// HEAD request to get metadata
 	resp, err := client.Head(url)
 	if err != nil {
@@ -268,18 +268,18 @@ func NewHTTPAttachment(url string, timeout time.Duration) (*HTTPAttachment, erro
 		}, nil // Don't error on network issues, check with Exists()
 	}
 	defer resp.Body.Close()
-	
+
 	mimeType := resp.Header.Get("Content-Type")
 	if mimeType == "" {
 		mimeType = "application/octet-stream"
 	}
-	
+
 	// Try to get size
 	var size int64
 	if resp.ContentLength > 0 {
 		size = resp.ContentLength
 	}
-	
+
 	return &HTTPAttachment{
 		url:      url,
 		mimeType: mimeType,
@@ -317,17 +317,17 @@ func (h *HTTPAttachment) Open() (io.ReadCloser, error) {
 	if !h.exists {
 		return nil, fmt.Errorf("HTTP resource not available: %s", h.url)
 	}
-	
+
 	resp, err := h.client.Get(h.url)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		resp.Body.Close()
 		return nil, fmt.Errorf("HTTP error %d for %s", resp.StatusCode, h.url)
 	}
-	
+
 	return resp.Body, nil
 }
 
@@ -337,12 +337,12 @@ func (h *HTTPAttachment) Base64() (string, error) {
 		return "", err
 	}
 	defer reader.Close()
-	
+
 	data, err := io.ReadAll(reader)
 	if err != nil {
 		return "", err
 	}
-	
+
 	return base64.StdEncoding.EncodeToString(data), nil
 }
 
@@ -352,12 +352,12 @@ func (h *HTTPAttachment) Hash() (string, error) {
 		return "", err
 	}
 	defer reader.Close()
-	
+
 	hash := md5.New()
 	if _, err := io.Copy(hash, reader); err != nil {
 		return "", err
 	}
-	
+
 	return fmt.Sprintf("%x", hash.Sum(nil)), nil
 }
 
@@ -382,7 +382,7 @@ func NewMemoryAttachment(data []byte, filename, mimeType string) *MemoryAttachme
 			mimeType = "application/octet-stream"
 		}
 	}
-	
+
 	return &MemoryAttachment{
 		data:     data,
 		filename: filename,
@@ -395,30 +395,33 @@ func NewMemoryAttachmentFromDataURL(dataURL string) (*MemoryAttachment, error) {
 	if !strings.HasPrefix(dataURL, "data:") {
 		return nil, fmt.Errorf("invalid data URL")
 	}
-	
+
 	// Parse data URL: data:mime/type;base64,data
 	parts := strings.SplitN(dataURL[5:], ",", 2)
 	if len(parts) != 2 {
 		return nil, fmt.Errorf("invalid data URL format")
 	}
-	
+
 	header := parts[0]
 	dataString := parts[1]
-	
+
 	// Extract MIME type
-	mimeType := "application/octet-stream"
+	var mimeType string
 	if idx := strings.Index(header, ";"); idx != -1 {
 		mimeType = header[:idx]
 	} else {
 		mimeType = header
 	}
-	
+	if mimeType == "" {
+		mimeType = "application/octet-stream"
+	}
+
 	// Decode data (assume base64 for now)
 	data, err := base64.StdEncoding.DecodeString(dataString)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode data URL: %w", err)
 	}
-	
+
 	return &MemoryAttachment{
 		data:     data,
 		filename: "data-attachment",

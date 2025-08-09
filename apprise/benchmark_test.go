@@ -81,7 +81,7 @@ func (m *MockService) GetCallCount() int {
 // Benchmark basic notification sending
 func BenchmarkApprise_Notify(b *testing.B) {
 	app := New()
-	
+
 	// Add mock services
 	mockService := NewMockService("mock", 0)
 	app.services = append(app.services, mockService)
@@ -101,11 +101,11 @@ func BenchmarkApprise_Notify(b *testing.B) {
 // Benchmark notification with multiple services
 func BenchmarkApprise_NotifyMultipleServices(b *testing.B) {
 	serviceCount := []int{1, 5, 10, 25, 50}
-	
+
 	for _, count := range serviceCount {
 		b.Run(fmt.Sprintf("Services_%d", count), func(b *testing.B) {
 			app := New()
-			
+
 			// Add multiple mock services
 			for i := 0; i < count; i++ {
 				mockService := NewMockService(fmt.Sprintf("mock_%d", i), 0)
@@ -129,7 +129,7 @@ func BenchmarkApprise_NotifyMultipleServices(b *testing.B) {
 // Benchmark notification with various delays
 func BenchmarkApprise_NotifyWithDelay(b *testing.B) {
 	delays := []time.Duration{0, 10 * time.Millisecond, 50 * time.Millisecond, 100 * time.Millisecond}
-	
+
 	for _, delay := range delays {
 		b.Run(fmt.Sprintf("Delay_%v", delay), func(b *testing.B) {
 			app := New()
@@ -174,7 +174,7 @@ func BenchmarkApprise_ConcurrentNotify(b *testing.B) {
 func BenchmarkAttachmentManager_AddFile(b *testing.B) {
 	// Create a temporary file
 	data := bytes.Repeat([]byte("test data "), 1000) // ~10KB file
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		mgr := NewAttachmentManager()
@@ -188,11 +188,11 @@ func BenchmarkAttachmentManager_AddFile(b *testing.B) {
 // Benchmark attachment operations with various sizes
 func BenchmarkAttachmentManager_AddFileSizes(b *testing.B) {
 	sizes := []int{1024, 10240, 102400, 1048576} // 1KB, 10KB, 100KB, 1MB
-	
+
 	for _, size := range sizes {
 		b.Run(fmt.Sprintf("Size_%dB", size), func(b *testing.B) {
 			data := bytes.Repeat([]byte("x"), size)
-			
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				mgr := NewAttachmentManager()
@@ -208,11 +208,11 @@ func BenchmarkAttachmentManager_AddFileSizes(b *testing.B) {
 // Benchmark multiple attachment operations
 func BenchmarkAttachmentManager_MultipleFiles(b *testing.B) {
 	fileCounts := []int{1, 5, 10, 25}
-	
+
 	for _, count := range fileCounts {
 		b.Run(fmt.Sprintf("Files_%d", count), func(b *testing.B) {
 			data := bytes.Repeat([]byte("test "), 1000) // ~5KB per file
-			
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				mgr := NewAttachmentManager()
@@ -230,12 +230,12 @@ func BenchmarkAttachmentManager_MultipleFiles(b *testing.B) {
 // Benchmark Base64 encoding performance
 func BenchmarkAttachment_Base64(b *testing.B) {
 	sizes := []int{1024, 10240, 102400, 1048576} // 1KB, 10KB, 100KB, 1MB
-	
+
 	for _, size := range sizes {
 		b.Run(fmt.Sprintf("Size_%dB", size), func(b *testing.B) {
 			data := bytes.Repeat([]byte("x"), size)
 			attachment := NewMemoryAttachment(data, "test.txt", "text/plain")
-			
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				_, err := attachment.Base64()
@@ -250,12 +250,12 @@ func BenchmarkAttachment_Base64(b *testing.B) {
 // Benchmark hash generation performance
 func BenchmarkAttachment_Hash(b *testing.B) {
 	sizes := []int{1024, 10240, 102400, 1048576} // 1KB, 10KB, 100KB, 1MB
-	
+
 	for _, size := range sizes {
 		b.Run(fmt.Sprintf("Size_%dB", size), func(b *testing.B) {
 			data := bytes.Repeat([]byte("x"), size)
 			attachment := NewMemoryAttachment(data, "test.txt", "text/plain")
-			
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				_, err := attachment.Hash()
@@ -271,7 +271,7 @@ func BenchmarkAttachment_Hash(b *testing.B) {
 func BenchmarkServiceRegistry_Create(b *testing.B) {
 	registry := NewServiceRegistry()
 	registry.Register("mock", func() Service { return NewMockService("mock", 0) })
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		service, err := registry.Create("mock")
@@ -296,7 +296,7 @@ func BenchmarkService_ParseURL(b *testing.B) {
 		{"Email", "mailto://user:pass@smtp.gmail.com:587/recipient@domain.com"},
 		{"Webhook", "webhook://api.example.com/webhook?token=secret"},
 	}
-	
+
 	for _, tc := range testCases {
 		b.Run(tc.name, func(b *testing.B) {
 			app := New()
@@ -304,12 +304,12 @@ func BenchmarkService_ParseURL(b *testing.B) {
 			if err != nil {
 				b.Fatalf("Failed to parse URL: %v", err)
 			}
-			
+
 			service, err := app.registry.Create(parsedURL.Scheme)
 			if err != nil {
 				b.Skip("Service not available:", parsedURL.Scheme)
 			}
-			
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				err := service.ParseURL(parsedURL)
@@ -334,7 +334,7 @@ func BenchmarkApprise_NotifyWithAttachments(b *testing.B) {
 	app.services = append(app.services, mockService)
 
 	// Add test attachments
-	smallData := bytes.Repeat([]byte("test"), 250) // 1KB
+	smallData := bytes.Repeat([]byte("test"), 250)   // 1KB
 	largeData := bytes.Repeat([]byte("test"), 25000) // 100KB
 
 	title := "Benchmark Test"
@@ -344,11 +344,11 @@ func BenchmarkApprise_NotifyWithAttachments(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		// Clear previous attachments
 		app.ClearAttachments()
-		
+
 		// Add attachments
 		app.AddAttachmentData(smallData, "small.txt", "text/plain")
 		app.AddAttachmentData(largeData, "large.txt", "text/plain")
-		
+
 		responses := app.Notify(title, body, NotifyTypeInfo)
 		if !responses[0].Success {
 			b.Fatal("Expected successful notification")
@@ -360,13 +360,13 @@ func BenchmarkApprise_NotifyWithAttachments(b *testing.B) {
 func BenchmarkApprise_MemoryAllocation(b *testing.B) {
 	title := "Benchmark Test"
 	body := "This is a benchmark notification message for memory testing"
-	
+
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		app := New()
 		mockService := NewMockService("mock", 0)
 		app.services = append(app.services, mockService)
-		
+
 		responses := app.Notify(title, body, NotifyTypeInfo)
 		if !responses[0].Success {
 			b.Fatal("Expected successful notification")
@@ -378,7 +378,7 @@ func BenchmarkApprise_MemoryAllocation(b *testing.B) {
 func BenchmarkApprise_Timeout(b *testing.B) {
 	app := New()
 	app.SetTimeout(50 * time.Millisecond) // Short timeout
-	
+
 	// Add a slow mock service that will timeout
 	slowService := NewMockService("slow", 100*time.Millisecond)
 	app.services = append(app.services, slowService)

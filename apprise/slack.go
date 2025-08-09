@@ -21,14 +21,14 @@ type SlackService struct {
 
 	// Bot mode fields
 	botToken string
-	
+
 	// Common fields
-	channel  string
-	username string
-	iconURL  string
+	channel   string
+	username  string
+	iconURL   string
 	iconEmoji string
-	client   *http.Client
-	mode     string // "webhook" or "bot"
+	client    *http.Client
+	mode      string // "webhook" or "bot"
 }
 
 // NewSlackService creates a new Slack service instance
@@ -57,7 +57,7 @@ func (s *SlackService) ParseURL(serviceURL *url.URL) error {
 	}
 
 	pathParts := strings.Split(strings.Trim(serviceURL.Path, "/"), "/")
-	
+
 	// Determine if this is webhook mode (3 tokens) or bot mode (1 token)
 	if len(pathParts) >= 3 && pathParts[0] != "" && pathParts[1] != "" && pathParts[2] != "" {
 		// Webhook mode: slack://TokenA/TokenB/TokenC[/Channel]
@@ -67,7 +67,7 @@ func (s *SlackService) ParseURL(serviceURL *url.URL) error {
 		s.webhookTokenC = pathParts[2]
 		s.webhookURL = fmt.Sprintf("https://hooks.slack.com/services/%s/%s/%s",
 			s.webhookTokenA, s.webhookTokenB, s.webhookTokenC)
-		
+
 		if len(pathParts) > 3 && pathParts[3] != "" {
 			s.channel = pathParts[3]
 		}
@@ -75,7 +75,7 @@ func (s *SlackService) ParseURL(serviceURL *url.URL) error {
 		// Bot mode: slack://bottoken[/Channel]
 		s.mode = "bot"
 		s.botToken = pathParts[0]
-		
+
 		if len(pathParts) > 1 && pathParts[1] != "" {
 			s.channel = pathParts[1]
 		}
@@ -103,13 +103,13 @@ func (s *SlackService) ParseURL(serviceURL *url.URL) error {
 
 // SlackWebhookPayload represents the Slack webhook payload structure
 type SlackWebhookPayload struct {
-	Text        string              `json:"text,omitempty"`
-	Username    string              `json:"username,omitempty"`
-	IconURL     string              `json:"icon_url,omitempty"`
-	IconEmoji   string              `json:"icon_emoji,omitempty"`
-	Channel     string              `json:"channel,omitempty"`
-	Attachments []SlackAttachment   `json:"attachments,omitempty"`
-	Blocks      []SlackBlock        `json:"blocks,omitempty"`
+	Text        string            `json:"text,omitempty"`
+	Username    string            `json:"username,omitempty"`
+	IconURL     string            `json:"icon_url,omitempty"`
+	IconEmoji   string            `json:"icon_emoji,omitempty"`
+	Channel     string            `json:"channel,omitempty"`
+	Attachments []SlackAttachment `json:"attachments,omitempty"`
+	Blocks      []SlackBlock      `json:"blocks,omitempty"`
 }
 
 // SlackBotPayload represents the Slack bot API payload structure
@@ -142,8 +142,8 @@ type SlackAttachmentField struct {
 
 // SlackBlock represents a Slack block element
 type SlackBlock struct {
-	Type string      `json:"type"`
-	Text *SlackText  `json:"text,omitempty"`
+	Type string     `json:"type"`
+	Text *SlackText `json:"text,omitempty"`
 }
 
 // SlackText represents text in Slack blocks
@@ -163,7 +163,7 @@ func (s *SlackService) Send(ctx context.Context, req NotificationRequest) error 
 // sendWebhook sends notification via Slack webhook
 func (s *SlackService) sendWebhook(ctx context.Context, req NotificationRequest) error {
 	color := s.getColorForNotifyType(req.NotifyType)
-	
+
 	payload := SlackWebhookPayload{
 		Username:  s.username,
 		IconURL:   s.iconURL,
@@ -174,9 +174,9 @@ func (s *SlackService) sendWebhook(ctx context.Context, req NotificationRequest)
 	// Create attachment if we have a title, otherwise use simple text
 	if req.Title != "" {
 		attachment := SlackAttachment{
-			Color: color,
-			Title: req.Title,
-			Text:  req.Body,
+			Color:  color,
+			Title:  req.Title,
+			Text:   req.Body,
 			Footer: fmt.Sprintf("Type: %s", req.NotifyType.String()),
 		}
 		payload.Attachments = []SlackAttachment{attachment}
@@ -190,7 +190,7 @@ func (s *SlackService) sendWebhook(ctx context.Context, req NotificationRequest)
 // sendBot sends notification via Slack bot API
 func (s *SlackService) sendBot(ctx context.Context, req NotificationRequest) error {
 	color := s.getColorForNotifyType(req.NotifyType)
-	
+
 	payload := SlackBotPayload{
 		Channel:   s.channel,
 		Username:  s.username,
@@ -201,9 +201,9 @@ func (s *SlackService) sendBot(ctx context.Context, req NotificationRequest) err
 	// Create attachment if we have a title, otherwise use simple text
 	if req.Title != "" {
 		attachment := SlackAttachment{
-			Color: color,
-			Title: req.Title,
-			Text:  req.Body,
+			Color:  color,
+			Title:  req.Title,
+			Text:   req.Body,
 			Footer: fmt.Sprintf("Type: %s", req.NotifyType.String()),
 		}
 		payload.Attachments = []SlackAttachment{attachment}

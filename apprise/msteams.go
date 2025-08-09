@@ -19,7 +19,7 @@ type MSTeamsService struct {
 	tokenC       string
 	tokenD       string // Optional for version 3
 	webhookURL   string
-	version      int    // 1 = legacy, 2 = modern, 3 = version 3
+	version      int // 1 = legacy, 2 = modern, 3 = version 3
 	includeImage bool
 	client       *http.Client
 }
@@ -54,35 +54,35 @@ func (m *MSTeamsService) ParseURL(serviceURL *url.URL) error {
 
 	// Extract tokens from path
 	pathParts := strings.Split(strings.Trim(serviceURL.Path, "/"), "/")
-	
+
 	// Determine version based on path structure and host
 	if serviceURL.Host != "" {
 		// Modern format: host is team name
 		m.teamName = serviceURL.Host
 		m.version = 2
-		
+
 		if len(pathParts) < 3 {
 			return fmt.Errorf("insufficient tokens for modern MS Teams format")
 		}
-		
+
 		m.tokenA = pathParts[0]
 		m.tokenB = pathParts[1]
 		m.tokenC = pathParts[2]
-		
+
 		// Check for version 3 (4th token)
 		if len(pathParts) >= 4 && pathParts[3] != "" {
 			m.tokenD = pathParts[3]
 			m.version = 3
 		}
-		
+
 	} else {
 		// Legacy format: no host, tokens start from beginning
 		m.version = 1
-		
+
 		if len(pathParts) < 3 {
 			return fmt.Errorf("insufficient tokens for legacy MS Teams format")
 		}
-		
+
 		m.tokenA = pathParts[0]
 		m.tokenB = pathParts[1]
 		m.tokenC = pathParts[2]
@@ -122,12 +122,12 @@ func (m *MSTeamsService) buildWebhookURL() string {
 
 // MSTeamsPayload represents the Microsoft Teams webhook payload structure
 type MSTeamsPayload struct {
-	Type        string                `json:"@type"`
-	Context     string                `json:"@context"`
-	Summary     string                `json:"summary"`
-	ThemeColor  string                `json:"themeColor"`
-	Sections    []MSTeamsSection      `json:"sections"`
-	PotentialAction []MSTeamsAction   `json:"potentialAction,omitempty"`
+	Type            string           `json:"@type"`
+	Context         string           `json:"@context"`
+	Summary         string           `json:"summary"`
+	ThemeColor      string           `json:"themeColor"`
+	Sections        []MSTeamsSection `json:"sections"`
+	PotentialAction []MSTeamsAction  `json:"potentialAction,omitempty"`
 }
 
 // MSTeamsSection represents a section in the Teams message
@@ -141,8 +141,8 @@ type MSTeamsSection struct {
 
 // MSTeamsAction represents a potential action in the Teams message
 type MSTeamsAction struct {
-	Type    string              `json:"@type"`
-	Name    string              `json:"name"`
+	Type    string                `json:"@type"`
+	Name    string                `json:"name"`
 	Targets []MSTeamsActionTarget `json:"targets,omitempty"`
 }
 
@@ -224,13 +224,13 @@ func (m *MSTeamsService) createSummary(title, body string) string {
 	if title != "" {
 		return title
 	}
-	
+
 	// Truncate body for summary if no title
 	const maxSummaryLength = 100
 	if len(body) <= maxSummaryLength {
 		return body
 	}
-	
+
 	return body[:maxSummaryLength] + "..."
 }
 
@@ -254,7 +254,7 @@ func (m *MSTeamsService) getColorForNotifyType(notifyType NotifyType) string {
 func (m *MSTeamsService) getImageForNotifyType(notifyType NotifyType) string {
 	// Using Microsoft's own icon set from their CDN
 	baseURL := "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets"
-	
+
 	switch notifyType {
 	case NotifyTypeSuccess:
 		return baseURL + "/Check-mark-button/3D/check_mark_button_3d.png"

@@ -46,14 +46,14 @@ type Attachment struct {
 
 // NotificationRequest contains all the data for a notification
 type NotificationRequest struct {
-	Title        string
-	Body         string
-	NotifyType   NotifyType
-	Attachments  []Attachment              // Legacy attachment support
-	AttachmentMgr *AttachmentManager       // Modern attachment support
-	Tags         []string
-	BodyFormat   string // html, markdown, text
-	URL          string // The service URL that will handle this notification
+	Title         string
+	Body          string
+	NotifyType    NotifyType
+	Attachments   []Attachment       // Legacy attachment support
+	AttachmentMgr *AttachmentManager // Modern attachment support
+	Tags          []string
+	BodyFormat    string // html, markdown, text
+	URL           string // The service URL that will handle this notification
 }
 
 // NotificationResponse contains the result of a notification attempt
@@ -69,22 +69,22 @@ type NotificationResponse struct {
 type Service interface {
 	// GetServiceID returns a unique identifier for this service type
 	GetServiceID() string
-	
+
 	// GetDefaultPort returns the default port for this service
 	GetDefaultPort() int
-	
+
 	// ParseURL parses a service URL and configures the service
 	ParseURL(serviceURL *url.URL) error
-	
+
 	// Send sends a notification and returns the result
 	Send(ctx context.Context, req NotificationRequest) error
-	
+
 	// TestURL validates that a service URL is properly formatted
 	TestURL(serviceURL string) error
-	
+
 	// SupportsAttachments returns true if this service supports file attachments
 	SupportsAttachments() bool
-	
+
 	// GetMaxBodyLength returns max body length (0 = unlimited)
 	GetMaxBodyLength() int
 }
@@ -114,11 +114,11 @@ func (r *ServiceRegistry) Create(serviceID string) (Service, error) {
 	r.mu.RLock()
 	factory, exists := r.services[serviceID]
 	r.mu.RUnlock()
-	
+
 	if !exists {
 		return nil, fmt.Errorf("unknown service: %s", serviceID)
 	}
-	
+
 	return factory(), nil
 }
 
@@ -126,7 +126,7 @@ func (r *ServiceRegistry) Create(serviceID string) (Service, error) {
 func (r *ServiceRegistry) GetSupportedServices() []string {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	
+
 	services := make([]string, 0, len(r.services))
 	for serviceID := range r.services {
 		services = append(services, serviceID)
@@ -146,10 +146,10 @@ type Apprise struct {
 // New creates a new Apprise instance
 func New() *Apprise {
 	registry := NewServiceRegistry()
-	
+
 	// Register built-in services
 	registerBuiltinServices(registry)
-	
+
 	return &Apprise{
 		services:      make([]Service, 0),
 		registry:      registry,
@@ -164,16 +164,16 @@ func (a *Apprise) Add(serviceURL string, tags ...string) error {
 	if err != nil {
 		return fmt.Errorf("invalid service URL: %w", err)
 	}
-	
+
 	service, err := a.registry.Create(parsedURL.Scheme)
 	if err != nil {
 		return err
 	}
-	
+
 	if err := service.ParseURL(parsedURL); err != nil {
 		return fmt.Errorf("failed to configure service: %w", err)
 	}
-	
+
 	a.services = append(a.services, service)
 	return nil
 }
@@ -187,12 +187,12 @@ func (a *Apprise) Notify(title, body string, notifyType NotifyType, options ...N
 		Tags:          a.tags,
 		AttachmentMgr: a.attachmentMgr,
 	}
-	
+
 	// Apply options
 	for _, option := range options {
 		option(&req)
 	}
-	
+
 	return a.NotifyAll(req)
 }
 
@@ -200,19 +200,19 @@ func (a *Apprise) Notify(title, body string, notifyType NotifyType, options ...N
 func (a *Apprise) NotifyAll(req NotificationRequest) []NotificationResponse {
 	ctx, cancel := context.WithTimeout(context.Background(), a.timeout)
 	defer cancel()
-	
+
 	responses := make([]NotificationResponse, len(a.services))
 	var wg sync.WaitGroup
-	
+
 	for i, service := range a.services {
 		wg.Add(1)
 		go func(idx int, svc Service) {
 			defer wg.Done()
-			
+
 			start := time.Now()
 			err := svc.Send(ctx, req)
 			duration := time.Since(start)
-			
+
 			responses[idx] = NotificationResponse{
 				ServiceURL: req.URL,
 				Success:    err == nil,
@@ -222,7 +222,7 @@ func (a *Apprise) NotifyAll(req NotificationRequest) []NotificationResponse {
 			}
 		}(i, service)
 	}
-	
+
 	wg.Wait()
 	return responses
 }
@@ -316,32 +316,32 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("slack", func() Service { return NewSlackService() })
 	registry.Register("telegram", func() Service { return NewTelegramService() })
 	registry.Register("tgram", func() Service { return NewTelegramService() })
-	
+
 	// Email services
 	registry.Register("mailto", func() Service { return NewEmailService() })
 	registry.Register("mailtos", func() Service { return NewEmailService() })
-	
+
 	// Webhook services
 	registry.Register("webhook", func() Service { return NewWebhookService() })
 	registry.Register("webhooks", func() Service { return NewWebhookService() })
 	registry.Register("json", func() Service { return NewJSONService() })
-	
+
 	// Push notification services
 	registry.Register("pushover", func() Service { return NewPushoverService() })
 	registry.Register("pover", func() Service { return NewPushoverService() })
 	registry.Register("pushbullet", func() Service { return NewPushbulletService() })
 	registry.Register("pball", func() Service { return NewPushbulletService() })
-	
+
 	// Enterprise messaging
 	registry.Register("msteams", func() Service { return NewMSTeamsService() })
-	
+
 	// SMS services
 	registry.Register("twilio", func() Service { return NewTwilioService() })
-	
+
 	// Self-hosted services
 	registry.Register("gotify", func() Service { return NewGotifyService() })
 	registry.Register("gotifys", func() Service { return NewGotifyService() })
-	
+
 	// Desktop notification services
 	registry.Register("desktop", func() Service { return NewDesktopService() })
 	registry.Register("macosx", func() Service { return NewDesktopService() })
@@ -352,6 +352,6 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("kde", func() Service { return NewLinuxDBusService() })
 	registry.Register("glib", func() Service { return NewLinuxDBusService() })
 	registry.Register("qt", func() Service { return NewLinuxDBusService() })
-	
+
 	// Add more services as needed...
 }

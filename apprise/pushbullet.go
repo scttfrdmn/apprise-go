@@ -75,7 +75,7 @@ func (p *PushbulletService) ParseURL(serviceURL *url.URL) error {
 
 	// Parse query parameters for additional targets
 	query := serviceURL.Query()
-	
+
 	if device := query.Get("device"); device != "" {
 		devices := strings.Split(device, ",")
 		for _, d := range devices {
@@ -85,7 +85,7 @@ func (p *PushbulletService) ParseURL(serviceURL *url.URL) error {
 			}
 		}
 	}
-	
+
 	if email := query.Get("email"); email != "" {
 		emails := strings.Split(email, ",")
 		for _, e := range emails {
@@ -95,7 +95,7 @@ func (p *PushbulletService) ParseURL(serviceURL *url.URL) error {
 			}
 		}
 	}
-	
+
 	if channel := query.Get("channel"); channel != "" {
 		channels := strings.Split(channel, ",")
 		for _, c := range channels {
@@ -111,28 +111,28 @@ func (p *PushbulletService) ParseURL(serviceURL *url.URL) error {
 
 // PushbulletPayload represents the Pushbullet API payload structure
 type PushbulletPayload struct {
-	Type         string `json:"type"`
-	Title        string `json:"title,omitempty"`
-	Body         string `json:"body,omitempty"`
-	DeviceIden   string `json:"device_iden,omitempty"`
-	Email        string `json:"email,omitempty"`
-	ChannelTag   string `json:"channel_tag,omitempty"`
+	Type             string `json:"type"`
+	Title            string `json:"title,omitempty"`
+	Body             string `json:"body,omitempty"`
+	DeviceIden       string `json:"device_iden,omitempty"`
+	Email            string `json:"email,omitempty"`
+	ChannelTag       string `json:"channel_tag,omitempty"`
 	SourceDeviceIden string `json:"source_device_iden,omitempty"`
 }
 
 // PushbulletResponse represents the Pushbullet API response
 type PushbulletResponse struct {
-	Active    bool   `json:"active"`
+	Active    bool    `json:"active"`
 	Created   float64 `json:"created"`
-	Direction string `json:"direction"`
-	Dismissed bool   `json:"dismissed"`
-	Iden      string `json:"iden"`
+	Direction string  `json:"direction"`
+	Dismissed bool    `json:"dismissed"`
+	Iden      string  `json:"iden"`
 	Modified  float64 `json:"modified"`
-	Type      string `json:"type"`
-	
+	Type      string  `json:"type"`
+
 	// Error fields
-	Error       *PushbulletError `json:"error,omitempty"`
-	ErrorCode   string          `json:"error_code,omitempty"`
+	Error     *PushbulletError `json:"error,omitempty"`
+	ErrorCode string           `json:"error_code,omitempty"`
 }
 
 // PushbulletError represents a Pushbullet API error
