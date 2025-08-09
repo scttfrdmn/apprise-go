@@ -1,0 +1,46 @@
+# Go specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+go.work.sum
+
+# Build artifacts
+/bin/
+/dist/
+/build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Log files
+*.log
+
+# Coverage reports
+*.cover
+coverage.out
+
+# Built binaries
+apprise-cli
+examples-binary
