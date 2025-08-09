@@ -34,7 +34,8 @@ func (nt NotifyType) String() string {
 	}
 }
 
-// Attachment represents a file or URL attachment
+// Attachment represents a file or URL attachment (legacy)
+// Deprecated: Use AttachmentInterface and AttachmentManager instead
 type Attachment struct {
 	URL         string
 	LocalPath   string
@@ -48,7 +49,8 @@ type NotificationRequest struct {
 	Title        string
 	Body         string
 	NotifyType   NotifyType
-	Attachments  []Attachment
+	Attachments  []Attachment              // Legacy attachment support
+	AttachmentMgr *AttachmentManager       // Modern attachment support
 	Tags         []string
 	BodyFormat   string // html, markdown, text
 	URL          string // The service URL that will handle this notification
@@ -134,10 +136,11 @@ func (r *ServiceRegistry) GetSupportedServices() []string {
 
 // Apprise is the main notification manager
 type Apprise struct {
-	services []Service
-	registry *ServiceRegistry
-	timeout  time.Duration
-	tags     []string
+	services      []Service
+	registry      *ServiceRegistry
+	timeout       time.Duration
+	tags          []string
+	attachmentMgr *AttachmentManager
 }
 
 // New creates a new Apprise instance
@@ -148,9 +151,10 @@ func New() *Apprise {
 	registerBuiltinServices(registry)
 	
 	return &Apprise{
-		services: make([]Service, 0),
-		registry: registry,
-		timeout:  30 * time.Second,
+		services:      make([]Service, 0),
+		registry:      registry,
+		timeout:       30 * time.Second,
+		attachmentMgr: NewAttachmentManager(),
 	}
 }
 
@@ -177,10 +181,11 @@ func (a *Apprise) Add(serviceURL string, tags ...string) error {
 // Notify sends a notification to all configured services
 func (a *Apprise) Notify(title, body string, notifyType NotifyType, options ...NotifyOption) []NotificationResponse {
 	req := NotificationRequest{
-		Title:      title,
-		Body:       body,
-		NotifyType: notifyType,
-		Tags:       a.tags,
+		Title:         title,
+		Body:          body,
+		NotifyType:    notifyType,
+		Tags:          a.tags,
+		AttachmentMgr: a.attachmentMgr,
 	}
 	
 	// Apply options
@@ -240,6 +245,36 @@ func (a *Apprise) Clear() {
 // Count returns the number of configured services
 func (a *Apprise) Count() int {
 	return len(a.services)
+}
+
+// AddAttachment adds an attachment from a file path or URL
+func (a *Apprise) AddAttachment(source string, name ...string) error {
+	return a.attachmentMgr.Add(source, name...)
+}
+
+// AddAttachmentData adds an attachment from raw data
+func (a *Apprise) AddAttachmentData(data []byte, filename, mimeType string) error {
+	return a.attachmentMgr.AddData(data, filename, mimeType)
+}
+
+// GetAttachments returns all attachments
+func (a *Apprise) GetAttachments() []AttachmentInterface {
+	return a.attachmentMgr.GetAll()
+}
+
+// AttachmentCount returns the number of attachments
+func (a *Apprise) AttachmentCount() int {
+	return a.attachmentMgr.Count()
+}
+
+// ClearAttachments removes all attachments
+func (a *Apprise) ClearAttachments() {
+	a.attachmentMgr.Clear()
+}
+
+// GetAttachmentManager returns the attachment manager for advanced operations
+func (a *Apprise) GetAttachmentManager() *AttachmentManager {
+	return a.attachmentMgr
 }
 
 // NotifyOption allows customization of notification requests

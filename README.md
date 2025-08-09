@@ -8,6 +8,7 @@ A Go port of the [Apprise notification library](https://github.com/caronc/appris
 - **Common and intuitive notification syntax** - Simple, unified API
 - **Lightweight** - Minimal dependencies
 - **Asynchronous** - Non-blocking notifications
+- **File Attachments** - Support for files, URLs, and in-memory data
 - **Extensible** - Easy to add new notification services
 
 ## Installation

@@ -364,4 +364,167 @@ app.Notify("Title", "<b>Bold</b> and <i>italic</i> text", apprise.NotifyTypeInfo
 4. **Use strong passwords** for SMTP authentication
 5. **Limit token permissions** to minimum required scope
 
+## Attachment Support
+
+Apprise Go provides comprehensive attachment support for services that support file uploads.
+
+### Basic Attachment Usage
+
+```go
+app := apprise.New()
+app.Add("discord://webhook_id/webhook_token") // Supports attachments
+
+// Add file attachment
+err := app.AddAttachment("/path/to/file.pdf")
+if err != nil {
+    log.Fatal(err)
+}
+
+// Add attachment with custom name
+err = app.AddAttachment("/path/to/file.txt", "custom_name.txt")
+
+// Add attachment from URL
+err = app.AddAttachment("https://example.com/image.png")
+
+// Add attachment from raw data
+data := []byte("Hello, World!")
+err = app.AddAttachmentData(data, "hello.txt", "text/plain")
+
+// Send notification with attachments
+app.Notify("Title", "Message with attachments", apprise.NotifyTypeInfo)
+```
+
+### Attachment Types
+
+**File Attachments:**
+```go
+// Local file
+app.AddAttachment("/path/to/document.pdf")
+app.AddAttachment("./relative/path/image.jpg", "custom_name.jpg")
+```
+
+**HTTP Attachments:**
+```go
+// Remote file via HTTP/HTTPS
+app.AddAttachment("https://example.com/file.pdf")
+app.AddAttachment("http://example.com/image.png", "screenshot.png")
+```
+
+**Memory Attachments:**
+```go
+// Raw data
+data := []byte("File content here")
+app.AddAttachmentData(data, "filename.txt", "text/plain")
+
+// Data URL (base64 encoded)
+app.AddAttachment("data:text/plain;base64,SGVsbG8gV29ybGQ=")
+```
+
+### Advanced Attachment Management
+
+```go
+app := apprise.New()
+
+// Get attachment manager for advanced operations
+mgr := app.GetAttachmentManager()
+
+// Set maximum attachment size (100MB)
+mgr.SetMaxSize(100 * 1024 * 1024)
+
+// Set timeout for HTTP attachments
+mgr.SetTimeout(60 * time.Second)
+
+// Add multiple attachments
+files := []string{
+    "/path/to/report.pdf",
+    "https://example.com/chart.png",
+    "/path/to/data.csv",
+}
+
+for _, file := range files {
+    if err := app.AddAttachment(file); err != nil {
+        log.Printf("Failed to add %s: %v", file, err)
+    }
+}
+
+// Check attachment info
+fmt.Printf("Total attachments: %d\n", app.AttachmentCount())
+for _, attachment := range app.GetAttachments() {
+    fmt.Printf("- %s (%s, %d bytes)\n", 
+        attachment.GetName(), 
+        attachment.GetMimeType(), 
+        attachment.GetSize())
+}
+
+// Send notification
+app.Notify("Report", "Please see attached files", apprise.NotifyTypeInfo)
+
+// Clear attachments for next notification
+app.ClearAttachments()
+```
+
+### Service-Specific Attachment Support
+
+| Service | Attachment Support | Notes |
+|---------|-------------------|-------|
+| Discord | ✅ Full | Images, documents, up to 8MB |
+| Slack | ✅ Full | All file types, size limits apply |
+| Telegram | ✅ Full | Photos, documents, audio, video |
+| Email (SMTP) | 🚧 Planned | MIME multipart support |
+| Pushbullet | ✅ Full | File uploads via API |
+| Microsoft Teams | 🚧 Planned | Adaptive cards with attachments |
+| Pushover | ✅ Images | Image attachments only |
+| Webhook/JSON | ❌ Not supported | Use base64 encoding in payload |
+| Twilio SMS | ❌ Not supported | SMS doesn't support attachments |
+
+### Attachment Security
+
+```go
+mgr := app.GetAttachmentManager()
+
+// Limit attachment size
+mgr.SetMaxSize(10 * 1024 * 1024) // 10MB limit
+
+// Set timeout for HTTP downloads
+mgr.SetTimeout(30 * time.Second)
+
+// Validate attachments before sending
+for _, attachment := range app.GetAttachments() {
+    if !attachment.Exists() {
+        log.Printf("Warning: Attachment %s is not accessible", attachment.GetName())
+    }
+    
+    // Check file type
+    mimeType := attachment.GetMimeType()
+    if !isAllowedMimeType(mimeType) {
+        log.Printf("Warning: Attachment %s has restricted type %s", 
+            attachment.GetName(), mimeType)
+    }
+}
+```
+
+### Error Handling
+
+```go
+// Attachment operations can fail
+if err := app.AddAttachment("/nonexistent/file.txt"); err != nil {
+    log.Printf("Attachment error: %v", err)
+}
+
+// Check attachment availability
+for _, attachment := range app.GetAttachments() {
+    if !attachment.Exists() {
+        log.Printf("Attachment %s is not available", attachment.GetName())
+    }
+}
+
+// Services may reject attachments
+responses := app.Notify("Title", "Message", apprise.NotifyTypeInfo)
+for _, response := range responses {
+    if !response.Success && response.Error != nil {
+        log.Printf("Service %s failed: %v", response.ServiceID, response.Error)
+    }
+}
+```
+
 For more examples, see the `examples/` directory in the repository.
