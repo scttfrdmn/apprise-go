@@ -50,14 +50,13 @@ func (d *DiscordService) ParseURL(serviceURL *url.URL) error {
 		d.avatar = serviceURL.User.Username()
 	}
 
-	// Extract webhook ID and token from path
-	pathParts := strings.Split(strings.Trim(serviceURL.Path, "/"), "/")
-	if len(pathParts) < 2 {
+	// Extract webhook ID from host and token from path
+	d.webhookID = serviceURL.Host
+	d.webhookToken = strings.Trim(serviceURL.Path, "/")
+
+	if d.webhookID == "" || d.webhookToken == "" {
 		return fmt.Errorf("invalid Discord URL: missing webhook_id and/or webhook_token")
 	}
-
-	d.webhookID = pathParts[0]
-	d.webhookToken = pathParts[1]
 
 	// Parse query parameters for additional options
 	query := serviceURL.Query()
