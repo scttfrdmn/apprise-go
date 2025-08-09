@@ -106,6 +106,29 @@ func (p *PushbulletService) ParseURL(serviceURL *url.URL) error {
 		}
 	}
 
+	// Handle fragment which may contain channels and devices (for URLs like pushbullet://token/#channel/device)
+	if serviceURL.Fragment != "" {
+		fragmentParts := strings.Split(serviceURL.Fragment, "/")
+		for _, part := range fragmentParts {
+			if part != "" {
+				if strings.Contains(part, "@") {
+					// Email address
+					p.emails = append(p.emails, part)
+				} else if len(fragmentParts) == 1 {
+					// Single fragment part is assumed to be a channel
+					p.channels = append(p.channels, part)
+				} else {
+					// Multiple fragment parts: first is channel, rest are devices
+					if part == fragmentParts[0] {
+						p.channels = append(p.channels, part)
+					} else {
+						p.devices = append(p.devices, part)
+					}
+				}
+			}
+		}
+	}
+
 	return nil
 }
 

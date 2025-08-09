@@ -253,6 +253,7 @@ slack://TokenA/TokenB/TokenC
 	}
 }
 
+
 // Helper functions
 func contains(slice []string, item string) bool {
 	for _, s := range slice {
