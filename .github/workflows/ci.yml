@@ -32,6 +32,16 @@ jobs:
     - name: Run tests with coverage
       run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
     
+    - name: Run security analysis
+      uses: securecodewarrior/github-action-gosec@master
+      with:
+        args: '-fmt sarif -out results.sarif ./...'
+    
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: results.sarif
+    
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v5
       with:

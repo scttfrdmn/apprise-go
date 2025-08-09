@@ -1,0 +1,316 @@
+{
+	"Golang errors": {},
+	"Issues": [
+		{
+			"severity": "HIGH",
+			"confidence": "LOW",
+			"cwe": {
+				"id": "295",
+				"url": "https://cwe.mitre.org/data/definitions/295.html"
+			},
+			"rule_id": "G402",
+			"details": "TLS InsecureSkipVerify may be true.",
+			"file": "/Users/scttfrdmn/src/apprise-go/apprise/email.go",
+			"code": "253: \t\t\tServerName:         e.smtpHost,\n254: \t\t\tInsecureSkipVerify: e.skipVerify,\n255: \t\t}\n",
+			"line": "254",
+			"column": "24",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "HIGH",
+			"confidence": "LOW",
+			"cwe": {
+				"id": "295",
+				"url": "https://cwe.mitre.org/data/definitions/295.html"
+			},
+			"rule_id": "G402",
+			"details": "TLS InsecureSkipVerify may be true.",
+			"file": "/Users/scttfrdmn/src/apprise-go/apprise/email.go",
+			"code": "228: \t\t\tServerName:         e.smtpHost,\n229: \t\t\tInsecureSkipVerify: e.skipVerify,\n230: \t\t}\n",
+			"line": "229",
+			"column": "24",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "MEDIUM",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "78",
+				"url": "https://cwe.mitre.org/data/definitions/78.html"
+			},
+			"rule_id": "G204",
+			"details": "Subprocess launched with variable",
+			"file": "/Users/scttfrdmn/src/apprise-go/apprise/desktop.go",
+			"code": "179: \n180: \t\tcmd := exec.CommandContext(ctx, \"zenity\", args...)\n181: \t\treturn cmd.Run()\n",
+			"line": "180",
+			"column": "10",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "MEDIUM",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "78",
+				"url": "https://cwe.mitre.org/data/definitions/78.html"
+			},
+			"rule_id": "G204",
+			"details": "Subprocess launched with variable",
+			"file": "/Users/scttfrdmn/src/apprise-go/apprise/desktop.go",
+			"code": "168: \n169: \t\tcmd := exec.CommandContext(ctx, \"notify-send\", args...)\n170: \t\treturn cmd.Run()\n",
+			"line": "169",
+			"column": "10",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "MEDIUM",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "78",
+				"url": "https://cwe.mitre.org/data/definitions/78.html"
+			},
+			"rule_id": "G204",
+			"details": "Subprocess launched with variable",
+			"file": "/Users/scttfrdmn/src/apprise-go/apprise/desktop.go",
+			"code": "154: \n155: \tcmd := exec.CommandContext(ctx, \"powershell\", \"-Command\", script)\n156: \treturn cmd.Run()\n",
+			"line": "155",
+			"column": "9",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "MEDIUM",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "78",
+				"url": "https://cwe.mitre.org/data/definitions/78.html"
+			},
+			"rule_id": "G204",
+			"details": "Subprocess launched with variable",
+			"file": "/Users/scttfrdmn/src/apprise-go/apprise/desktop.go",
+			"code": "129: \n130: \tcmd := exec.CommandContext(ctx, \"terminal-notifier\", args...)\n131: \treturn cmd.Run()\n",
+			"line": "130",
+			"column": "9",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "MEDIUM",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "78",
+				"url": "https://cwe.mitre.org/data/definitions/78.html"
+			},
+			"rule_id": "G204",
+			"details": "Subprocess launched with a potential tainted input or cmd arguments",
+			"file": "/Users/scttfrdmn/src/apprise-go/apprise/desktop.go",
+			"code": "185: \tif _, err := exec.LookPath(\"kdialog\"); err == nil {\n186: \t\tcmd := exec.CommandContext(ctx, \"kdialog\", \"--passivepopup\", fmt.Sprintf(\"%s\\n%s\", title, body), \"5\")\n187: \t\treturn cmd.Run()\n",
+			"line": "186",
+			"column": "10",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "MEDIUM",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "22",
+				"url": "https://cwe.mitre.org/data/definitions/22.html"
+			},
+			"rule_id": "G304",
+			"details": "Potential file inclusion via variable",
+			"file": "/Users/scttfrdmn/src/apprise-go/apprise/config.go",
+			"code": "43: func (ac *AppriseConfig) AddFromFile(configPath string) error {\n44: \tcontent, err := os.ReadFile(configPath)\n45: \tif err != nil {\n",
+			"line": "44",
+			"column": "18",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "MEDIUM",
+			"confidence": "MEDIUM",
+			"cwe": {
+				"id": "88",
+				"url": "https://cwe.mitre.org/data/definitions/88.html"
+			},
+			"rule_id": "G107",
+			"details": "Potential HTTP request made with variable url",
+			"file": "/Users/scttfrdmn/src/apprise-go/apprise/config.go",
+			"code": "53: func (ac *AppriseConfig) AddFromURL(configURL string) error {\n54: \tresp, err := http.Get(configURL)\n55: \tif err != nil {\n",
+			"line": "54",
+			"column": "15",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "/Users/scttfrdmn/src/apprise-go/examples/main.go",
+			"code": "271: \tapp := apprise.New()\n272: \tapp.Add(\"discord://webhook_id/webhook_token\")\n273: \n",
+			"line": "272",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "/Users/scttfrdmn/src/apprise-go/examples/main.go",
+			"code": "146: \tapp := apprise.New()\n147: \tapp.Add(\"discord://webhook_id/webhook_token\")\n148: \n",
+			"line": "147",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "/Users/scttfrdmn/src/apprise-go/examples/main.go",
+			"code": "117: \tapp.Add(\"mailto://admin@company.com\", \"admin\")\n118: \tapp.Add(\"slack://TokenA/TokenB/TokenC/Channel\", \"team\", \"general\")\n119: \n",
+			"line": "118",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "/Users/scttfrdmn/src/apprise-go/examples/main.go",
+			"code": "116: \tapp.Add(\"discord://webhook_id/webhook_token\", \"team\", \"alerts\")\n117: \tapp.Add(\"mailto://admin@company.com\", \"admin\")\n118: \tapp.Add(\"slack://TokenA/TokenB/TokenC/Channel\", \"team\", \"general\")\n",
+			"line": "117",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "/Users/scttfrdmn/src/apprise-go/examples/main.go",
+			"code": "115: \t// Add services with different tags\n116: \tapp.Add(\"discord://webhook_id/webhook_token\", \"team\", \"alerts\")\n117: \tapp.Add(\"mailto://admin@company.com\", \"admin\")\n",
+			"line": "116",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "/Users/scttfrdmn/src/apprise-go/examples/main.go",
+			"code": "94: \tconfig.LoadDefaultConfigs()\n95: \tconfig.ApplyToApprise()\n96: \n",
+			"line": "95",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "/Users/scttfrdmn/src/apprise-go/examples/main.go",
+			"code": "93: \t// Load default configurations\n94: \tconfig.LoadDefaultConfigs()\n95: \tconfig.ApplyToApprise()\n",
+			"line": "94",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "/Users/scttfrdmn/src/apprise-go/examples/main.go",
+			"code": "89: \t\t// Apply configuration to Apprise instance\n90: \t\tconfig.ApplyToApprise()\n91: \t}\n",
+			"line": "90",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "/Users/scttfrdmn/src/apprise-go/examples/main.go",
+			"code": "86: \t\t// Continue with manual configuration\n87: \t\tapp.Add(\"discord://webhook_id/webhook_token\")\n88: \t} else {\n",
+			"line": "87",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "/Users/scttfrdmn/src/apprise-go/cmd/apprise/main.go",
+			"code": "67: \t\t}\n68: \t\tconfig.ApplyToApprise()\n69: \t}\n",
+			"line": "68",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		}
+	],
+	"Stats": {
+		"files": 17,
+		"lines": 5086,
+		"nosec": 0,
+		"found": 19
+	},
+	"GosecVersion": "2.22.7"
+}

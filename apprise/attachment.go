@@ -1,7 +1,7 @@
 package apprise
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
 	"io"
@@ -232,7 +232,7 @@ func (f *FileAttachment) Hash() (string, error) {
 	}
 	defer func() { _ = reader.Close() }()
 
-	hash := md5.New()
+	hash := sha256.New()
 	if _, err := io.Copy(hash, reader); err != nil {
 		return "", err
 	}
@@ -353,7 +353,7 @@ func (h *HTTPAttachment) Hash() (string, error) {
 	}
 	defer func() { _ = reader.Close() }()
 
-	hash := md5.New()
+	hash := sha256.New()
 	if _, err := io.Copy(hash, reader); err != nil {
 		return "", err
 	}
@@ -457,7 +457,7 @@ func (m *MemoryAttachment) Base64() (string, error) {
 }
 
 func (m *MemoryAttachment) Hash() (string, error) {
-	hash := md5.New()
+	hash := sha256.New()
 	hash.Write(m.data)
 	return fmt.Sprintf("%x", hash.Sum(nil)), nil
 }

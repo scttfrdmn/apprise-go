@@ -1,0 +1,28 @@
+{
+    "global": {
+        "nosec": false,
+        "audit": true
+    },
+    "rules": {
+        "G402": {
+            "exclude": ["*/email.go"],
+            "reason": "TLS InsecureSkipVerify is a configurable option for email service"
+        },
+        "G204": {
+            "exclude": ["*/desktop.go"],
+            "reason": "Desktop notifications require system command execution with controlled inputs"
+        },
+        "G304": {
+            "exclude": ["*/config.go"],
+            "reason": "Reading configuration files from user-specified paths is expected behavior"
+        },
+        "G107": {
+            "exclude": ["*/config.go"],
+            "reason": "HTTP requests to user-specified URLs for config loading is expected behavior"
+        },
+        "G104": {
+            "exclude": ["examples/*"],
+            "reason": "Examples intentionally omit error handling for brevity"
+        }
+    }
+}

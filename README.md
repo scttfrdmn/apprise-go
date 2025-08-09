@@ -7,6 +7,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/scttfrdmn/apprise-go)](https://goreportcard.com/report/github.com/scttfrdmn/apprise-go)
 [![codecov](https://codecov.io/gh/scttfrdmn/apprise-go/branch/main/graph/badge.svg)](https://codecov.io/gh/scttfrdmn/apprise-go)
+[![Security](https://img.shields.io/github/actions/workflow/status/scttfrdmn/apprise-go/ci.yml?branch=main&label=security)](https://github.com/scttfrdmn/apprise-go/security/code-scanning)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/scttfrdmn/apprise-go/ci.yml?branch=main)](https://github.com/scttfrdmn/apprise-go/actions)
 [![GitHub Issues](https://img.shields.io/github/issues/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/issues)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/scttfrdmn/apprise-go)](https://github.com/scttfrdmn/apprise-go/pulls)
