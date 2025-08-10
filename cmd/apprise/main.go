@@ -36,76 +36,103 @@ const (
 func main() {
 	opts := parseFlags()
 
-	if opts.Help {
-		printUsage()
+	if err := handleSpecialFlags(opts); err != nil {
 		os.Exit(0)
 	}
 
+	app, err := setupApprise(opts)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	body, err := getNotificationBody(opts)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	attachments := createAttachments(opts.Attachments)
+	
+	printVerboseInfo(opts, app, body, attachments)
+
+	if opts.DryRun {
+		fmt.Println("DRY RUN: Notification would be sent to the following services:")
+		return
+	}
+
+	responses := sendNotification(app, opts, body, attachments)
+	processResults(opts, responses)
+}
+
+func handleSpecialFlags(opts CLIOptions) error {
+	if opts.Help {
+		printUsage()
+		return fmt.Errorf("help shown")
+	}
 	if opts.Version {
 		versionInfo := apprise.GetVersionInfo()
 		fmt.Printf("%s %s\n", AppName, versionInfo.String())
-		os.Exit(0)
+		return fmt.Errorf("version shown")
 	}
+	return nil
+}
 
-	// Create Apprise instance
+func setupApprise(opts CLIOptions) (*apprise.Apprise, error) {
 	app := apprise.New()
 	app.SetTimeout(opts.Timeout)
 
-	// Load configurations if specified
-	if len(opts.ConfigPaths) > 0 {
-		if err := loadConfigurations(app, opts.ConfigPaths, opts.Verbose); err != nil {
-			fmt.Fprintf(os.Stderr, "Error loading configuration: %v\n", err)
-			os.Exit(1)
-		}
-	} else {
-		// Try to load default configurations
-		config := apprise.NewAppriseConfig(app)
-		if err := config.LoadDefaultConfigs(); err != nil {
-			if opts.Verbose > 0 {
-				fmt.Printf("Warning: %v\n", err)
-			}
-		}
-		_ = config.ApplyToApprise()
+	if err := setupConfigurations(app, opts); err != nil {
+		return nil, err
 	}
 
-	// Add URLs from command line
 	for _, url := range opts.URLs {
 		if err := app.Add(url, opts.Tags...); err != nil {
-			fmt.Fprintf(os.Stderr, "Error adding URL %s: %v\n", url, err)
-			os.Exit(1)
+			return nil, fmt.Errorf("adding URL %s: %w", url, err)
 		}
 	}
 
-	// Check if we have any services configured
 	if app.Count() == 0 {
-		fmt.Fprintf(os.Stderr, "Error: No notification services configured.\n")
-		fmt.Fprintf(os.Stderr, "Use --config to specify a configuration file or provide URLs directly.\n")
-		os.Exit(1)
+		return nil, fmt.Errorf("no notification services configured. Use --config to specify a configuration file or provide URLs directly")
 	}
 
-	// Get notification body
+	return app, nil
+}
+
+func setupConfigurations(app *apprise.Apprise, opts CLIOptions) error {
+	if len(opts.ConfigPaths) > 0 {
+		return loadConfigurations(app, opts.ConfigPaths, opts.Verbose)
+	}
+	
+	config := apprise.NewAppriseConfig(app)
+	if err := config.LoadDefaultConfigs(); err != nil {
+		if opts.Verbose > 0 {
+			fmt.Printf("Warning: %v\n", err)
+		}
+	}
+	_ = config.ApplyToApprise()
+	return nil
+}
+
+func getNotificationBody(opts CLIOptions) (string, error) {
 	body := opts.Body
 	if body == "" {
-		// Read from stdin if no body specified
 		var err error
 		body, err = readFromStdin()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error reading from stdin: %v\n", err)
-			os.Exit(1)
+			return "", fmt.Errorf("reading from stdin: %w", err)
 		}
 	}
 
 	if body == "" {
-		fmt.Fprintf(os.Stderr, "Error: No notification body specified.\n")
-		os.Exit(1)
+		return "", fmt.Errorf("no notification body specified")
 	}
+	return body, nil
+}
 
-	// Parse notification type
-	notifyType := parseNotifyType(opts.NotifyType)
-
-	// Create attachments
+func createAttachments(attachPaths []string) []apprise.Attachment {
 	var attachments []apprise.Attachment
-	for _, attachPath := range opts.Attachments {
+	for _, attachPath := range attachPaths {
 		attachment := apprise.Attachment{}
 		if strings.HasPrefix(attachPath, "http://") || strings.HasPrefix(attachPath, "https://") {
 			attachment.URL = attachPath
@@ -115,26 +142,25 @@ func main() {
 		}
 		attachments = append(attachments, attachment)
 	}
+	return attachments
+}
 
-	if opts.Verbose > 0 {
-		fmt.Printf("Sending notification to %d service(s)...\n", app.Count())
-		if opts.Title != "" {
-			fmt.Printf("Title: %s\n", opts.Title)
-		}
-		fmt.Printf("Body: %s\n", truncateString(body, 100))
-		if len(attachments) > 0 {
-			fmt.Printf("Attachments: %d\n", len(attachments))
-		}
-	}
-
-	// Dry run mode
-	if opts.DryRun {
-		fmt.Println("DRY RUN: Notification would be sent to the following services:")
-		// Here you would list the configured services
+func printVerboseInfo(opts CLIOptions, app *apprise.Apprise, body string, attachments []apprise.Attachment) {
+	if opts.Verbose == 0 {
 		return
 	}
+	
+	fmt.Printf("Sending notification to %d service(s)...\n", app.Count())
+	if opts.Title != "" {
+		fmt.Printf("Title: %s\n", opts.Title)
+	}
+	fmt.Printf("Body: %s\n", truncateString(body, 100))
+	if len(attachments) > 0 {
+		fmt.Printf("Attachments: %d\n", len(attachments))
+	}
+}
 
-	// Send notification
+func sendNotification(app *apprise.Apprise, opts CLIOptions, body string, attachments []apprise.Attachment) []apprise.NotificationResponse {
 	options := []apprise.NotifyOption{
 		apprise.WithTags(opts.Tags...),
 		apprise.WithBodyFormat(opts.BodyFormat),
@@ -144,9 +170,11 @@ func main() {
 		options = append(options, apprise.WithAttachments(attachments...))
 	}
 
-	responses := app.Notify(opts.Title, body, notifyType, options...)
+	notifyType := parseNotifyType(opts.NotifyType)
+	return app.Notify(opts.Title, body, notifyType, options...)
+}
 
-	// Process results
+func processResults(opts CLIOptions, responses []apprise.NotificationResponse) {
 	successCount := 0
 	for i, response := range responses {
 		if response.Success {
@@ -163,7 +191,6 @@ func main() {
 		fmt.Printf("Notification sent successfully to %d/%d services.\n", successCount, len(responses))
 	}
 
-	// Exit with error code if any notifications failed
 	if successCount < len(responses) {
 		os.Exit(1)
 	}

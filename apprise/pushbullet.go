@@ -43,93 +43,124 @@ func (p *PushbulletService) GetDefaultPort() int {
 // Format: pushbullet://access_token/email@domain.com
 // Format: pball://access_token?device=device1&email=user@domain.com&channel=channel1
 func (p *PushbulletService) ParseURL(serviceURL *url.URL) error {
-	scheme := serviceURL.Scheme
+	if err := p.validateScheme(serviceURL.Scheme); err != nil {
+		return err
+	}
+	if err := p.parseAccessToken(serviceURL); err != nil {
+		return err
+	}
+	if err := p.parsePathTargets(serviceURL); err != nil {
+		return err
+	}
+	if err := p.parseQueryTargets(serviceURL); err != nil {
+		return err
+	}
+	if err := p.parseFragmentTargets(serviceURL); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *PushbulletService) validateScheme(scheme string) error {
 	if scheme != "pball" && scheme != "pushbullet" {
 		return fmt.Errorf("invalid scheme: expected 'pball' or 'pushbullet', got '%s'", scheme)
 	}
+	return nil
+}
 
-	// Extract access token from host
+func (p *PushbulletService) parseAccessToken(serviceURL *url.URL) error {
 	p.accessToken = serviceURL.Host
 	if p.accessToken == "" {
 		return fmt.Errorf("pushbullet access token is required")
 	}
-
-	// Extract targets from path
-	if serviceURL.Path != "" {
-		pathParts := strings.Split(strings.Trim(serviceURL.Path, "/"), "/")
-		for _, part := range pathParts {
-			if part != "" {
-				if strings.Contains(part, "@") {
-					// Email address
-					p.emails = append(p.emails, part)
-				} else if strings.HasPrefix(part, "#") {
-					// Channel
-					p.channels = append(p.channels, strings.TrimPrefix(part, "#"))
-				} else {
-					// Device ID
-					p.devices = append(p.devices, part)
-				}
-			}
-		}
-	}
-
-	// Parse query parameters for additional targets
-	query := serviceURL.Query()
-
-	if device := query.Get("device"); device != "" {
-		devices := strings.Split(device, ",")
-		for _, d := range devices {
-			d = strings.TrimSpace(d)
-			if d != "" {
-				p.devices = append(p.devices, d)
-			}
-		}
-	}
-
-	if email := query.Get("email"); email != "" {
-		emails := strings.Split(email, ",")
-		for _, e := range emails {
-			e = strings.TrimSpace(e)
-			if e != "" && strings.Contains(e, "@") {
-				p.emails = append(p.emails, e)
-			}
-		}
-	}
-
-	if channel := query.Get("channel"); channel != "" {
-		channels := strings.Split(channel, ",")
-		for _, c := range channels {
-			c = strings.TrimSpace(c)
-			if c != "" {
-				p.channels = append(p.channels, c)
-			}
-		}
-	}
-
-	// Handle fragment which may contain channels and devices (for URLs like pushbullet://token/#channel/device)
-	if serviceURL.Fragment != "" {
-		fragmentParts := strings.Split(serviceURL.Fragment, "/")
-		for _, part := range fragmentParts {
-			if part != "" {
-				if strings.Contains(part, "@") {
-					// Email address
-					p.emails = append(p.emails, part)
-				} else if len(fragmentParts) == 1 {
-					// Single fragment part is assumed to be a channel
-					p.channels = append(p.channels, part)
-				} else {
-					// Multiple fragment parts: first is channel, rest are devices
-					if part == fragmentParts[0] {
-						p.channels = append(p.channels, part)
-					} else {
-						p.devices = append(p.devices, part)
-					}
-				}
-			}
-		}
-	}
-
 	return nil
+}
+
+func (p *PushbulletService) parsePathTargets(serviceURL *url.URL) error {
+	if serviceURL.Path == "" {
+		return nil
+	}
+	
+	pathParts := strings.Split(strings.Trim(serviceURL.Path, "/"), "/")
+	for _, part := range pathParts {
+		if part != "" {
+			p.addTarget(part)
+		}
+	}
+	return nil
+}
+
+func (p *PushbulletService) parseQueryTargets(serviceURL *url.URL) error {
+	query := serviceURL.Query()
+	
+	p.parseCommaSeparatedTargets(query.Get("device"), "device")
+	p.parseCommaSeparatedTargets(query.Get("email"), "email")
+	p.parseCommaSeparatedTargets(query.Get("channel"), "channel")
+	
+	return nil
+}
+
+func (p *PushbulletService) parseCommaSeparatedTargets(value, targetType string) {
+	if value == "" {
+		return
+	}
+	
+	parts := strings.Split(value, ",")
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if part == "" {
+			continue
+		}
+		
+		switch targetType {
+		case "device":
+			p.devices = append(p.devices, part)
+		case "email":
+			if strings.Contains(part, "@") {
+				p.emails = append(p.emails, part)
+			}
+		case "channel":
+			p.channels = append(p.channels, part)
+		}
+	}
+}
+
+func (p *PushbulletService) parseFragmentTargets(serviceURL *url.URL) error {
+	if serviceURL.Fragment == "" {
+		return nil
+	}
+	
+	fragmentParts := strings.Split(serviceURL.Fragment, "/")
+	for i, part := range fragmentParts {
+		if part == "" {
+			continue
+		}
+		
+		if strings.Contains(part, "@") {
+			p.emails = append(p.emails, part)
+		} else if len(fragmentParts) == 1 {
+			// Single fragment part is assumed to be a channel
+			p.channels = append(p.channels, part)
+		} else {
+			// Multiple fragment parts: first is channel, rest are devices
+			if i == 0 {
+				p.channels = append(p.channels, part)
+			} else {
+				p.devices = append(p.devices, part)
+			}
+		}
+	}
+	return nil
+}
+
+func (p *PushbulletService) addTarget(part string) {
+	if strings.Contains(part, "@") {
+		p.emails = append(p.emails, part)
+	} else if strings.HasPrefix(part, "#") {
+		p.channels = append(p.channels, strings.TrimPrefix(part, "#"))
+	} else {
+		p.devices = append(p.devices, part)
+	}
 }
 
 // PushbulletPayload represents the Pushbullet API payload structure

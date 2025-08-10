@@ -239,13 +239,13 @@ func (s *SlackService) sendPayload(ctx context.Context, webhookURL string, paylo
 	// Check response status
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("Slack API error (status %d): %s", resp.StatusCode, string(body))
+		return fmt.Errorf("slack API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	// For webhooks, check if response is "ok"
 	body, _ := io.ReadAll(resp.Body)
 	if string(body) != "ok" {
-		return fmt.Errorf("Slack webhook error: %s", string(body))
+		return fmt.Errorf("slack webhook error: %s", string(body))
 	}
 
 	return nil
@@ -289,7 +289,7 @@ func (s *SlackService) sendBotPayload(ctx context.Context, apiURL string, payloa
 	}
 
 	if !result.OK {
-		return fmt.Errorf("Slack API error: %s", result.Error)
+		return fmt.Errorf("slack API error: %s", result.Error)
 	}
 
 	return nil

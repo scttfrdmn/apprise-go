@@ -50,7 +50,7 @@ func (t *TwilioService) ParseURL(serviceURL *url.URL) error {
 
 	// Extract Account SID and Auth Token from user info
 	if serviceURL.User == nil {
-		return fmt.Errorf("Twilio Account SID and Auth Token are required")
+		return fmt.Errorf("twilio Account SID and Auth Token are required")
 	}
 
 	t.accountSID = serviceURL.User.Username()
@@ -65,7 +65,7 @@ func (t *TwilioService) ParseURL(serviceURL *url.URL) error {
 	// Extract from phone number from host
 	t.fromPhone = t.normalizePhoneNumber(serviceURL.Host)
 	if t.fromPhone == "" {
-		return fmt.Errorf("Twilio from phone number is required")
+		return fmt.Errorf("twilio from phone number is required")
 	}
 
 	// Extract destination phone numbers from path

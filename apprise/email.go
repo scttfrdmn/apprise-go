@@ -57,14 +57,34 @@ func (e *EmailService) GetDefaultPort() int {
 // Format: mailtos://username:password@smtp.server.com:port/to@email.com (TLS)
 // Format: mailto://username:password@smtp.server.com/to@email.com?cc=cc@email.com&bcc=bcc@email.com
 func (e *EmailService) ParseURL(serviceURL *url.URL) error {
+	if err := e.parseScheme(serviceURL); err != nil {
+		return err
+	}
+	if err := e.parseHost(serviceURL); err != nil {
+		return err
+	}
+	if err := e.parseCredentials(serviceURL); err != nil {
+		return err
+	}
+	if err := e.parseRecipients(serviceURL); err != nil {
+		return err
+	}
+	if err := e.parseQueryParams(serviceURL); err != nil {
+		return err
+	}
+	e.setDefaults()
+	return nil
+}
+
+func (e *EmailService) parseScheme(serviceURL *url.URL) error {
 	if serviceURL.Scheme != "mailto" && serviceURL.Scheme != "mailtos" {
 		return fmt.Errorf("invalid scheme: expected 'mailto' or 'mailtos', got '%s'", serviceURL.Scheme)
 	}
-
-	// Set TLS based on scheme
 	e.useTLS = serviceURL.Scheme == "mailtos"
+	return nil
+}
 
-	// Extract SMTP server and port
+func (e *EmailService) parseHost(serviceURL *url.URL) error {
 	e.smtpHost = serviceURL.Hostname()
 	if e.smtpHost == "" {
 		return fmt.Errorf("SMTP host is required")
@@ -78,23 +98,26 @@ func (e *EmailService) ParseURL(serviceURL *url.URL) error {
 		}
 		e.smtpPort = port
 	} else {
-		// Set default port based on TLS
 		if e.useTLS {
 			e.smtpPort = 465 // SMTPS port
 		} else {
 			e.smtpPort = 587 // SMTP submission port
 		}
 	}
+	return nil
+}
 
-	// Extract credentials
+func (e *EmailService) parseCredentials(serviceURL *url.URL) error {
 	if serviceURL.User != nil {
 		e.username = serviceURL.User.Username()
 		if password, hasPassword := serviceURL.User.Password(); hasPassword {
 			e.password = password
 		}
 	}
+	return nil
+}
 
-	// Extract recipient email(s) from path
+func (e *EmailService) parseRecipients(serviceURL *url.URL) error {
 	pathParts := strings.Split(strings.Trim(serviceURL.Path, "/"), "/")
 	for _, part := range pathParts {
 		if part != "" && e.isValidEmail(part) {
@@ -105,56 +128,51 @@ func (e *EmailService) ParseURL(serviceURL *url.URL) error {
 	if len(e.toEmails) == 0 {
 		return fmt.Errorf("at least one recipient email is required")
 	}
+	return nil
+}
 
-	// Parse query parameters
+func (e *EmailService) parseQueryParams(serviceURL *url.URL) error {
 	query := serviceURL.Query()
 
 	if from := query.Get("from"); from != "" && e.isValidEmail(from) {
 		e.fromEmail = from
 	}
-
 	if fromName := query.Get("name"); fromName != "" {
 		e.fromName = fromName
 	}
-
-	if cc := query.Get("cc"); cc != "" {
-		ccEmails := strings.Split(cc, ",")
-		for _, email := range ccEmails {
-			email = strings.TrimSpace(email)
-			if e.isValidEmail(email) {
-				e.ccEmails = append(e.ccEmails, email)
-			}
-		}
-	}
-
-	if bcc := query.Get("bcc"); bcc != "" {
-		bccEmails := strings.Split(bcc, ",")
-		for _, email := range bccEmails {
-			email = strings.TrimSpace(email)
-			if e.isValidEmail(email) {
-				e.bccEmails = append(e.bccEmails, email)
-			}
-		}
-	}
+	
+	e.parseEmailList(query.Get("cc"), &e.ccEmails)
+	e.parseEmailList(query.Get("bcc"), &e.bccEmails)
 
 	if subject := query.Get("subject"); subject != "" {
 		e.subject = subject
 	}
-
 	if skipVerify := query.Get("skip_verify"); skipVerify == "true" || skipVerify == "yes" {
 		e.skipVerify = true
 	}
-
 	if noTLS := query.Get("no_tls"); noTLS == "true" || noTLS == "yes" {
 		e.useSTARTTLS = false
 	}
+	return nil
+}
 
-	// Set default from email if not specified
+func (e *EmailService) parseEmailList(emailStr string, target *[]string) {
+	if emailStr == "" {
+		return
+	}
+	emails := strings.Split(emailStr, ",")
+	for _, email := range emails {
+		email = strings.TrimSpace(email)
+		if e.isValidEmail(email) {
+			*target = append(*target, email)
+		}
+	}
+}
+
+func (e *EmailService) setDefaults() {
 	if e.fromEmail == "" && e.username != "" {
 		e.fromEmail = e.username
 	}
-
-	return nil
 }
 
 // Send sends an email notification

@@ -60,7 +60,7 @@ func (t *TelegramService) ParseURL(serviceURL *url.URL) error {
 	}
 
 	if t.botToken == "" {
-		return fmt.Errorf("Telegram bot token is required")
+		return fmt.Errorf("telegram bot token is required")
 	}
 
 	// Extract chat IDs from path
@@ -192,7 +192,7 @@ func (t *TelegramService) sendToChat(ctx context.Context, chatID, message string
 	}
 
 	if !result.OK {
-		return fmt.Errorf("Telegram API error (%d): %s", result.ErrorCode, result.Description)
+		return fmt.Errorf("telegram API error (%d): %s", result.ErrorCode, result.Description)
 	}
 
 	return nil

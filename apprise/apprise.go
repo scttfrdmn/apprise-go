@@ -300,7 +300,6 @@ func WithBodyFormat(format string) NotifyOption {
 	}
 }
 
-
 // registerBuiltinServices registers all built-in notification services
 func registerBuiltinServices(registry *ServiceRegistry) {
 	// Messaging/Chat platforms

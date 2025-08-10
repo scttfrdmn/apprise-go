@@ -47,12 +47,30 @@ func (p *PushoverService) GetDefaultPort() int {
 // Format: pover://token@user[/device1/device2/...]
 // Format: pushover://token@user[/device1/device2/...]
 func (p *PushoverService) ParseURL(serviceURL *url.URL) error {
-	scheme := serviceURL.Scheme
+	if err := p.validateScheme(serviceURL.Scheme); err != nil {
+		return err
+	}
+	if err := p.parseCredentials(serviceURL); err != nil {
+		return err
+	}
+	if err := p.parseDevices(serviceURL); err != nil {
+		return err
+	}
+	if err := p.parseQueryParams(serviceURL); err != nil {
+		return err
+	}
+	p.setEmergencyDefaults()
+	return nil
+}
+
+func (p *PushoverService) validateScheme(scheme string) error {
 	if scheme != "pover" && scheme != "pushover" {
 		return fmt.Errorf("invalid scheme: expected 'pover' or 'pushover', got '%s'", scheme)
 	}
+	return nil
+}
 
-	// Extract token and user key
+func (p *PushoverService) parseCredentials(serviceURL *url.URL) error {
 	if serviceURL.User == nil {
 		return fmt.Errorf("pushover token and user key are required")
 	}
@@ -69,57 +87,81 @@ func (p *PushoverService) ParseURL(serviceURL *url.URL) error {
 	if p.token == "" || p.userKey == "" {
 		return fmt.Errorf("both Pushover token and user key are required")
 	}
+	return nil
+}
 
-	// Extract devices from path
-	if serviceURL.Path != "" {
-		pathParts := strings.Split(strings.Trim(serviceURL.Path, "/"), "/")
-		for _, part := range pathParts {
-			if part != "" {
-				p.devices = append(p.devices, part)
-			}
+func (p *PushoverService) parseDevices(serviceURL *url.URL) error {
+	if serviceURL.Path == "" {
+		return nil
+	}
+	
+	pathParts := strings.Split(strings.Trim(serviceURL.Path, "/"), "/")
+	for _, part := range pathParts {
+		if part != "" {
+			p.devices = append(p.devices, part)
 		}
 	}
+	return nil
+}
 
-	// Parse query parameters
+func (p *PushoverService) parseQueryParams(serviceURL *url.URL) error {
 	query := serviceURL.Query()
+	
+	p.parsePriority(query.Get("priority"))
+	p.parseSound(query.Get("sound"))
+	p.parseRetry(query.Get("retry"))
+	p.parseExpire(query.Get("expire"))
+	
+	return nil
+}
 
-	if priority := query.Get("priority"); priority != "" {
-		if prio, err := strconv.Atoi(priority); err == nil && prio >= -2 && prio <= 2 {
-			p.priority = prio
-		}
+func (p *PushoverService) parsePriority(priority string) {
+	if priority == "" {
+		return
 	}
+	if prio, err := strconv.Atoi(priority); err == nil && prio >= -2 && prio <= 2 {
+		p.priority = prio
+	}
+}
 
-	if sound := query.Get("sound"); sound != "" {
+func (p *PushoverService) parseSound(sound string) {
+	if sound != "" {
 		p.sound = sound
 	}
+}
 
-	if retry := query.Get("retry"); retry != "" && p.priority == 2 {
-		if r, err := strconv.Atoi(retry); err == nil && r >= 30 {
-			p.retry = r
-		} else {
-			p.retry = 60 // Default retry for emergency priority
-		}
+func (p *PushoverService) parseRetry(retry string) {
+	if retry == "" || p.priority != 2 {
+		return
 	}
-
-	if expire := query.Get("expire"); expire != "" && p.priority == 2 {
-		if e, err := strconv.Atoi(expire); err == nil && e <= 10800 {
-			p.expire = e
-		} else {
-			p.expire = 3600 // Default expire for emergency priority
-		}
+	if r, err := strconv.Atoi(retry); err == nil && r >= 30 {
+		p.retry = r
+	} else {
+		p.retry = 60 // Default retry for emergency priority
 	}
+}
 
-	// Set defaults for emergency priority
-	if p.priority == 2 {
-		if p.retry == 0 {
-			p.retry = 60 // Default retry interval
-		}
-		if p.expire == 0 {
-			p.expire = 3600 // Default expiration
-		}
+func (p *PushoverService) parseExpire(expire string) {
+	if expire == "" || p.priority != 2 {
+		return
 	}
+	if e, err := strconv.Atoi(expire); err == nil && e <= 10800 {
+		p.expire = e
+	} else {
+		p.expire = 3600 // Default expire for emergency priority
+	}
+}
 
-	return nil
+func (p *PushoverService) setEmergencyDefaults() {
+	if p.priority != 2 {
+		return
+	}
+	if p.retry == 0 {
+		p.retry = 60 // Default retry interval
+	}
+	if p.expire == 0 {
+		p.expire = 3600 // Default expiration
+	}
 }
 
 // PushoverPayload represents the Pushover API payload structure
@@ -232,9 +274,9 @@ func (p *PushoverService) sendToDevice(ctx context.Context, apiURL, device strin
 
 	if result.Status != 1 {
 		if len(result.Errors) > 0 {
-			return fmt.Errorf("Pushover API error: %s", strings.Join(result.Errors, ", "))
+			return fmt.Errorf("pushover API error: %s", strings.Join(result.Errors, ", "))
 		}
-		return fmt.Errorf("Pushover API error: status %d", result.Status)
+		return fmt.Errorf("pushover API error: status %d", result.Status)
 	}
 
 	return nil

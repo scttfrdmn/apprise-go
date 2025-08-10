@@ -28,13 +28,13 @@ func TestFileAttachment(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	defer func() { _ = os.Remove(tmpFile.Name()) }()
 
 	testContent := "This is a test file for attachment testing"
 	if _, err := tmpFile.WriteString(testContent); err != nil {
 		t.Fatalf("Failed to write to temp file: %v", err)
 	}
-	tmpFile.Close()
+	_ = tmpFile.Close()
 
 	// Test file attachment
 	attachment, err := NewFileAttachment(tmpFile.Name())
@@ -64,7 +64,7 @@ func TestFileAttachment(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to open attachment: %v", err)
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 
 	content, err := io.ReadAll(reader)
 	if err != nil {
@@ -145,7 +145,7 @@ func TestMemoryAttachment(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to open memory attachment: %v", err)
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 
 	content, err := io.ReadAll(reader)
 	if err != nil {
@@ -185,7 +185,7 @@ func TestMemoryAttachmentFromDataURL(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to open attachment: %v", err)
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 
 	content, err := io.ReadAll(reader)
 	if err != nil {
@@ -312,11 +312,11 @@ func TestAttachmentManagerFromPath(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	defer func() { _ = os.Remove(tmpFile.Name()) }()
 
 	testContent := "manager test content"
-	tmpFile.WriteString(testContent)
-	tmpFile.Close()
+	_, _ = tmpFile.WriteString(testContent)
+	_ = tmpFile.Close()
 
 	// Test adding file attachment via manager
 	err = mgr.Add(tmpFile.Name())

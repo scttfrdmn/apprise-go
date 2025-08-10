@@ -233,7 +233,6 @@ func errorHandlingExample() {
 
 // Additional utility functions and examples
 
-
 /* Example configuration files:
 
 config.yaml:

@@ -346,8 +346,8 @@ func BenchmarkApprise_NotifyWithAttachments(b *testing.B) {
 		app.ClearAttachments()
 
 		// Add attachments
-		app.AddAttachmentData(smallData, "small.txt", "text/plain")
-		app.AddAttachmentData(largeData, "large.txt", "text/plain")
+		_ = app.AddAttachmentData(smallData, "small.txt", "text/plain")
+		_ = app.AddAttachmentData(largeData, "large.txt", "text/plain")
 
 		responses := app.Notify(title, body, NotifyTypeInfo)
 		if !responses[0].Success {
