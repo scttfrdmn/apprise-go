@@ -193,7 +193,7 @@ func (t *TwilioService) sendToPhone(ctx context.Context, toPhone, message string
 
 	// Check response status
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return fmt.Errorf("Twilio API error (status %d): %s", resp.StatusCode, string(body))
+		return fmt.Errorf("twilio API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	return nil

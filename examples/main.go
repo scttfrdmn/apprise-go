@@ -84,7 +84,7 @@ func configExample() {
 	if err != nil {
 		fmt.Printf("Could not load config.yaml: %v\n", err)
 		// Continue with manual configuration
-		app.Add("discord://webhook_id/webhook_token")
+		_ = app.Add("discord://webhook_id/webhook_token")
 	} else {
 		// Apply configuration to Apprise instance
 		_ = config.ApplyToApprise()
@@ -113,9 +113,9 @@ func taggedExample() {
 	app := apprise.New()
 
 	// Add services with different tags
-	app.Add("discord://webhook_id/webhook_token", "team", "alerts")
-	app.Add("mailto://admin@company.com", "admin")
-	app.Add("slack://TokenA/TokenB/TokenC/Channel", "team", "general")
+	_ = app.Add("discord://webhook_id/webhook_token", "team", "alerts")
+	_ = app.Add("mailto://admin@company.com", "admin")
+	_ = app.Add("slack://TokenA/TokenB/TokenC/Channel", "team", "general")
 
 	// Send to all services
 	fmt.Println("Sending to all services:")
@@ -144,7 +144,7 @@ func attachmentExample() {
 	fmt.Println("=== Attachment Example ===")
 
 	app := apprise.New()
-	app.Add("discord://webhook_id/webhook_token")
+	_ = app.Add("discord://webhook_id/webhook_token")
 
 	// Create attachments
 	attachments := []apprise.Attachment{

@@ -300,7 +300,7 @@ func TestTelegramChatIDValidation(t *testing.T) {
 func TestTelegramSendMethod(t *testing.T) {
 	service := NewTelegramService()
 	parsedURL, _ := url.Parse("tgram://test_bot_token/test_chat_id")
-	service.(*TelegramService).ParseURL(parsedURL)
+	_ = service.(*TelegramService).ParseURL(parsedURL)
 
 	req := NotificationRequest{
 		Title:      "Test",
@@ -317,11 +317,12 @@ func TestTelegramSendMethod(t *testing.T) {
 		t.Error("Expected network error for invalid bot token, got none")
 	}
 
-	// Check that error message makes sense
-	if !strings.Contains(err.Error(), "Telegram") &&
+	// Check that error message makes sense (network or API error)
+	if !strings.Contains(err.Error(), "telegram") &&
 		!strings.Contains(err.Error(), "connect") &&
 		!strings.Contains(err.Error(), "no such host") &&
-		!strings.Contains(err.Error(), "timeout") {
-		t.Errorf("Error should be network-related, got: %v", err)
+		!strings.Contains(err.Error(), "timeout") &&
+		!strings.Contains(err.Error(), "Not Found") {
+		t.Errorf("Error should be network-related or API error, got: %v", err)
 	}
 }

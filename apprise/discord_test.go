@@ -130,7 +130,7 @@ func TestDiscordColorMapping(t *testing.T) {
 func TestDiscordPayloadGeneration(t *testing.T) {
 	service := NewDiscordService()
 	parsedURL, _ := url.Parse("discord://webhook_id/webhook_token?username=TestBot")
-	service.(*DiscordService).ParseURL(parsedURL)
+	_ = service.(*DiscordService).ParseURL(parsedURL)
 
 	discordService := service.(*DiscordService)
 
@@ -203,7 +203,7 @@ func TestDiscordTestURL(t *testing.T) {
 func TestDiscordSendMethodExists(t *testing.T) {
 	service := NewDiscordService()
 	parsedURL, _ := url.Parse("discord://test_id/test_token")
-	service.(*DiscordService).ParseURL(parsedURL)
+	_ = service.(*DiscordService).ParseURL(parsedURL)
 
 	req := NotificationRequest{
 		Title:      "Test",

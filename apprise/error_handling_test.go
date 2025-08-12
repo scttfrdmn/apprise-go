@@ -72,8 +72,8 @@ func TestPartialFailures(t *testing.T) {
 	validService := "discord://valid_id/valid_token"
 	invalidService := "webhook://192.0.2.1:1234/notify" // Will timeout/fail
 
-	app.Add(validService)   // This will parse successfully
-	app.Add(invalidService) // This will also parse successfully but fail on send
+	_ = app.Add(validService)   // This will parse successfully
+	_ = app.Add(invalidService) // This will also parse successfully but fail on send
 
 	if app.Count() != 2 {
 		t.Fatalf("Expected 2 services, got %d", app.Count())
@@ -104,7 +104,7 @@ func TestPartialFailures(t *testing.T) {
 
 func TestEmptyNotification(t *testing.T) {
 	app := New()
-	app.Add("discord://test_id/test_token")
+	_ = app.Add("discord://test_id/test_token")
 
 	// Test empty title and body
 	responses := app.Notify("", "", NotifyTypeInfo)
@@ -130,9 +130,9 @@ func TestLargeNotificationBody(t *testing.T) {
 	}
 
 	// Add services with different body length limits
-	app.Add("discord://test_id/test_token")    // 2000 char limit
-	app.Add("pushover://test_token@test_user") // 1024 char limit
-	app.Add("webhook://example.com/notify")    // No limit
+	_ = app.Add("discord://test_id/test_token")    // 2000 char limit
+	_ = app.Add("pushover://test_token@test_user") // 1024 char limit
+	_ = app.Add("webhook://example.com/notify")    // No limit
 
 	responses := app.Notify("Large Body Test", string(largeBody), NotifyTypeInfo)
 
@@ -166,7 +166,7 @@ func TestConcurrentNotifications(t *testing.T) {
 	}
 
 	for _, service := range services {
-		app.Add(service)
+		_ = app.Add(service)
 	}
 
 	if app.Count() != 5 {
@@ -206,9 +206,9 @@ func TestServiceClear(t *testing.T) {
 	app := New()
 
 	// Add multiple services
-	app.Add("discord://id/token")
-	app.Add("slack://a/b/c")
-	app.Add("webhook://example.com/notify")
+	_ = app.Add("discord://id/token")
+	_ = app.Add("slack://a/b/c")
+	_ = app.Add("webhook://example.com/notify")
 
 	if app.Count() != 3 {
 		t.Fatalf("Expected 3 services before clear, got %d", app.Count())
@@ -231,7 +231,7 @@ func TestServiceClear(t *testing.T) {
 
 func TestInvalidNotifyOptions(t *testing.T) {
 	app := New()
-	app.Add("discord://test_id/test_token")
+	_ = app.Add("discord://test_id/test_token")
 
 	// Test with various notify options
 	responses := app.Notify("Test", "Testing options", NotifyTypeInfo,
@@ -252,7 +252,7 @@ func TestInvalidNotifyOptions(t *testing.T) {
 
 func TestContextCancellation(t *testing.T) {
 	app := New()
-	app.Add("webhook://httpbin.org/delay/10") // Will take 10 seconds
+	_ = app.Add("webhook://httpbin.org/delay/10") // Will take 10 seconds
 
 	// Create a context that cancels after 100ms
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)

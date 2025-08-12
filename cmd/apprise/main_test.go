@@ -236,7 +236,7 @@ func TestReadFromStdinEmpty(t *testing.T) {
 
 	r, w, _ := os.Pipe()
 	os.Stdin = r
-	w.Close() // Close immediately to simulate empty input
+	_ = w.Close() // Close immediately to simulate empty input
 
 	result, err := readFromStdin()
 	if err != nil {
@@ -257,8 +257,8 @@ func TestReadFromStdinWithContent(t *testing.T) {
 
 	// Write test content
 	go func() {
-		defer w.Close()
-		w.Write([]byte("Line 1\nLine 2\nLine 3"))
+		defer func() { _ = w.Close() }()
+		_, _ = w.Write([]byte("Line 1\nLine 2\nLine 3"))
 	}()
 
 	result, err := readFromStdin()
@@ -338,11 +338,11 @@ func TestPrintUsage(t *testing.T) {
 
 	printUsage()
 
-	w.Close()
+	_ = w.Close()
 	os.Stdout = oldStdout
 
 	var buf bytes.Buffer
-	buf.ReadFrom(r)
+	_, _ = buf.ReadFrom(r)
 	output := buf.String()
 
 	// Check that usage contains expected elements
