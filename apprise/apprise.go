@@ -322,6 +322,9 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("pover", func() Service { return NewPushoverService() })
 	registry.Register("pushbullet", func() Service { return NewPushbulletService() })
 	registry.Register("pball", func() Service { return NewPushbulletService() })
+	
+	// Mobile push services  
+	registry.Register("fcm", func() Service { return NewFCMService() })
 
 	// Enterprise messaging
 	registry.Register("msteams", func() Service { return NewMSTeamsService() })
