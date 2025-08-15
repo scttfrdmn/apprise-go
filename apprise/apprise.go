@@ -331,6 +331,8 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("msteams", func() Service { return NewMSTeamsService() })
 	registry.Register("mattermost", func() Service { return NewMattermostService() })
 	registry.Register("mmosts", func() Service { return NewMattermostService() })
+	registry.Register("rocketchat", func() Service { return NewRocketChatService() })
+	registry.Register("rocket", func() Service { return NewRocketChatService() })
 	
 	// Incident management
 	registry.Register("pagerduty", func() Service { return NewPagerDutyService() })
