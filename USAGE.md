@@ -172,6 +172,78 @@ msteams://team_name/token_a/token_b/token_c?image=no
 - Support for all Teams webhook versions
 - Markdown text formatting support
 
+### Mattermost
+
+Open-source team collaboration platform with API v4 support for self-hosted and cloud deployments.
+
+**URL Formats:**
+```
+# Username/password authentication (HTTP)
+mattermost://username:password@mattermost.example.com/general
+
+# Token authentication (HTTPS)
+mmosts://token@mattermost.company.com/alerts
+
+# Custom port
+mattermost://user:pass@mm.company.com:9000/general
+
+# Multiple channels
+mmosts://token@mattermost.example.com/general/alerts/dev-team
+
+# With bot customization
+mattermost://token@mm.example.com/general?bot=AlertBot&icon_emoji=:warning:&icon_url=https://example.com/icon.png
+```
+
+**Query Parameters:**
+- `token=string` - Access token (alternative to URL auth)
+- `bot=string` - Custom bot name for message display
+- `icon_url=url` - Custom icon URL for bot avatar
+- `icon_emoji=:emoji:` - Custom emoji for bot icon
+
+**Features:**
+- Mattermost API v4 compliance for broad compatibility
+- Multiple authentication methods: username/password and personal access tokens
+- Multi-channel messaging in single URL
+- Channel name normalization (removes # and @ prefixes)
+- Fragment URL parsing for channel references (#channel)
+- Bot appearance customization (name, icon URL, emoji)
+- Markdown message formatting with emoji support
+- Automatic channel ID resolution via API
+- Session management for username/password authentication
+
+**Authentication Methods:**
+1. **Personal Access Token** (recommended for production)
+   ```go
+   app.Add("mmosts://sdf2h3jh4k2j3h4k2j3h4k@mattermost.company.com/alerts")
+   ```
+
+2. **Username/Password** (for development/testing)
+   ```go
+   app.Add("mattermost://myuser:mypass@mattermost.example.com/general")
+   ```
+
+3. **Token in Query Parameter**
+   ```go
+   app.Add("mattermost://myuser@mm.example.com/general?token=access_token")
+   ```
+
+**Channel Formats:**
+- **Simple Names**: `general`, `alerts`, `dev-team`
+- **Hash Prefixed**: `#general` (automatically normalized)
+- **Direct Messages**: `@username` (automatically normalized)
+
+**Message Formatting:**
+- Automatic emoji prefixing based on notification type
+- Markdown bold formatting for titles: `**Title**`
+- Multi-line support with proper spacing
+- Fallback messages for empty notifications
+
+**Example:**
+```go
+// Send alert to self-hosted Mattermost with custom bot appearance
+app.Add("mmosts://token@mattermost.company.com/ops-alerts?bot=MonitoringBot&icon_emoji=:rotating_light:")
+```
+
 ### PagerDuty
 
 Enterprise incident management with Events API v2 support for both US and EU regions.
@@ -777,6 +849,7 @@ app.ClearAttachments()
 | Opsgenie | ❌ Not supported | Alert API doesn't support attachments |
 | Pushbullet | ✅ Full | File uploads via API |
 | Microsoft Teams | 🚧 Planned | Adaptive cards with attachments |
+| Mattermost | ✅ Full | File uploads via API v4 |
 | Pushover | ✅ Images | Image attachments only |
 | Webhook/JSON | ❌ Not supported | Use base64 encoding in payload |
 | Twilio SMS | ❌ Not supported | SMS doesn't support attachments |
