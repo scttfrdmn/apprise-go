@@ -7,13 +7,13 @@ import (
 
 const (
 	// Version of this Go port
-	Version = "1.9.4-1"
+	Version = "1.9.4-2"
 
 	// UpstreamVersion is the version of the original Apprise project this port is based on
 	UpstreamVersion = "1.9.4"
 
 	// PortVersion is the Go port revision number for this upstream version
-	PortVersion = "1"
+	PortVersion = "2"
 )
 
 // VersionInfo contains detailed version information

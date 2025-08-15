@@ -7,6 +7,66 @@ and this project follows upstream version tracking with Go-specific port revisio
 
 **Versioning Strategy**: `{upstream-version}-{port-revision}` (e.g., `1.9.4-1`)
 
+## [1.9.4-2] - 2025-01-15
+
+### Added - Phase 1 Service Expansion Complete 🎉
+- **Enterprise Incident Management Services**:
+  - **PagerDuty**: Complete Events API v2 implementation with US/EU region support
+    - Integration key authentication with automatic region endpoint selection
+    - Custom alert metadata: source, component, group, class parameters
+    - Severity mapping from notification types to PagerDuty priority levels
+    - Alert deduplication and custom details support
+  - **Opsgenie**: Atlassian incident management and alerting service
+    - Alerts API v2 with US/EU regional endpoint support
+    - Multiple responder types: teams and users with automatic email detection
+    - Priority levels P1-P5 with automatic mapping from notification types
+    - Rich alert metadata: entity, source, tags, alias, notes
+    - GenieKey authentication with proper API headers
+
+- **Team Collaboration Services**:
+  - **Matrix**: Decentralized messaging with Client-Server API v3
+    - Multiple authentication methods: access tokens and username/password
+    - Multi-room support with automatic room normalization
+    - Room formats: IDs (!room:server), aliases (#room:server), simple names
+    - HTML message formatting with security escaping
+    - Fragment URL parsing for room aliases (#room:server)
+    - Automatic login and session management
+  - **Mattermost**: Open-source team collaboration with API v4
+    - Personal access token and username/password authentication
+    - Multi-channel messaging in single URL
+    - Channel name normalization with # and @ prefix handling
+    - Bot appearance customization (name, icon URL, emoji)
+    - Automatic channel ID resolution via Mattermost API
+    - Session management and fragment URL parsing
+
+- **Developer/Self-Hosted Services**:
+  - **Ntfy**: Simple HTTP push notifications with priority levels
+    - Public ntfy.sh and self-hosted instance support
+    - Priority levels (1-5) with automatic mapping from notification types
+    - Advanced features: tags, delayed delivery, email forwarding
+    - Interactive features: action buttons, click URLs, attachment URLs
+    - Emoji tag support with automatic fallbacks
+    - Token and username/password authentication
+
+### Enhanced
+- **Service Registry**: Added 5 new service registrations with proper URL schemes
+- **Documentation**: Comprehensive updates to README.md and USAGE.md
+  - Complete service documentation with URL formats and examples
+  - Service comparison table updates
+  - Attachment support matrix updates
+- **Test Coverage**: Added 50+ test functions with 200+ test cases across new services
+- **Version System**: Updated to version 1.9.4-2 reflecting port revision increment
+
+### Technical Details
+- **Code Additions**: 2,500+ lines of production code across 5 new services
+- **Service Count**: Increased from 13 to 18 services (+38% expansion)
+- **Enterprise Focus**: Targeted DevOps market with incident management and team collaboration
+- **Quality Assurance**: Comprehensive error handling, URL validation, and network resilience
+- **Performance**: Maintained existing performance characteristics with concurrent processing
+
+### Breaking Changes
+None - All changes are additive and backward compatible.
+
 ## [1.9.4-1] - 2025-01-09
 
 ### Added
