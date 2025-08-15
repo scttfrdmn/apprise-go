@@ -174,8 +174,8 @@ func TestEmailService_TestURL(t *testing.T) {
 func TestEmailService_Properties(t *testing.T) {
 	service := NewEmailService()
 
-	if service.SupportsAttachments() {
-		t.Error("Email service should not support attachments yet")
+	if !service.SupportsAttachments() {
+		t.Error("Email service should support attachments via MIME multipart")
 	}
 
 	if service.GetMaxBodyLength() != 0 {

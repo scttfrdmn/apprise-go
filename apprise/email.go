@@ -2,6 +2,7 @@ package apprise
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/tls"
 	"fmt"
 	"net"
@@ -281,7 +282,7 @@ func (e *EmailService) connectSMTP(ctx context.Context) (*smtp.Client, error) {
 	return client, nil
 }
 
-// createMessage creates the email message with headers and body
+// createMessage creates the email message with headers, body, and attachments
 func (e *EmailService) createMessage(req NotificationRequest) (string, error) {
 	var message strings.Builder
 
@@ -312,23 +313,59 @@ func (e *EmailService) createMessage(req NotificationRequest) (string, error) {
 
 	// Additional headers
 	message.WriteString("MIME-Version: 1.0\r\n")
-
-	// Determine content type based on body format
-	contentType := "text/plain; charset=UTF-8"
-	if req.BodyFormat == "html" {
-		contentType = "text/html; charset=UTF-8"
-	}
-	message.WriteString(fmt.Sprintf("Content-Type: %s\r\n", contentType))
-
 	message.WriteString(fmt.Sprintf("Date: %s\r\n", time.Now().Format(time.RFC1123Z)))
-	message.WriteString("X-Mailer: GetUserAgent()\r\n")
+	message.WriteString(fmt.Sprintf("X-Mailer: %s\r\n", GetUserAgent()))
 
-	// Empty line separating headers from body
-	message.WriteString("\r\n")
+	// Check if we have attachments
+	hasAttachments := req.AttachmentMgr != nil && req.AttachmentMgr.Count() > 0
 
-	// Format message body
-	body := e.formatMessageBody(req.Title, req.Body, req.NotifyType, req.BodyFormat)
-	message.WriteString(body)
+	if hasAttachments {
+		// Generate boundary for multipart message
+		boundary, err := e.generateBoundary()
+		if err != nil {
+			return "", fmt.Errorf("failed to generate MIME boundary: %w", err)
+		}
+
+		// Multipart message with attachments
+		message.WriteString(fmt.Sprintf("Content-Type: multipart/mixed; boundary=\"%s\"\r\n", boundary))
+		message.WriteString("\r\n")
+		message.WriteString("This is a multi-part message in MIME format.\r\n")
+
+		// Add text/HTML part
+		message.WriteString(fmt.Sprintf("\r\n--%s\r\n", boundary))
+		if req.BodyFormat == "html" {
+			message.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
+		} else {
+			message.WriteString("Content-Type: text/plain; charset=UTF-8\r\n")
+		}
+		message.WriteString("Content-Transfer-Encoding: 8bit\r\n")
+		message.WriteString("\r\n")
+
+		// Add formatted body
+		body := e.formatMessageBody(req.Title, req.Body, req.NotifyType, req.BodyFormat)
+		message.WriteString(body)
+
+		// Add attachment parts
+		if err := e.addAttachments(&message, boundary, req.AttachmentMgr); err != nil {
+			return "", fmt.Errorf("failed to add attachments: %w", err)
+		}
+
+		// Close multipart message
+		message.WriteString(fmt.Sprintf("\r\n--%s--\r\n", boundary))
+	} else {
+		// Simple message without attachments
+		if req.BodyFormat == "html" {
+			message.WriteString("Content-Type: text/html; charset=UTF-8\r\n")
+		} else {
+			message.WriteString("Content-Type: text/plain; charset=UTF-8\r\n")
+		}
+		message.WriteString("Content-Transfer-Encoding: 8bit\r\n")
+		message.WriteString("\r\n")
+
+		// Add formatted body
+		body := e.formatMessageBody(req.Title, req.Body, req.NotifyType, req.BodyFormat)
+		message.WriteString(body)
+	}
 
 	return message.String(), nil
 }
@@ -403,14 +440,100 @@ func (e *EmailService) TestURL(serviceURL string) error {
 	return e.ParseURL(parsedURL)
 }
 
-// SupportsAttachments returns false for basic SMTP (can be extended later)
+// SupportsAttachments returns true - SMTP supports attachments via MIME multipart
 func (e *EmailService) SupportsAttachments() bool {
-	return false // Basic implementation, can be extended with MIME multipart
+	return true // Full MIME multipart support with attachments
 }
 
 // GetMaxBodyLength returns email body length limit (effectively unlimited for most servers)
 func (e *EmailService) GetMaxBodyLength() int {
 	return 0 // No practical limit for email body
+}
+
+// generateBoundary generates a random MIME boundary string
+func (e *EmailService) generateBoundary() (string, error) {
+	boundary := make([]byte, 16)
+	_, err := rand.Read(boundary)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("----=_Part_%x", boundary), nil
+}
+
+// addAttachments adds all attachments to the MIME message
+func (e *EmailService) addAttachments(message *strings.Builder, boundary string, attachmentMgr *AttachmentManager) error {
+	if attachmentMgr == nil {
+		return nil
+	}
+
+	attachments := attachmentMgr.GetAll()
+	for _, attachment := range attachments {
+		if !attachment.Exists() {
+			continue // Skip non-existent attachments
+		}
+
+		if err := e.addSingleAttachment(message, boundary, attachment); err != nil {
+			return fmt.Errorf("failed to add attachment %s: %w", attachment.GetName(), err)
+		}
+	}
+
+	return nil
+}
+
+// addSingleAttachment adds a single attachment to the MIME message
+func (e *EmailService) addSingleAttachment(message *strings.Builder, boundary string, attachment AttachmentInterface) error {
+	// Get attachment content as base64
+	base64Content, err := attachment.Base64()
+	if err != nil {
+		return fmt.Errorf("failed to encode attachment: %w", err)
+	}
+
+	// Get MIME type
+	mimeType := attachment.GetMimeType()
+	if mimeType == "" {
+		mimeType = "application/octet-stream"
+	}
+
+	// Get filename
+	filename := attachment.GetName()
+	if filename == "" {
+		filename = "attachment"
+	}
+
+	// Determine if this is an inline attachment (image)
+	isInline := strings.HasPrefix(mimeType, "image/")
+	
+	// Write attachment headers
+	message.WriteString(fmt.Sprintf("\r\n--%s\r\n", boundary))
+	message.WriteString(fmt.Sprintf("Content-Type: %s; name=\"%s\"\r\n", mimeType, filename))
+	message.WriteString("Content-Transfer-Encoding: base64\r\n")
+	
+	if isInline {
+		message.WriteString(fmt.Sprintf("Content-Disposition: inline; filename=\"%s\"\r\n", filename))
+		message.WriteString(fmt.Sprintf("Content-ID: <%s>\r\n", filename))
+	} else {
+		message.WriteString(fmt.Sprintf("Content-Disposition: attachment; filename=\"%s\"\r\n", filename))
+	}
+	
+	message.WriteString("\r\n")
+
+	// Write base64 content in 76-character lines (RFC 2045)
+	e.writeBase64Lines(message, base64Content)
+
+	return nil
+}
+
+// writeBase64Lines writes base64 content with proper line breaks
+func (e *EmailService) writeBase64Lines(message *strings.Builder, base64Content string) {
+	const lineLength = 76
+	for i := 0; i < len(base64Content); i += lineLength {
+		end := i + lineLength
+		if end > len(base64Content) {
+			end = len(base64Content)
+		}
+		message.WriteString(base64Content[i:end])
+		message.WriteString("\r\n")
+	}
 }
 
 // Example usage and URL formats:
