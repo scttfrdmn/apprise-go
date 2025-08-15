@@ -1,0 +1,17 @@
+name: Update Go Report Card
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+
+jobs:
+  go-report-card:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Update Go Report Card
+      uses: creekorful/goreportcard-action@v1.0
