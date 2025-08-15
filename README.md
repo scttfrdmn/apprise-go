@@ -81,6 +81,7 @@ func main() {
 - **Webhook/JSON** - Generic HTTP webhooks with custom templates
 - **Microsoft Teams** - Enterprise messaging with adaptive cards
 - **PagerDuty** - Incident management with Events API v2 (US/EU regions)
+- **Opsgenie** - Atlassian's incident management and alerting (US/EU regions)
 - **Matrix** - Decentralized messaging with Client-Server API v3
 - **Pushover** - Mobile push notifications with priority levels
 - **Pushbullet** - Cross-platform push notifications
@@ -147,7 +148,7 @@ This Go port follows a structured versioning approach that tracks the upstream P
 | **Attachments** | Basic file support | Advanced multi-source framework |
 | **CLI Tool** | `apprise` command | `apprise-cli` binary |
 | **Configuration** | YAML/Text files | YAML/Text files ✅ |
-| **Services** | 90+ services | 16 core services (expanding) |
+| **Services** | 90+ services | 17 core services (expanding) |
 | **Type Safety** | Runtime validation | Compile-time validation |
 
 **Go Port Advantages:**

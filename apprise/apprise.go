@@ -328,6 +328,7 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	
 	// Incident management
 	registry.Register("pagerduty", func() Service { return NewPagerDutyService() })
+	registry.Register("opsgenie", func() Service { return NewOpsgenieService() })
 	
 	// Decentralized messaging
 	registry.Register("matrix", func() Service { return NewMatrixService() })

@@ -213,6 +213,72 @@ pagerduty://integration_key?region=eu&source=server-01&component=database&group=
 app.Add("pagerduty://r1234567890abcdef1234567890abcdef@eu?source=db-cluster&component=primary")
 ```
 
+### Opsgenie
+
+Atlassian's incident management and alerting service with comprehensive responder and priority management.
+
+**URL Formats:**
+```
+# Basic API key (defaults to US region)
+opsgenie://api_key
+
+# Specify region explicitly
+opsgenie://api_key@us
+opsgenie://api_key@eu
+
+# With team and user responders
+opsgenie://api_key@us/backend-team/user@example.com
+
+# With priority and tags
+opsgenie://api_key@us?priority=P1&tags=critical,production
+
+# Full configuration
+opsgenie://api_key@eu/oncall-team?priority=P2&teams=devops,backend&entity=web-server&source=monitoring&alias=db-alert
+```
+
+**Query Parameters:**
+- `region=us|eu` - Opsgenie region (default: us)
+- `priority=P1-P5` - Alert priority (P1=Critical, P5=Informational)
+- `tags=tag1,tag2` - Comma-separated tags for alert categorization
+- `teams=team1,team2` - Additional team responders (comma-separated)
+- `alias=string` - Alert alias for deduplication
+- `entity=string` - Entity name (server, application, etc.)
+- `source=string` - Alert source identifier (default: apprise-go)
+- `user=string` - User who created the alert
+- `note=string` - Additional note for the alert
+
+**Features:**
+- Opsgenie Alerts API v2 compliance
+- US and EU region support with appropriate API endpoints
+- Multiple responder types: teams (path/query), users (email detection)
+- Priority levels P1-P5 with automatic mapping from notification types
+- Alert deduplication via alias parameter
+- Rich alert metadata: entity, source, tags, notes
+- Team and user responder assignment
+- Integration with Opsgenie's incident response workflows
+- Alert details with notification context
+
+**Responder Detection:**
+- **Teams**: Simple names in path or teams query parameter → `{"type": "team", "name": "backend"}`
+- **Users**: Email addresses in path → `{"type": "user", "name": "user@example.com"}`
+- **Mixed**: Can combine teams and users in single URL
+
+**Priority Mapping:**
+- `NotifyTypeError` → P1 (Critical)
+- `NotifyTypeWarning` → P2 (High)  
+- `NotifyTypeInfo` → P3 (Moderate)
+- `NotifyTypeSuccess` → P4 (Low)
+
+**Regional Endpoints:**
+- **US Region**: `https://api.opsgenie.com/v2/alerts`
+- **EU Region**: `https://api.eu.opsgenie.com/v2/alerts`
+
+**Example:**
+```go
+// Send P1 alert to EU region with team responders and custom metadata
+app.Add("opsgenie://abc123@eu/backend-team/devops?priority=P1&tags=production,database&entity=mysql-cluster&alias=db-performance")
+```
+
 ### Matrix
 
 Decentralized messaging with Client-Server API v3 support for both access token and username/password authentication.
@@ -708,6 +774,7 @@ app.ClearAttachments()
 | Telegram | ✅ Full | Photos, documents, audio, video |
 | Email (SMTP) | 🚧 Planned | MIME multipart support |
 | Matrix | ✅ Full | Media uploads via Matrix API |
+| Opsgenie | ❌ Not supported | Alert API doesn't support attachments |
 | Pushbullet | ✅ Full | File uploads via API |
 | Microsoft Teams | 🚧 Planned | Adaptive cards with attachments |
 | Pushover | ✅ Images | Image attachments only |
