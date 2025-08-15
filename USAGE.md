@@ -213,6 +213,70 @@ pagerduty://integration_key?region=eu&source=server-01&component=database&group=
 app.Add("pagerduty://r1234567890abcdef1234567890abcdef@eu?source=db-cluster&component=primary")
 ```
 
+### Matrix
+
+Decentralized messaging with Client-Server API v3 support for both access token and username/password authentication.
+
+**URL Formats:**
+```
+# Access token authentication (recommended)
+matrix://access_token@matrix.org/!room_id:matrix.org
+matrix://access_token@matrix.org/#room_alias:matrix.org
+
+# Username/password authentication
+matrix://username:password@matrix.example.com/general
+matrix://username:password@homeserver.com/room1/room2
+
+# Token in query parameter
+matrix://username@matrix.org/general?token=access_token
+
+# Multiple rooms and options
+matrix://token@matrix.org/room1/room2/#room3:matrix.org?msgtype=notice&format=html
+```
+
+**Query Parameters:**
+- `msgtype=text|notice` - Message type (default: text)
+- `format=html` - Enable HTML formatting in messages
+- `token=string` - Access token (alternative to URL auth)
+
+**Features:**
+- Matrix Client-Server API v3 compliance
+- Support for both access token and username/password authentication
+- Multiple room targeting in a single URL
+- Room ID (!room:server) and alias (#room:server) formats
+- Automatic room normalization (simple names become aliases)
+- HTML message formatting with proper escaping
+- Message and notice types (m.text, m.notice)
+- Automatic login and session management
+- Support for both public and private homeservers
+
+**Authentication Methods:**
+1. **Access Token** (recommended for production)
+   ```go
+   app.Add("matrix://syt_dXNlcm5hbWU_abcdef123456789@matrix.org/!room:matrix.org")
+   ```
+
+2. **Username/Password** (for development/testing)
+   ```go
+   app.Add("matrix://myuser:mypass@matrix.example.com/general")
+   ```
+
+3. **Mixed Authentication** (username with token in query)
+   ```go
+   app.Add("matrix://myuser@matrix.org/room?token=access_token")
+   ```
+
+**Room Formats:**
+- **Room ID**: `!AbCdEf123456789:matrix.org` (specific room identifier)
+- **Room Alias**: `#general:matrix.org` (human-readable room alias)
+- **Simple Name**: `general` (auto-converts to `#general:homeserver`)
+
+**Example:**
+```go
+// Send critical alert to Matrix operations room with HTML formatting
+app.Add("matrix://access_token@company.matrix.org/#ops:company.matrix.org?msgtype=notice&format=html")
+```
+
 ### Pushover
 
 Mobile push notifications with priority levels and custom sounds.
@@ -578,6 +642,7 @@ app.ClearAttachments()
 | Slack | ✅ Full | All file types, size limits apply |
 | Telegram | ✅ Full | Photos, documents, audio, video |
 | Email (SMTP) | 🚧 Planned | MIME multipart support |
+| Matrix | ✅ Full | Media uploads via Matrix API |
 | Pushbullet | ✅ Full | File uploads via API |
 | Microsoft Teams | 🚧 Planned | Adaptive cards with attachments |
 | Pushover | ✅ Images | Image attachments only |

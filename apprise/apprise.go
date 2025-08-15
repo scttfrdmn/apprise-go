@@ -328,6 +328,9 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	
 	// Incident management
 	registry.Register("pagerduty", func() Service { return NewPagerDutyService() })
+	
+	// Decentralized messaging
+	registry.Register("matrix", func() Service { return NewMatrixService() })
 
 	// SMS services
 	registry.Register("twilio", func() Service { return NewTwilioService() })
