@@ -23,7 +23,7 @@ type DiscordService struct {
 // NewDiscordService creates a new Discord service instance
 func NewDiscordService() Service {
 	return &DiscordService{
-		client: &http.Client{},
+		client: GetWebhookHTTPClient("discord"),
 	}
 }
 

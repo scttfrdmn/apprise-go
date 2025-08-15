@@ -32,7 +32,7 @@ type AWSSESService struct {
 // NewAWSSESService creates a new AWS SES service instance
 func NewAWSSESService() Service {
 	return &AWSSESService{
-		client:       &http.Client{},
+		client:       GetCloudHTTPClient("aws-ses"),
 		region:       "us-east-1",
 		templateData: make(map[string]interface{}),
 	}

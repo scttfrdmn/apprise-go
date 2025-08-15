@@ -34,7 +34,7 @@ type SlackService struct {
 // NewSlackService creates a new Slack service instance
 func NewSlackService() Service {
 	return &SlackService{
-		client: &http.Client{},
+		client: GetWebhookHTTPClient("slack"),
 	}
 }
 

@@ -34,7 +34,7 @@ func NewWebhookService() Service {
 		method:      "POST",
 		contentType: "application/json",
 		headers:     make(map[string]string),
-		client:      &http.Client{},
+		client:      GetWebhookHTTPClient("webhook"),
 		timeout:     30 * time.Second,
 	}
 }
@@ -45,7 +45,7 @@ func NewJSONService() Service {
 		method:      "POST",
 		contentType: "application/json",
 		headers:     make(map[string]string),
-		client:      &http.Client{},
+		client:      GetWebhookHTTPClient("json"),
 		timeout:     30 * time.Second,
 	}
 	return &JSONService{WebhookService: webhook}

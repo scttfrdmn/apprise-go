@@ -27,7 +27,7 @@ type MSTeamsService struct {
 // NewMSTeamsService creates a new Microsoft Teams service instance
 func NewMSTeamsService() Service {
 	return &MSTeamsService{
-		client:       &http.Client{},
+		client:       GetWebhookHTTPClient("msteams"),
 		includeImage: true,
 		version:      2, // Default to modern version
 	}

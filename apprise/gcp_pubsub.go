@@ -27,7 +27,7 @@ type GCPPubSubService struct {
 // NewGCPPubSubService creates a new Google Cloud Pub/Sub service instance
 func NewGCPPubSubService() Service {
 	return &GCPPubSubService{
-		client:     &http.Client{},
+		client:     GetCloudHTTPClient("gcp-pubsub"),
 		attributes: make(map[string]string),
 	}
 }

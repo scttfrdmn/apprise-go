@@ -31,7 +31,7 @@ type AzureServiceBusService struct {
 // NewAzureServiceBusService creates a new Azure Service Bus service instance
 func NewAzureServiceBusService() Service {
 	return &AzureServiceBusService{
-		client:            &http.Client{},
+		client:            GetCloudHTTPClient("azure-servicebus"),
 		messageProperties: make(map[string]interface{}),
 		timeToLive:        3600, // Default 1 hour TTL
 	}

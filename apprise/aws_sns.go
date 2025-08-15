@@ -27,7 +27,7 @@ type AWSSNSService struct {
 // NewAWSSNSService creates a new AWS SNS service instance
 func NewAWSSNSService() Service {
 	return &AWSSNSService{
-		client:        &http.Client{},
+		client:        GetCloudHTTPClient("aws-sns"),
 		region:        "us-east-1",
 		messageFormat: "text",
 		attributes:    make(map[string]string),
