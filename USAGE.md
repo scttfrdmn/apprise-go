@@ -553,6 +553,248 @@ gotify://192.168.1.100:8080/ABCDefGHijkL?priority=5
 - JSON-based API integration
 - Supports rich notification metadata via "extras"
 
+### AWS SNS
+
+Amazon Simple Notification Service for enterprise cloud messaging with webhook proxy support.
+
+**URL Formats:**
+```
+# Via API Gateway webhook endpoint
+sns://api.gateway.url/sns-proxy?topic_arn=arn:aws:sns:us-east-1:123456789:my-topic
+
+# Via API Gateway with API key authentication
+sns://api-key@api.gateway.url/webhook?topic_arn=arn:aws:sns:eu-west-1:987654321:alerts
+
+# Using topic components instead of full ARN
+sns://webhook.example.com/sns?topic=notifications&region=us-west-2&account=123456789
+
+# With custom message attributes and formatting
+sns://webhook.url/proxy?topic=alerts&format=json&attr_Environment=production&attr_Service=web-api
+```
+
+**Query Parameters:**
+- `topic_arn=arn:...` - Full SNS topic ARN (recommended)
+- `topic=name` - Topic name (requires `account` parameter)
+- `region=us-east-1` - AWS region (default: us-east-1)
+- `account=123456789` - AWS account ID (when using topic name)
+- `subject=string` - Custom subject line for notifications
+- `format=text|json` - Message format (default: text)
+- `attr_Key=value` - Custom message attributes (prefix with attr_)
+- `test_mode=true` - Use HTTP instead of HTTPS (for testing only)
+
+**Features:**
+- Enterprise-grade cloud messaging via Amazon SNS
+- Webhook proxy integration for secure API access
+- JSON and text message formatting options
+- Custom message attributes and metadata
+- Subject line customization
+- Message size up to 256KB
+- Emoji indicators based on notification type
+- API key authentication support
+- Regional endpoint support
+
+**Authentication Methods:**
+1. **API Gateway with API Key** (recommended for production)
+   ```go
+   app.Add("sns://your-api-key@api.gateway.amazonaws.com/prod/sns?topic_arn=arn:aws:sns:us-east-1:123456789:alerts")
+   ```
+
+2. **Custom Webhook Proxy**
+   ```go
+   app.Add("sns://webhook.yourcompany.com/sns-proxy?topic=notifications&region=us-east-1&account=123456789")
+   ```
+
+3. **Direct Integration** (requires AWS SDK setup)
+   ```go
+   app.Add("sns://your-webhook.com/direct-sns?topic_arn=arn:aws:sns:us-east-1:123456789:topic&format=json")
+   ```
+
+**Message Formats:**
+- **Text Format** (default): `🔔 Alert Title\n\nAlert details here`
+- **JSON Format**: `{"title":"Alert Title","body":"Alert details","type":"warning","emoji":"⚠️","timestamp":"2024-01-15T10:30:00Z"}`
+
+**Message Attributes:**
+All notifications include these attributes:
+- `NotificationType`: error, warning, info, success
+- `Source`: apprise-go
+- Custom attributes via `attr_` query parameters
+
+**Integration Notes:**
+This service sends webhook requests to your configured endpoint, which should then forward the message to AWS SNS. This approach provides:
+- Secure credential management (keys stay on your server)
+- Custom authentication and authorization
+- Message transformation and routing
+- Integration with existing AWS infrastructure
+
+**Example Webhook Payload:**
+```json
+{
+  "topicArn": "arn:aws:sns:us-east-1:123456789:alerts",
+  "message": "⚠️ Database Warning\n\nConnection pool at 80% capacity",
+  "subject": "Database Warning",
+  "region": "us-east-1",
+  "messageAttributes": {
+    "NotificationType": {"DataType": "String", "StringValue": "warning"},
+    "Source": {"DataType": "String", "StringValue": "apprise-go"},
+    "Environment": {"DataType": "String", "StringValue": "production"}
+  }
+}
+```
+
+**Example:**
+```go
+// Send critical alert to SNS via API Gateway with custom attributes
+app.Add("sns://api-key@gateway.us-east-1.amazonaws.com/prod/sns?topic_arn=arn:aws:sns:us-east-1:123456789:alerts&format=json&attr_Environment=prod&attr_Team=backend")
+```
+
+### AWS SES
+
+Amazon Simple Email Service for enterprise-grade email delivery with template support and rich formatting.
+
+**URL Formats:**
+```
+# Basic email via webhook proxy
+ses://api.gateway.url/ses-proxy?from=alerts@company.com&to=admin@company.com
+
+# Multiple recipients with CC/BCC
+ses://webhook.example.com/ses?from=noreply@company.com&to=team@company.com,alerts@company.com&cc=manager@company.com&bcc=audit@company.com
+
+# With API key authentication and custom options
+ses://api-key@api.gateway.amazonaws.com/prod/ses?from=Alerts%20Team%20<alerts@company.com>&to=oncall@company.com&subject=Custom%20Subject&region=eu-west-1
+
+# Using SES templates with dynamic data
+ses://webhook.url/ses?from=system@company.com&to=user@company.com&template=welcome-email&data_username=john&data_company=Acme%20Corp
+```
+
+**Query Parameters:**
+- `from=email` - Sender email address (required)
+- `name=Name` - Sender display name (optional)
+- `to=email1,email2` - Recipient email addresses (required, comma-separated)
+- `cc=email1,email2` - CC recipients (optional, comma-separated)
+- `bcc=email1,email2` - BCC recipients (optional, comma-separated)
+- `reply_to=email` - Reply-to email address (optional)
+- `subject=string` - Custom subject line (optional)
+- `region=us-east-1` - AWS region (default: us-east-1)
+- `template=name` - SES template name for templated emails (optional)
+- `data_key=value` - Template data parameters (prefix with data_)
+- `test_mode=true` - Use HTTP instead of HTTPS (for testing only)
+
+**Features:**
+- Enterprise email delivery via Amazon SES
+- HTML and plain text message formatting
+- Multiple recipients (TO, CC, BCC)
+- Attachment support up to 10MB
+- SES template integration with dynamic data
+- Custom sender names and reply-to addresses
+- Regional endpoint support
+- Rich HTML formatting with responsive design
+- Emoji indicators based on notification type
+- Professional email signatures
+
+**Authentication Methods:**
+1. **API Gateway with API Key** (recommended)
+   ```go
+   app.Add("ses://your-api-key@api.gateway.amazonaws.com/prod/ses?from=alerts@company.com&to=oncall@company.com")
+   ```
+
+2. **Custom Webhook Proxy**
+   ```go
+   app.Add("ses://webhook.yourcompany.com/ses-proxy?from=system@company.com&to=admin@company.com")
+   ```
+
+**Message Formatting:**
+- **HTML Version**: Professional email template with:
+  - Responsive design for mobile compatibility
+  - Color-coded headers based on notification type
+  - Proper HTML escaping for security
+  - Branded footer with timestamp
+- **Text Version**: Clean plain text format with:
+  - Emoji indicators for notification types
+  - Structured layout with clear sections
+  - Professional signature
+
+**Template Integration:**
+Use SES templates for consistent branding and dynamic content:
+```go
+app.Add("ses://webhook.url/ses?from=alerts@company.com&to=team@company.com&template=incident-alert&data_severity=critical&data_service=database&data_environment=production")
+```
+
+Template data automatically includes:
+- `title` - Notification title
+- `body` - Notification body  
+- `notifyType` - Notification type (info, warning, error, success)
+- `timestamp` - ISO 8601 timestamp
+- Custom data via `data_` query parameters
+
+**Attachment Support:**
+SES supports various attachment types:
+```go
+app := apprise.New()
+app.Add("ses://webhook.url/ses?from=reports@company.com&to=team@company.com")
+
+// Add file attachments
+app.AddAttachment("/path/to/report.pdf")
+app.AddAttachment("https://example.com/chart.png", "monthly_chart.png")
+
+// Add data attachments
+data := []byte("CSV,Data\nvalue1,value2")
+app.AddAttachmentData(data, "report.csv", "text/csv")
+
+app.Notify("Monthly Report", "Please find the monthly report attached", apprise.NotifyTypeInfo)
+```
+
+**Example Webhook Payload:**
+```json
+{
+  "region": "us-east-1",
+  "source": "Alerts Team <alerts@company.com>",
+  "destination": {
+    "toAddresses": ["oncall@company.com"],
+    "ccAddresses": ["manager@company.com"],
+    "bccAddresses": ["audit@company.com"]
+  },
+  "message": {
+    "subject": {
+      "data": "Database Alert",
+      "charset": "UTF-8"
+    },
+    "body": {
+      "html": {
+        "data": "<!DOCTYPE html><html>...<h2 style=\"color: #dc3545;\">❌ Database Connection Failed</h2>...",
+        "charset": "UTF-8"
+      },
+      "text": {
+        "data": "❌ Database Connection Failed\n\nUnable to connect to primary database server...",
+        "charset": "UTF-8"
+      }
+    }
+  },
+  "replyToAddresses": ["support@company.com"],
+  "attachments": [
+    {
+      "filename": "error_log.txt",
+      "contentType": "text/plain",
+      "data": "base64-encoded-content",
+      "size": 1024
+    }
+  ]
+}
+```
+
+**Integration Notes:**
+This service sends webhook requests to your configured endpoint, which should forward the email via AWS SES. This approach provides:
+- Secure credential management (AWS keys stay on your server)
+- Template customization and branding
+- Compliance and audit logging
+- Integration with existing SES configurations (reputation management, bounce handling)
+- Cost optimization through SES pricing
+
+**Example:**
+```go
+// Send critical alert with attachments via SES with custom template
+app.Add("ses://api-key@gateway.amazonaws.com/prod/ses?from=Critical%20Alerts%20<critical@company.com>&to=oncall@company.com,management@company.com&cc=security@company.com&template=security-incident&data_incident_id=INC-2024-001&data_severity=high")
+```
+
 ### Ntfy
 
 Simple HTTP push notifications with priority levels, perfect for self-hosted setups and lightweight notifications.

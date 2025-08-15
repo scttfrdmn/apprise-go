@@ -344,6 +344,13 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("ntfy", func() Service { return NewNtfyService() })
 	registry.Register("ntfys", func() Service { return NewNtfyService() })
 
+	// Cloud services
+	registry.Register("sns", func() Service { return NewAWSSNSService() })
+	registry.Register("ses", func() Service { return NewAWSSESService() })
+	registry.Register("azuresb", func() Service { return NewAzureServiceBusService() })
+	
+	// Note: Cloud services use webhook proxy patterns for secure credential management
+
 	// Desktop notification services
 	registry.Register("desktop", func() Service { return NewDesktopService() })
 	registry.Register("macosx", func() Service { return NewDesktopService() })
