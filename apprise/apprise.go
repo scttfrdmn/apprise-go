@@ -348,6 +348,7 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("sns", func() Service { return NewAWSSNSService() })
 	registry.Register("ses", func() Service { return NewAWSSESService() })
 	registry.Register("azuresb", func() Service { return NewAzureServiceBusService() })
+	registry.Register("pubsub", func() Service { return NewGCPPubSubService() })
 	
 	// Note: Cloud services use webhook proxy patterns for secure credential management
 

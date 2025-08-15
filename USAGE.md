@@ -795,6 +795,168 @@ This service sends webhook requests to your configured endpoint, which should fo
 app.Add("ses://api-key@gateway.amazonaws.com/prod/ses?from=Critical%20Alerts%20<critical@company.com>&to=oncall@company.com,management@company.com&cc=security@company.com&template=security-incident&data_incident_id=INC-2024-001&data_severity=high")
 ```
 
+### Google Cloud Pub/Sub
+
+Google Cloud Pub/Sub for scalable real-time messaging with advanced filtering and ordering capabilities.
+
+**URL Formats:**
+```
+# Basic Pub/Sub via webhook proxy
+pubsub://webhook.example.com/pubsub-proxy?project_id=my-project&topic=notifications
+
+# With service account and ordering
+pubsub://webhook.example.com/gcp?project_id=company-project&topic=alerts&service_account=sa@project.iam.gserviceaccount.com&ordering_key=region-us
+
+# With API key authentication and custom attributes
+pubsub://api-key@api.gateway.googleapis.com/v1/pubsub?project_id=prod-project&topic=events&attr_environment=production&attr_service=api&attr_team=backend
+
+# Full configuration with metadata
+pubsub://webhook.url/proxy?project_id=my-project&topic=logs&ordering_key=severity&attr_datacenter=us-east1&attr_version=v1.2.3
+```
+
+**Query Parameters:**
+- `project_id=string` - Google Cloud Project ID (required)
+- `topic=string` - Pub/Sub topic name (required)
+- `service_account=email` - Service account for authentication (optional)
+- `ordering_key=string` - Key for ordered message delivery (optional)
+- `attr_key=value` - Custom message attributes for filtering (prefix with attr_)
+- `test_mode=true` - Use HTTP instead of HTTPS (for testing only)
+
+**Features:**
+- Google Cloud Pub/Sub integration with structured JSON messaging
+- Custom message attributes for subscriber filtering and routing
+- Ordered message delivery with configurable ordering keys
+- Service account authentication support
+- Project-based topic organization
+- Rich message metadata with timestamp and version tracking
+- Severity-based priority mapping
+- Comprehensive attribute-based filtering capabilities
+
+**Authentication Methods:**
+1. **Service Account** (recommended for production)
+   ```go
+   app.Add("pubsub://webhook.url/pubsub?project_id=my-project&topic=alerts&service_account=alerts@my-project.iam.gserviceaccount.com")
+   ```
+
+2. **API Key Authentication**
+   ```go
+   app.Add("pubsub://api-key@webhook.company.com/gcp-proxy?project_id=company-project&topic=notifications")
+   ```
+
+3. **Managed Identity** (via webhook proxy)
+   ```go
+   app.Add("pubsub://webhook.googleapis.com/pubsub-proxy?project_id=my-project&topic=events")
+   ```
+
+**Message Structure:**
+All messages are published as structured JSON with:
+```json
+{
+  "title": "Alert Title",
+  "body": "Alert description and details",
+  "type": "warning",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "source": "apprise-go",
+  "version": "1.9.4-2",
+  "severity": "WARNING",
+  "category": "notification",
+  "emoji": "⚠️",
+  "color": "#ffc107",
+  "priority": "medium",
+  "environment": {
+    "project": "my-project",
+    "topic": "alerts",
+    "orderingKey": "region-us"
+  }
+}
+```
+
+**Message Attributes:**
+Comprehensive attributes for subscriber filtering:
+- `notificationType`: error, warning, info, success
+- `severity`: ERROR, WARNING, INFO
+- `priority`: HIGH, MEDIUM, LOW, NORMAL
+- `alertLevel`: CRITICAL, WARNING, INFO
+- `source`: apprise-go
+- `version`: Current Apprise-Go version
+- `timestamp`: ISO 8601 timestamp
+- `topic`: Topic name for routing
+- `project`: Project ID for multi-project setups
+- `orderingKey`: Ordering key (if specified)
+- Custom attributes via `attr_` query parameters
+
+**Ordered Delivery:**
+Enable ordered message processing with ordering keys:
+```go
+// Messages with same ordering key are delivered in order
+app.Add("pubsub://webhook.url/pubsub?project_id=my-project&topic=user-events&ordering_key=user-123")
+```
+
+**Subscriber Filtering Examples:**
+```go
+// Subscribers can filter messages by attributes
+// Error messages only: attributes.severity = "ERROR"
+// High priority only: attributes.priority = "HIGH"
+// Specific environment: attributes.environment = "production"
+// Custom service: attributes.service = "web-api"
+```
+
+**Example Webhook Payload:**
+```json
+{
+  "projectId": "my-project",
+  "topicName": "alerts",
+  "orderingKey": "region-us",
+  "serviceAccount": "alerts@my-project.iam.gserviceaccount.com",
+  "message": {
+    "data": "{\"title\":\"Database Alert\",\"body\":\"Connection timeout\",\"type\":\"error\",\"severity\":\"ERROR\",\"emoji\":\"❌\"}",
+    "messageId": "apprise-1642248600-error",
+    "publishTime": "2024-01-15T10:30:00Z"
+  },
+  "attributes": {
+    "notificationType": "error",
+    "severity": "ERROR",
+    "priority": "HIGH",
+    "alertLevel": "CRITICAL",
+    "source": "apprise-go",
+    "version": "1.9.4-2",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "topic": "alerts",
+    "project": "my-project",
+    "environment": "production",
+    "service": "database"
+  }
+}
+```
+
+**Integration Notes:**
+This service sends webhook requests to your configured endpoint, which should publish messages to Google Cloud Pub/Sub. This approach provides:
+- Secure credential management (service account keys stay on your server)
+- Custom message transformation and enrichment
+- Integration with existing GCP infrastructure
+- Advanced Pub/Sub features like dead letter queues and retry policies
+- Cost optimization through efficient message batching
+
+**Subscriber Integration:**
+Create Pub/Sub subscriptions to process notifications:
+```bash
+# Create subscription for error messages only
+gcloud pubsub subscriptions create error-alerts \
+  --topic=alerts \
+  --filter='attributes.severity="ERROR"'
+
+# Create subscription for specific service
+gcloud pubsub subscriptions create api-events \
+  --topic=events \
+  --filter='attributes.service="api"'
+```
+
+**Example:**
+```go
+// Send critical system alert with custom routing attributes
+app.Add("pubsub://api-key@gateway.googleapis.com/v1/pubsub?project_id=prod-system&topic=critical-alerts&ordering_key=system-health&attr_environment=production&attr_datacenter=us-central1&attr_service=core-api&attr_team=platform")
+```
+
 ### Ntfy
 
 Simple HTTP push notifications with priority levels, perfect for self-hosted setups and lightweight notifications.
