@@ -153,8 +153,8 @@ func TestMSTeamsService_TestURL(t *testing.T) {
 func TestMSTeamsService_Properties(t *testing.T) {
 	service := NewMSTeamsService()
 
-	if service.SupportsAttachments() {
-		t.Error("MSTeams service should not support attachments")
+	if !service.SupportsAttachments() {
+		t.Error("MSTeams service should support attachments via Adaptive Cards")
 	}
 
 	if service.GetMaxBodyLength() != 28000 {

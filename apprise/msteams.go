@@ -128,6 +128,7 @@ type MSTeamsPayload struct {
 	ThemeColor      string           `json:"themeColor"`
 	Sections        []MSTeamsSection `json:"sections"`
 	PotentialAction []MSTeamsAction  `json:"potentialAction,omitempty"`
+	Attachments     []MSTeamsAttachment `json:"attachments,omitempty"`
 }
 
 // MSTeamsSection represents a section in the Teams message
@@ -152,8 +153,49 @@ type MSTeamsActionTarget struct {
 	URI string `json:"uri"`
 }
 
+// MSTeamsAttachment represents a file attachment in Teams message
+type MSTeamsAttachment struct {
+	ContentType   string `json:"contentType"`
+	ContentURL    string `json:"contentUrl,omitempty"`
+	Name          string `json:"name"`
+	ThumbnailURL  string `json:"thumbnailUrl,omitempty"`
+	Content       interface{} `json:"content,omitempty"`
+}
+
+// MSTeamsAdaptiveCard represents an Adaptive Card for rich content
+type MSTeamsAdaptiveCard struct {
+	Type    string                `json:"$schema"`
+	Version string                `json:"version"`
+	Body    []MSTeamsCardElement  `json:"body"`
+}
+
+// MSTeamsCardElement represents an element in an Adaptive Card
+type MSTeamsCardElement struct {
+	Type     string `json:"type"`
+	Text     string `json:"text,omitempty"`
+	URL      string `json:"url,omitempty"`
+	AltText  string `json:"altText,omitempty"`
+	Size     string `json:"size,omitempty"`
+	Style    string `json:"style,omitempty"`
+	Weight   string `json:"weight,omitempty"`
+}
+
 // Send sends a notification to Microsoft Teams
 func (m *MSTeamsService) Send(ctx context.Context, req NotificationRequest) error {
+	// Check if we have attachments
+	hasAttachments := req.AttachmentMgr != nil && req.AttachmentMgr.Count() > 0
+	
+	if hasAttachments {
+		// Send with attachments using Adaptive Cards
+		return m.sendWithAttachments(ctx, req)
+	}
+	
+	// Send standard message without attachments
+	return m.sendStandardMessage(ctx, req)
+}
+
+// sendStandardMessage sends a regular Teams message without attachments
+func (m *MSTeamsService) sendStandardMessage(ctx context.Context, req NotificationRequest) error {
 	// Create the Teams message payload
 	payload := MSTeamsPayload{
 		Type:       "MessageCard",
@@ -163,6 +205,41 @@ func (m *MSTeamsService) Send(ctx context.Context, req NotificationRequest) erro
 		Sections:   []MSTeamsSection{m.createSection(req)},
 	}
 
+	return m.sendPayload(ctx, payload)
+}
+
+// sendWithAttachments sends a Teams message with file attachments using Adaptive Cards
+func (m *MSTeamsService) sendWithAttachments(ctx context.Context, req NotificationRequest) error {
+	// Create Adaptive Card with attachments
+	card := m.createAdaptiveCard(req)
+	
+	// Create attachment containing the Adaptive Card
+	attachment := MSTeamsAttachment{
+		ContentType: "application/vnd.microsoft.card.adaptive",
+		Content:     card,
+	}
+	
+	// Create payload with Adaptive Card attachment
+	payload := MSTeamsPayload{
+		Type:        "message",
+		Summary:     m.createSummary(req.Title, req.Body),
+		Attachments: []MSTeamsAttachment{attachment},
+	}
+	
+	// Add file attachments as additional attachments
+	if req.AttachmentMgr != nil {
+		fileAttachments, err := m.createFileAttachments(req.AttachmentMgr)
+		if err != nil {
+			return fmt.Errorf("failed to create file attachments: %w", err)
+		}
+		payload.Attachments = append(payload.Attachments, fileAttachments...)
+	}
+	
+	return m.sendPayload(ctx, payload)
+}
+
+// sendPayload sends the payload to Teams webhook
+func (m *MSTeamsService) sendPayload(ctx context.Context, payload MSTeamsPayload) error {
 	// Convert payload to JSON
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
@@ -279,14 +356,125 @@ func (m *MSTeamsService) TestURL(serviceURL string) error {
 	return m.ParseURL(parsedURL)
 }
 
-// SupportsAttachments returns false for Teams webhooks (basic implementation)
+// SupportsAttachments returns true for Teams webhooks with Adaptive Cards
 func (m *MSTeamsService) SupportsAttachments() bool {
-	return false // Can be extended with adaptive cards
+	return true // Supported via Adaptive Cards and file attachments
 }
 
 // GetMaxBodyLength returns Teams' message length limit
 func (m *MSTeamsService) GetMaxBodyLength() int {
 	return 28000 // Teams has a high character limit
+}
+
+// createAdaptiveCard creates an Adaptive Card for rich content with attachments
+func (m *MSTeamsService) createAdaptiveCard(req NotificationRequest) MSTeamsAdaptiveCard {
+	card := MSTeamsAdaptiveCard{
+		Type:    "http://adaptivecards.io/schemas/adaptive-card.json",
+		Version: "1.2",
+		Body:    []MSTeamsCardElement{},
+	}
+	
+	// Add title if present
+	if req.Title != "" {
+		titleElement := MSTeamsCardElement{
+			Type:   "TextBlock",
+			Text:   req.Title,
+			Weight: "Bolder",
+			Size:   "Medium",
+		}
+		card.Body = append(card.Body, titleElement)
+	}
+	
+	// Add body text
+	if req.Body != "" {
+		bodyElement := MSTeamsCardElement{
+			Type: "TextBlock",
+			Text: req.Body,
+		}
+		card.Body = append(card.Body, bodyElement)
+	}
+	
+	// Add notification type indicator
+	emoji := m.getEmojiForNotifyType(req.NotifyType)
+	typeElement := MSTeamsCardElement{
+		Type:   "TextBlock",
+		Text:   fmt.Sprintf("%s **%s**", emoji, req.NotifyType.String()),
+		Style:  "emphasis",
+		Weight: "Lighter",
+		Size:   "Small",
+	}
+	card.Body = append(card.Body, typeElement)
+	
+	return card
+}
+
+// createFileAttachments creates file attachments from the attachment manager
+func (m *MSTeamsService) createFileAttachments(attachmentMgr *AttachmentManager) ([]MSTeamsAttachment, error) {
+	var attachments []MSTeamsAttachment
+	
+	if attachmentMgr == nil {
+		return attachments, nil
+	}
+	
+	files := attachmentMgr.GetAll()
+	for _, file := range files {
+		if !file.Exists() {
+			continue // Skip non-existent files
+		}
+		
+		// Create Teams attachment
+		attachment := MSTeamsAttachment{
+			Name:        file.GetName(),
+			ContentType: file.GetMimeType(),
+		}
+		
+		// For images, add as inline content with data URL
+		if strings.HasPrefix(file.GetMimeType(), "image/") {
+			base64Content, err := file.Base64()
+			if err != nil {
+				return nil, fmt.Errorf("failed to encode image %s: %w", file.GetName(), err)
+			}
+			
+			// Create data URL for image
+			dataURL := fmt.Sprintf("data:%s;base64,%s", file.GetMimeType(), base64Content)
+			attachment.ContentURL = dataURL
+			
+			// Add image element to show inline
+			attachment.Content = map[string]interface{}{
+				"type": "Image",
+				"url":  dataURL,
+				"altText": file.GetName(),
+				"size": "Medium",
+			}
+		} else {
+			// For non-image files, create a text representation
+			attachment.Content = map[string]interface{}{
+				"type": "TextBlock",
+				"text": fmt.Sprintf("📎 **%s** (%s)", file.GetName(), file.GetMimeType()),
+				"weight": "Bolder",
+			}
+		}
+		
+		attachments = append(attachments, attachment)
+	}
+	
+	return attachments, nil
+}
+
+// getEmojiForNotifyType returns appropriate emoji for notification type
+func (m *MSTeamsService) getEmojiForNotifyType(notifyType NotifyType) string {
+	switch notifyType {
+	case NotifyTypeSuccess:
+		return "✅"
+	case NotifyTypeWarning:
+		return "⚠️"
+	case NotifyTypeError:
+		return "❌"
+	case NotifyTypeInfo:
+		return "ℹ️"
+	default:
+		return "📢"
+	}
 }
 
 // Example usage and URL formats:
