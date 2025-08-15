@@ -53,7 +53,7 @@ func main() {
 	}
 
 	attachments := createAttachments(opts.Attachments)
-	
+
 	printVerboseInfo(opts, app, body, attachments)
 
 	if opts.DryRun {
@@ -103,7 +103,7 @@ func setupConfigurations(app *apprise.Apprise, opts CLIOptions) error {
 	if len(opts.ConfigPaths) > 0 {
 		return loadConfigurations(app, opts.ConfigPaths, opts.Verbose)
 	}
-	
+
 	config := apprise.NewAppriseConfig(app)
 	if err := config.LoadDefaultConfigs(); err != nil {
 		if opts.Verbose > 0 {
@@ -149,7 +149,7 @@ func printVerboseInfo(opts CLIOptions, app *apprise.Apprise, body string, attach
 	if opts.Verbose == 0 {
 		return
 	}
-	
+
 	fmt.Printf("Sending notification to %d service(s)...\n", app.Count())
 	if opts.Title != "" {
 		fmt.Printf("Title: %s\n", opts.Title)

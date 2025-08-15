@@ -80,7 +80,7 @@ func (p *PushbulletService) parsePathTargets(serviceURL *url.URL) error {
 	if serviceURL.Path == "" {
 		return nil
 	}
-	
+
 	pathParts := strings.Split(strings.Trim(serviceURL.Path, "/"), "/")
 	for _, part := range pathParts {
 		if part != "" {
@@ -92,11 +92,11 @@ func (p *PushbulletService) parsePathTargets(serviceURL *url.URL) error {
 
 func (p *PushbulletService) parseQueryTargets(serviceURL *url.URL) error {
 	query := serviceURL.Query()
-	
+
 	p.parseCommaSeparatedTargets(query.Get("device"), "device")
 	p.parseCommaSeparatedTargets(query.Get("email"), "email")
 	p.parseCommaSeparatedTargets(query.Get("channel"), "channel")
-	
+
 	return nil
 }
 
@@ -104,14 +104,14 @@ func (p *PushbulletService) parseCommaSeparatedTargets(value, targetType string)
 	if value == "" {
 		return
 	}
-	
+
 	parts := strings.Split(value, ",")
 	for _, part := range parts {
 		part = strings.TrimSpace(part)
 		if part == "" {
 			continue
 		}
-		
+
 		switch targetType {
 		case "device":
 			p.devices = append(p.devices, part)
@@ -129,13 +129,13 @@ func (p *PushbulletService) parseFragmentTargets(serviceURL *url.URL) error {
 	if serviceURL.Fragment == "" {
 		return nil
 	}
-	
+
 	fragmentParts := strings.Split(serviceURL.Fragment, "/")
 	for i, part := range fragmentParts {
 		if part == "" {
 			continue
 		}
-		
+
 		if strings.Contains(part, "@") {
 			p.emails = append(p.emails, part)
 		} else if len(fragmentParts) == 1 {

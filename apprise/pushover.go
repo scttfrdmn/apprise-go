@@ -94,7 +94,7 @@ func (p *PushoverService) parseDevices(serviceURL *url.URL) error {
 	if serviceURL.Path == "" {
 		return nil
 	}
-	
+
 	pathParts := strings.Split(strings.Trim(serviceURL.Path, "/"), "/")
 	for _, part := range pathParts {
 		if part != "" {
@@ -106,12 +106,12 @@ func (p *PushoverService) parseDevices(serviceURL *url.URL) error {
 
 func (p *PushoverService) parseQueryParams(serviceURL *url.URL) error {
 	query := serviceURL.Query()
-	
+
 	p.parsePriority(query.Get("priority"))
 	p.parseSound(query.Get("sound"))
 	p.parseRetry(query.Get("retry"))
 	p.parseExpire(query.Get("expire"))
-	
+
 	return nil
 }
 

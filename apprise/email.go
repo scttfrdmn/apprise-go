@@ -140,7 +140,7 @@ func (e *EmailService) parseQueryParams(serviceURL *url.URL) error {
 	if fromName := query.Get("name"); fromName != "" {
 		e.fromName = fromName
 	}
-	
+
 	e.parseEmailList(query.Get("cc"), &e.ccEmails)
 	e.parseEmailList(query.Get("bcc"), &e.bccEmails)
 
