@@ -1,6 +1,7 @@
 package apprise
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
