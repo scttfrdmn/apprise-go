@@ -80,6 +80,7 @@ func main() {
 - **Email (SMTP)** - Full SMTP support with TLS/STARTTLS
 - **Webhook/JSON** - Generic HTTP webhooks with custom templates
 - **Microsoft Teams** - Enterprise messaging with adaptive cards
+- **PagerDuty** - Incident management with Events API v2 (US/EU regions)
 - **Pushover** - Mobile push notifications with priority levels
 - **Pushbullet** - Cross-platform push notifications
 - **Twilio SMS** - SMS/MMS messaging with rate limiting
@@ -145,7 +146,7 @@ This Go port follows a structured versioning approach that tracks the upstream P
 | **Attachments** | Basic file support | Advanced multi-source framework |
 | **CLI Tool** | `apprise` command | `apprise-cli` binary |
 | **Configuration** | YAML/Text files | YAML/Text files ✅ |
-| **Services** | 90+ services | 11 core services (expanding) |
+| **Services** | 90+ services | 14 core services (expanding) |
 | **Type Safety** | Runtime validation | Compile-time validation |
 
 **Go Port Advantages:**

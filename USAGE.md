@@ -172,6 +172,47 @@ msteams://team_name/token_a/token_b/token_c?image=no
 - Support for all Teams webhook versions
 - Markdown text formatting support
 
+### PagerDuty
+
+Enterprise incident management with Events API v2 support for both US and EU regions.
+
+**URL Formats:**
+```
+# Basic integration key
+pagerduty://integration_key
+
+# Specify region explicitly  
+pagerduty://integration_key@us
+pagerduty://integration_key@eu
+
+# With custom source and component
+pagerduty://integration_key?source=monitoring&component=api
+
+# Full configuration
+pagerduty://integration_key?region=eu&source=server-01&component=database&group=production&class=critical
+```
+
+**Query Parameters:**
+- `region=us|eu` - PagerDuty region (default: us)
+- `source=string` - Alert source identifier (default: apprise-go)
+- `component=string` - System component name
+- `group=string` - Alert grouping identifier
+- `class=string` - Alert classification
+
+**Features:**
+- Events API v2 with automatic severity mapping
+- US and EU region support
+- Custom alert metadata (source, component, group, class)
+- Automatic deduplication support
+- Title and body included in custom details
+- Integration with PagerDuty's incident response workflows
+
+**Example:**
+```go
+// Send critical database alert to EU region
+app.Add("pagerduty://r1234567890abcdef1234567890abcdef@eu?source=db-cluster&component=primary")
+```
+
 ### Pushover
 
 Mobile push notifications with priority levels and custom sounds.
