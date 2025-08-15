@@ -7,6 +7,53 @@ and this project follows upstream version tracking with Go-specific port revisio
 
 **Versioning Strategy**: `{upstream-version}-{port-revision}` (e.g., `1.9.4-1`)
 
+## [1.9.4-3] - 2025-01-15
+
+### Added - Phase 2 Cloud & Performance Expansion 🚀
+- **Multi-Cloud Platform Support**:
+  - **AWS SNS**: Amazon Simple Notification Service via webhook proxy with JSON/text formats
+    - Regional endpoint support and custom message attributes
+    - Structured JSON messaging with severity mapping and environment context
+  - **AWS SES**: Amazon Simple Email Service for enterprise email delivery
+    - HTML/text email templates with multiple recipient support (TO/CC/BCC)
+    - Professional email formatting with attachment support integration
+  - **Azure Service Bus**: Enterprise messaging with queue/topic patterns
+    - SAS authentication and managed identity support
+    - Connection string and individual parameter configuration
+  - **Google Cloud Pub/Sub**: Real-time messaging with ordered delivery
+    - Service account authentication and attribute filtering
+    - Project-based organization with custom message attributes
+
+- **Complete Attachment Support**:
+  - **SMTP Email Attachments**: Full MIME multipart functionality
+    - Base64 encoding with RFC 2045 compliant line wrapping
+    - Inline vs attachment disposition based on content type
+    - Support for multiple attachments with proper boundary generation
+  - **Microsoft Teams Attachments**: Adaptive Cards with rich content
+    - Image attachments with data URLs for inline display
+    - Dual-mode operation (MessageCard vs message+attachments)
+    - File attachment support with proper MIME type handling
+
+- **HTTP Connection Pooling**: Enterprise-grade performance infrastructure
+  - Configurable connection pools with specialized configurations:
+    - Default: General purpose (30s timeout, 100 idle connections)
+    - Cloud: Optimized for cloud APIs (60s timeout, 200 idle connections)  
+    - Webhook: Fast webhooks (15s timeout, 50 idle connections)
+  - HTTP/2 support with automatic protocol negotiation
+  - Thread-safe implementation with proper resource management
+  - Applied to all HTTP-based services for improved scalability
+
+### Enhanced
+- **Email Service**: Updated `SupportsAttachments()` to return true with full MIME multipart support
+- **Microsoft Teams Service**: Updated `SupportsAttachments()` to return true with Adaptive Card support
+- **All HTTP Services**: Migrated to use optimized connection pooling for better performance
+
+### Technical Improvements
+- Comprehensive test coverage for all new services and attachment functionality
+- Performance benchmarks demonstrating connection pooling benefits
+- Proper error handling and timeout configuration across all cloud services
+- Enhanced documentation with usage examples and configuration guides
+
 ## [1.9.4-2] - 2025-01-15
 
 ### Added - Phase 1 Service Expansion Complete 🎉
