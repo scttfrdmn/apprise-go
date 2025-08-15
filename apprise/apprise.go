@@ -338,6 +338,8 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	// Self-hosted services
 	registry.Register("gotify", func() Service { return NewGotifyService() })
 	registry.Register("gotifys", func() Service { return NewGotifyService() })
+	registry.Register("ntfy", func() Service { return NewNtfyService() })
+	registry.Register("ntfys", func() Service { return NewNtfyService() })
 
 	// Desktop notification services
 	registry.Register("desktop", func() Service { return NewDesktopService() })

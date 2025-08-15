@@ -415,6 +415,71 @@ gotify://192.168.1.100:8080/ABCDefGHijkL?priority=5
 - JSON-based API integration
 - Supports rich notification metadata via "extras"
 
+### Ntfy
+
+Simple HTTP push notifications with priority levels, perfect for self-hosted setups and lightweight notifications.
+
+**URL Formats:**
+```
+# Public ntfy.sh (HTTPS)
+ntfys://ntfy.sh/my-topic
+
+# Self-hosted (HTTP)
+ntfy://ntfy.example.com:8080/alerts
+
+# With authentication
+ntfy://username:password@ntfy.example.com/notifications
+ntfys://token@ntfy.sh/alerts
+
+# With priority and tags
+ntfy://ntfy.sh/alerts?priority=5&tags=urgent,production
+
+# With advanced features
+ntfy://ntfy.sh/alerts?delay=30min&email=admin@example.com&attach=https://example.com/file.pdf
+```
+
+**Query Parameters:**
+- `priority=1-5` - Message priority (1=min, 3=default, 5=max)
+- `tags=tag1,tag2` - Comma-separated tags for message categorization
+- `delay=30min` - Delay message delivery (e.g., 30s, 5min, 1h)
+- `actions=action1,Label1,url1` - Action buttons (comma-separated)
+- `attach=url` - Attachment URL
+- `filename=name` - Custom attachment filename
+- `click=url` - URL to open when notification is clicked
+- `email=address` - Forward notification to email
+- `token=string` - Access token (alternative to URL auth)
+
+**Features:**
+- Simple HTTP-based push notifications
+- Priority levels (1-5) with automatic mapping from notification types
+- Tag-based message categorization with emoji support
+- Delayed message delivery
+- Email forwarding integration
+- Attachment support via URLs
+- Action buttons for interactive notifications
+- Click URLs for notification actions
+- Self-hosted and public ntfy.sh support
+- Token and username/password authentication
+
+**Priority Mapping:**
+- `NotifyTypeInfo` → Priority 3 (Normal)
+- `NotifyTypeSuccess` → Priority 3 (Normal)  
+- `NotifyTypeWarning` → Priority 4 (High)
+- `NotifyTypeError` → Priority 5 (Max)
+
+**Emoji Tags:**
+When no custom tags are provided, automatic emoji tags are added:
+- ✅ `white_check_mark` for success notifications
+- ⚠️ `warning` for warning notifications  
+- 🚨 `rotating_light` for error notifications
+- ℹ️ `information_source` for info notifications
+
+**Example:**
+```go
+// Send high-priority alert with custom tags to self-hosted ntfy
+app.Add("ntfy://token@ntfy.company.com/alerts?priority=4&tags=production,database&email=oncall@company.com")
+```
+
 ## Configuration Files
 
 ### YAML Format
@@ -650,6 +715,7 @@ app.ClearAttachments()
 | Twilio SMS | ❌ Not supported | SMS doesn't support attachments |
 | Desktop Notifications | ❌ Not supported | Images via image parameter only |
 | Gotify | ❌ Not supported | Text-only notifications |
+| Ntfy | ✅ URLs | Attachment support via URLs only |
 
 ### Attachment Security
 

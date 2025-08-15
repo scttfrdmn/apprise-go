@@ -87,6 +87,7 @@ func main() {
 - **Twilio SMS** - SMS/MMS messaging with rate limiting
 - **Desktop Notifications** - Cross-platform desktop notifications (macOS, Windows, Linux)
 - **Gotify** - Self-hosted push notifications
+- **Ntfy** - Simple HTTP push notifications with priority levels
 
 ### 🚧 Coming Soon
 - AWS SNS
@@ -146,7 +147,7 @@ This Go port follows a structured versioning approach that tracks the upstream P
 | **Attachments** | Basic file support | Advanced multi-source framework |
 | **CLI Tool** | `apprise` command | `apprise-cli` binary |
 | **Configuration** | YAML/Text files | YAML/Text files ✅ |
-| **Services** | 90+ services | 15 core services (expanding) |
+| **Services** | 90+ services | 16 core services (expanding) |
 | **Type Safety** | Runtime validation | Compile-time validation |
 
 **Go Port Advantages:**
