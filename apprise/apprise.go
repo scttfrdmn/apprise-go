@@ -348,6 +348,9 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("twilio-voice", func() Service { return NewTwilioVoiceService() })
 	registry.Register("polly", func() Service { return NewPollyService() })
 
+	// IoT services
+	registry.Register("aws-iot", func() Service { return NewAWSIoTService() })
+
 	// Self-hosted services
 	registry.Register("gotify", func() Service { return NewGotifyService() })
 	registry.Register("gotifys", func() Service { return NewGotifyService() })
