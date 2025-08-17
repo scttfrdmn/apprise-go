@@ -163,6 +163,9 @@ func (l *LinkedInService) ParseURL(serviceURL *url.URL) error {
 			if l.clientID == "" || l.clientSecret == "" || l.accessToken == "" {
 				return fmt.Errorf("all LinkedIn credentials are required")
 			}
+		} else if hasKey {
+			// Incomplete OAuth credentials (password but not the right format)
+			return fmt.Errorf("LinkedIn OAuth requires client_id:client_secret:access_token format")
 		} else {
 			// Access token only format
 			l.accessToken = serviceURL.User.Username()
