@@ -88,6 +88,171 @@ const (
 	JobStatusCancelled  JobStatus = "cancelled"
 )
 
+// Public API methods
+
+// GetScheduledJobs returns all scheduled jobs
+func (s *NotificationScheduler) GetScheduledJobs() ([]ScheduledJob, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	query := `SELECT id, name, cron_expression, title, body, notify_type, services, tags, metadata,
+			  template, enabled, created_at, updated_at, next_run, last_run, last_status, run_count
+			  FROM scheduled_jobs ORDER BY created_at DESC`
+
+	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query scheduled jobs: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	var jobs []ScheduledJob
+	for rows.Next() {
+		job, err := s.scanScheduledJob(rows)
+		if err != nil {
+			return nil, err
+		}
+		jobs = append(jobs, job)
+	}
+
+	return jobs, nil
+}
+
+// GetScheduledJob returns a specific scheduled job by ID  
+func (s *NotificationScheduler) GetScheduledJob(jobID int64) (*ScheduledJob, error) {
+	return s.getScheduledJob(jobID)
+}
+
+// UpdateScheduledJob updates an existing scheduled job
+func (s *NotificationScheduler) UpdateScheduledJob(job ScheduledJob) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	job.UpdatedAt = time.Now()
+
+	servicesJSON, _ := json.Marshal(job.Services)
+	tagsJSON, _ := json.Marshal(job.Tags)
+	metadataJSON, _ := json.Marshal(job.Metadata)
+
+	query := `UPDATE scheduled_jobs SET name = ?, cron_expression = ?, title = ?, body = ?,
+			  notify_type = ?, services = ?, tags = ?, metadata = ?, template = ?, enabled = ?, updated_at = ?
+			  WHERE id = ?`
+
+	_, err := s.db.Exec(query, job.Name, job.CronExpr, job.Title, job.Body, int(job.NotifyType),
+		string(servicesJSON), string(tagsJSON), string(metadataJSON), job.Template, job.Enabled, job.UpdatedAt, job.ID)
+	
+	if err != nil {
+		return fmt.Errorf("failed to update scheduled job: %w", err)
+	}
+
+	// Reload jobs to update cron schedule
+	return s.loadScheduledJobs()
+}
+
+// RemoveScheduledJob removes a scheduled job
+func (s *NotificationScheduler) RemoveScheduledJob(jobID int64) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// First get the job to find its cron ID
+	job, err := s.getScheduledJob(jobID)
+	if err != nil {
+		return fmt.Errorf("job not found: %w", err)
+	}
+
+	// Remove from cron scheduler
+	if job.CronID > 0 {
+		s.cron.Remove(job.CronID)
+	}
+
+	// Delete from database
+	query := `DELETE FROM scheduled_jobs WHERE id = ?`
+	_, err = s.db.Exec(query, jobID)
+	if err != nil {
+		return fmt.Errorf("failed to delete scheduled job: %w", err)
+	}
+
+	s.logger.Printf("Removed scheduled job: %s (ID: %d)", job.Name, jobID)
+	return nil
+}
+
+// EnableScheduledJob enables a scheduled job
+func (s *NotificationScheduler) EnableScheduledJob(jobID int64) error {
+	return s.setScheduledJobEnabled(jobID, true)
+}
+
+// DisableScheduledJob disables a scheduled job
+func (s *NotificationScheduler) DisableScheduledJob(jobID int64) error {
+	return s.setScheduledJobEnabled(jobID, false)
+}
+
+// GetQueuedJobs returns queued jobs with limit
+func (s *NotificationScheduler) GetQueuedJobs(limit int) ([]QueuedJob, error) {
+	return s.queue.GetPendingJobs(limit)
+}
+
+// QueueNotification adds a notification to the queue
+func (s *NotificationScheduler) QueueNotification(job QueuedJob) (*QueuedJob, error) {
+	return s.queue.Add(job)
+}
+
+// GetQueueStats returns queue statistics
+func (s *NotificationScheduler) GetQueueStats() (map[string]int64, error) {
+	return s.queue.GetJobStats()
+}
+
+// Helper method to enable/disable scheduled jobs
+func (s *NotificationScheduler) setScheduledJobEnabled(jobID int64, enabled bool) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	query := `UPDATE scheduled_jobs SET enabled = ?, updated_at = ? WHERE id = ?`
+	_, err := s.db.Exec(query, enabled, time.Now(), jobID)
+	if err != nil {
+		return fmt.Errorf("failed to update job enabled status: %w", err)
+	}
+
+	// Reload jobs to update cron schedule
+	if err := s.loadScheduledJobs(); err != nil {
+		return fmt.Errorf("failed to reload jobs after enable/disable: %w", err)
+	}
+
+	status := "disabled"
+	if enabled {
+		status = "enabled"
+	}
+	s.logger.Printf("Job %d %s", jobID, status)
+	return nil
+}
+
+// scanScheduledJob scans a scheduled job from database rows
+func (s *NotificationScheduler) scanScheduledJob(rows *sql.Rows) (ScheduledJob, error) {
+	var job ScheduledJob
+	var servicesJSON, tagsJSON, metadataJSON string
+	var nextRun, lastRun sql.NullTime
+
+	err := rows.Scan(&job.ID, &job.Name, &job.CronExpr, &job.Title, &job.Body, &job.NotifyType,
+		&servicesJSON, &tagsJSON, &metadataJSON, &job.Template, &job.Enabled,
+		&job.CreatedAt, &job.UpdatedAt, &nextRun, &lastRun, &job.LastStatus, &job.RunCount)
+	if err != nil {
+		return job, fmt.Errorf("failed to scan scheduled job: %w", err)
+	}
+
+	// Parse JSON fields
+	_ = json.Unmarshal([]byte(servicesJSON), &job.Services)
+	_ = json.Unmarshal([]byte(tagsJSON), &job.Tags)
+	_ = json.Unmarshal([]byte(metadataJSON), &job.Metadata)
+
+	// Parse optional time fields
+	if nextRun.Valid {
+		job.NextRun = &nextRun.Time
+	}
+	if lastRun.Valid {
+		job.LastRun = &lastRun.Time
+	}
+
+	return job, nil
+}
+
 // NewNotificationScheduler creates a new notification scheduler
 func NewNotificationScheduler(dbPath string, apprise *Apprise) (*NotificationScheduler, error) {
 	db, err := sql.Open("sqlite3", dbPath+"?_foreign_keys=on&_journal_mode=WAL")
@@ -212,84 +377,6 @@ func (s *NotificationScheduler) AddScheduledJob(job ScheduledJob) (*ScheduledJob
 
 	s.logger.Printf("Added scheduled job: %s (ID: %d)", job.Name, job.ID)
 	return &job, nil
-}
-
-// RemoveScheduledJob removes a scheduled job
-func (s *NotificationScheduler) RemoveScheduledJob(jobID int64) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	// Get job to find cron ID
-	job, err := s.getScheduledJob(jobID)
-	if err != nil {
-		return fmt.Errorf("failed to get scheduled job: %w", err)
-	}
-
-	// Remove from cron scheduler
-	if job.CronID != 0 {
-		s.cron.Remove(job.CronID)
-	}
-
-	// Delete from database
-	query := `DELETE FROM scheduled_jobs WHERE id = ?`
-	_, err = s.db.Exec(query, jobID)
-	if err != nil {
-		return fmt.Errorf("failed to delete scheduled job: %w", err)
-	}
-
-	s.logger.Printf("Removed scheduled job: %s (ID: %d)", job.Name, jobID)
-	return nil
-}
-
-// GetScheduledJobs returns all scheduled jobs
-func (s *NotificationScheduler) GetScheduledJobs() ([]ScheduledJob, error) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-
-	query := `SELECT id, name, cron_expression, title, body, notify_type, services, tags, metadata,
-			  template, enabled, created_at, updated_at, next_run, last_run, last_status, run_count
-			  FROM scheduled_jobs ORDER BY created_at DESC`
-
-	rows, err := s.db.Query(query)
-	if err != nil {
-		return nil, fmt.Errorf("failed to query scheduled jobs: %w", err)
-	}
-	defer func() { _ = rows.Close() }()
-
-	var jobs []ScheduledJob
-	for rows.Next() {
-		var job ScheduledJob
-		var servicesJSON, tagsJSON, metadataJSON string
-		var nextRun, lastRun sql.NullTime
-
-		err := rows.Scan(&job.ID, &job.Name, &job.CronExpr, &job.Title, &job.Body, &job.NotifyType,
-			&servicesJSON, &tagsJSON, &metadataJSON, &job.Template, &job.Enabled,
-			&job.CreatedAt, &job.UpdatedAt, &nextRun, &lastRun, &job.LastStatus, &job.RunCount)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan scheduled job: %w", err)
-		}
-
-		// Parse JSON fields
-		_ = json.Unmarshal([]byte(servicesJSON), &job.Services)
-		_ = json.Unmarshal([]byte(tagsJSON), &job.Tags)
-		_ = json.Unmarshal([]byte(metadataJSON), &job.Metadata)
-
-		if nextRun.Valid {
-			job.NextRun = &nextRun.Time
-		}
-		if lastRun.Valid {
-			job.LastRun = &lastRun.Time
-		}
-
-		jobs = append(jobs, job)
-	}
-
-	return jobs, nil
-}
-
-// QueueNotification adds a notification to the processing queue
-func (s *NotificationScheduler) QueueNotification(job QueuedJob) (*QueuedJob, error) {
-	return s.queue.Add(job)
 }
 
 // executeScheduledJob executes a scheduled job by adding it to the queue
