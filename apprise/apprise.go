@@ -375,6 +375,7 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 
 	// Social media services
 	registry.Register("twitter", func() Service { return NewTwitterService() })
+	registry.Register("linkedin", func() Service { return NewLinkedInService() })
 
 	// Note: Cloud services use webhook proxy patterns for secure credential management
 
