@@ -1,0 +1,5 @@
+# Benchmark results directory
+
+This directory contains performance benchmark results and profiling data.
+
+Files in this directory are typically generated during benchmarking runs and may be excluded from git history.

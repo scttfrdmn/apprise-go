@@ -50,6 +50,18 @@ pip install apprise
 **Choose Go when**: You need performance, static compilation, or are building Go applications  
 **Choose Python when**: You need maximum service coverage or are working in Python environments
 
+## Performance
+
+Apprise-Go is designed for high-performance notification delivery:
+
+- **Single notification**: ~880 ns/op with minimal memory allocation
+- **Concurrent notifications**: Excellent parallel performance with goroutine safety
+- **Service registry**: Very fast service creation at ~25 ns/op
+- **Attachment handling**: Efficient with constant-time performance
+- **Memory footprint**: Low allocation patterns, scales linearly
+
+See [BENCHMARKS.md](BENCHMARKS.md) for detailed performance analysis and benchmarking tools.
+
 ## Usage
 
 ```go
