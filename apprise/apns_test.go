@@ -77,13 +77,13 @@ func TestAPNSService_ParseURL(t *testing.T) {
 			expectedTeamID:      "TEAM",
 		},
 		{
-			name:                "Valid APNS URL with API key authentication",
-			url:                 "apns://api-key-123@webhook.example.com/apns?bundle_id=com.company.app&key_id=XYZ&team_id=ABC&key_path=auth.p8",
-			expectError:         false,
-			expectedAPIKey:      "api-key-123",
-			expectedBundleID:    "com.company.app",
-			expectedKeyID:       "XYZ",
-			expectedTeamID:      "ABC",
+			name:             "Valid APNS URL with API key authentication",
+			url:              "apns://api-key-123@webhook.example.com/apns?bundle_id=com.company.app&key_id=XYZ&team_id=ABC&key_path=auth.p8",
+			expectError:      false,
+			expectedAPIKey:   "api-key-123",
+			expectedBundleID: "com.company.app",
+			expectedKeyID:    "XYZ",
+			expectedTeamID:   "ABC",
 		},
 		{
 			name:        "Invalid scheme",
@@ -160,7 +160,7 @@ func TestAPNSService_ParseURL(t *testing.T) {
 
 func TestAPNSService_TestURL(t *testing.T) {
 	service := NewAPNSService()
-	
+
 	tests := []struct {
 		name        string
 		url         string
@@ -491,11 +491,11 @@ func TestAPNSService_HelperMethods(t *testing.T) {
 
 	// Test sound configurations
 	tests := []struct {
-		notifyType         NotifyType
-		expectedPriority   string
-		expectedCategory   string
-		expectedInterrupt  string
-		expectedRelevance  float64
+		notifyType        NotifyType
+		expectedPriority  string
+		expectedCategory  string
+		expectedInterrupt string
+		expectedRelevance float64
 	}{
 		{NotifyTypeInfo, "5", "INFO_CATEGORY", "passive", 0.4},
 		{NotifyTypeSuccess, "5", "SUCCESS_CATEGORY", "active", 0.6},

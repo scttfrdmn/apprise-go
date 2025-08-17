@@ -243,7 +243,7 @@ func TestMSTeamsService_CreateFileAttachments(t *testing.T) {
 
 	// Create attachment manager with multiple files
 	attachmentMgr := NewAttachmentManager()
-	
+
 	err := attachmentMgr.AddData([]byte("Document content"), "doc.txt", "text/plain")
 	if err != nil {
 		t.Fatalf("Failed to add text attachment: %v", err)
@@ -333,7 +333,7 @@ func TestMSTeamsService_SendWithMultipleAttachments(t *testing.T) {
 
 	// Create attachment manager with multiple files
 	attachmentMgr := NewAttachmentManager()
-	
+
 	err := attachmentMgr.AddData([]byte("Document content"), "doc.txt", "text/plain")
 	if err != nil {
 		t.Fatalf("Failed to add text attachment: %v", err)

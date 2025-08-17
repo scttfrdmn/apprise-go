@@ -15,15 +15,15 @@ import (
 
 // APNSService implements Apple Push Notification Service for iOS notifications
 type APNSService struct {
-	keyID           string            // Key ID for JWT authentication (.p8 key)
-	teamID          string            // Team ID (App Store Connect)
-	bundleID        string            // App bundle identifier
-	keyPath         string            // Path to .p8 private key file
-	certificatePath string            // Path to .p12 certificate (alternative auth)
-	certificatePass string            // Password for .p12 certificate
-	environment     string            // "production" or "sandbox"
-	webhookURL      string            // Webhook proxy URL for secure credential management
-	apiKey          string            // API key for webhook authentication
+	keyID           string // Key ID for JWT authentication (.p8 key)
+	teamID          string // Team ID (App Store Connect)
+	bundleID        string // App bundle identifier
+	keyPath         string // Path to .p8 private key file
+	certificatePath string // Path to .p12 certificate (alternative auth)
+	certificatePass string // Password for .p12 certificate
+	environment     string // "production" or "sandbox"
+	webhookURL      string // Webhook proxy URL for secure credential management
+	apiKey          string // API key for webhook authentication
 	client          *http.Client
 }
 
@@ -35,38 +35,38 @@ type APNSPayload struct {
 
 // APSPayload represents the Apple-specific payload
 type APSPayload struct {
-	Alert            interface{}       `json:"alert,omitempty"`
-	Badge            interface{}       `json:"badge,omitempty"`
-	Sound            interface{}       `json:"sound,omitempty"`
-	ThreadID         string            `json:"thread-id,omitempty"`
-	Category         string            `json:"category,omitempty"`
-	ContentAvailable int               `json:"content-available,omitempty"`
-	MutableContent   int               `json:"mutable-content,omitempty"`
-	TargetContentID  string            `json:"target-content-id,omitempty"`
-	InterruptionLevel string           `json:"interruption-level,omitempty"`
-	RelevanceScore   float64           `json:"relevance-score,omitempty"`
-	FilterCriteria   string            `json:"filter-criteria,omitempty"`
-	Timestamp        int64             `json:"timestamp,omitempty"`
-	Event            string            `json:"event,omitempty"`
-	DismissalDate    int64             `json:"dismissal-date,omitempty"`
-	Stale            bool              `json:"stale,omitempty"`
-	ContentState     interface{}       `json:"content-state,omitempty"`
-	URLArgs          []string          `json:"url-args,omitempty"`
+	Alert             interface{} `json:"alert,omitempty"`
+	Badge             interface{} `json:"badge,omitempty"`
+	Sound             interface{} `json:"sound,omitempty"`
+	ThreadID          string      `json:"thread-id,omitempty"`
+	Category          string      `json:"category,omitempty"`
+	ContentAvailable  int         `json:"content-available,omitempty"`
+	MutableContent    int         `json:"mutable-content,omitempty"`
+	TargetContentID   string      `json:"target-content-id,omitempty"`
+	InterruptionLevel string      `json:"interruption-level,omitempty"`
+	RelevanceScore    float64     `json:"relevance-score,omitempty"`
+	FilterCriteria    string      `json:"filter-criteria,omitempty"`
+	Timestamp         int64       `json:"timestamp,omitempty"`
+	Event             string      `json:"event,omitempty"`
+	DismissalDate     int64       `json:"dismissal-date,omitempty"`
+	Stale             bool        `json:"stale,omitempty"`
+	ContentState      interface{} `json:"content-state,omitempty"`
+	URLArgs           []string    `json:"url-args,omitempty"`
 }
 
 // APNSAlert represents the alert portion of the APS payload
 type APNSAlert struct {
-	Title        string   `json:"title,omitempty"`
-	Subtitle     string   `json:"subtitle,omitempty"`
-	Body         string   `json:"body,omitempty"`
-	LaunchImage  string   `json:"launch-image,omitempty"`
-	TitleLocKey  string   `json:"title-loc-key,omitempty"`
-	TitleLocArgs []string `json:"title-loc-args,omitempty"`
-	ActionLocKey string   `json:"action-loc-key,omitempty"`
-	LocKey       string   `json:"loc-key,omitempty"`
-	LocArgs      []string `json:"loc-args,omitempty"`
-	SummaryArg   string   `json:"summary-arg,omitempty"`
-	SummaryArgCount int   `json:"summary-arg-count,omitempty"`
+	Title           string   `json:"title,omitempty"`
+	Subtitle        string   `json:"subtitle,omitempty"`
+	Body            string   `json:"body,omitempty"`
+	LaunchImage     string   `json:"launch-image,omitempty"`
+	TitleLocKey     string   `json:"title-loc-key,omitempty"`
+	TitleLocArgs    []string `json:"title-loc-args,omitempty"`
+	ActionLocKey    string   `json:"action-loc-key,omitempty"`
+	LocKey          string   `json:"loc-key,omitempty"`
+	LocArgs         []string `json:"loc-args,omitempty"`
+	SummaryArg      string   `json:"summary-arg,omitempty"`
+	SummaryArgCount int      `json:"summary-arg-count,omitempty"`
 }
 
 // APNSSound represents sound configuration
@@ -78,19 +78,19 @@ type APNSSound struct {
 
 // APNSRequest represents the complete APNS webhook request
 type APNSRequest struct {
-	DeviceToken   string                 `json:"device_token"`
-	Payload       APNSPayload            `json:"payload"`
-	Headers       map[string]string      `json:"headers"`
-	Authentication APNSAuthentication    `json:"authentication"`
-	Environment   string                 `json:"environment"`
-	Timestamp     string                 `json:"timestamp"`
-	Source        string                 `json:"source"`
-	Version       string                 `json:"version"`
+	DeviceToken    string             `json:"device_token"`
+	Payload        APNSPayload        `json:"payload"`
+	Headers        map[string]string  `json:"headers"`
+	Authentication APNSAuthentication `json:"authentication"`
+	Environment    string             `json:"environment"`
+	Timestamp      string             `json:"timestamp"`
+	Source         string             `json:"source"`
+	Version        string             `json:"version"`
 }
 
 // APNSAuthentication contains authentication information
 type APNSAuthentication struct {
-	Method          string `json:"method"`           // "jwt" or "certificate"
+	Method          string `json:"method"` // "jwt" or "certificate"
 	KeyID           string `json:"key_id,omitempty"`
 	TeamID          string `json:"team_id,omitempty"`
 	BundleID        string `json:"bundle_id,omitempty"`
@@ -141,7 +141,7 @@ func (a *APNSService) ParseURL(serviceURL *url.URL) error {
 
 	// Parse query parameters
 	query := serviceURL.Query()
-	
+
 	// Required: bundle_id
 	a.bundleID = query.Get("bundle_id")
 	if a.bundleID == "" {
@@ -183,16 +183,16 @@ func (a *APNSService) Send(ctx context.Context, req NotificationRequest) error {
 	// APNS requires device tokens to be specified in the notification request
 	// Since we use webhook proxy, we'll send the complete configuration
 	// The webhook service will handle device token management
-	
+
 	// Create APNS payload
 	payload := a.createPayload(req)
-	
+
 	// Create authentication config
 	auth := a.createAuthentication()
-	
+
 	// Create APNS headers
 	headers := a.createHeaders(req)
-	
+
 	// Create webhook request
 	apnsReq := APNSRequest{
 		DeviceToken:    "webhook-managed", // Webhook will handle device tokens
@@ -241,8 +241,8 @@ func (a *APNSService) createPayload(req NotificationRequest) APNSPayload {
 	// Create custom data
 	data := map[string]interface{}{
 		"notification_type": req.NotifyType.String(),
-		"source":           "apprise-go",
-		"timestamp":        time.Now().UTC().Format(time.RFC3339),
+		"source":            "apprise-go",
+		"timestamp":         time.Now().UTC().Format(time.RFC3339),
 	}
 
 	// Add body format if specified
@@ -254,14 +254,14 @@ func (a *APNSService) createPayload(req NotificationRequest) APNSPayload {
 	if req.AttachmentMgr != nil && req.AttachmentMgr.Count() > 0 {
 		attachments := req.AttachmentMgr.GetAll()
 		attachmentInfo := make([]map[string]string, len(attachments))
-		
+
 		for i, attachment := range attachments {
 			attachmentInfo[i] = map[string]string{
 				"name":      attachment.GetName(),
 				"mime_type": attachment.GetMimeType(),
 			}
 		}
-		
+
 		data["attachments"] = attachmentInfo
 	}
 
@@ -330,7 +330,7 @@ func (a *APNSService) sendViaWebhook(ctx context.Context, apnsReq APNSRequest) e
 	// Set headers
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("User-Agent", GetUserAgent())
-	
+
 	if a.apiKey != "" {
 		httpReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", a.apiKey))
 		httpReq.Header.Set("X-API-Key", a.apiKey)

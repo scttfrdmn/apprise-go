@@ -17,7 +17,6 @@ type MattermostService struct {
 	token     string
 	username  string
 	password  string
-	channelID string
 	channels  []string
 	botName   string
 	iconURL   string
@@ -86,7 +85,7 @@ func (m *MattermostService) ParseURL(serviceURL *url.URL) error {
 		} else {
 			// Could be token as username, or username with token in query
 			// We'll check query parameters first
-			m.username = username  // Preserve username for potential query token
+			m.username = username // Preserve username for potential query token
 		}
 	}
 
@@ -101,7 +100,7 @@ func (m *MattermostService) ParseURL(serviceURL *url.URL) error {
 			}
 		}
 	}
-	
+
 	// Handle channel in fragment (URLs like mattermost://token@server/#channel)
 	if serviceURL.Fragment != "" {
 		// Fragment was likely a channel that started with # but URL parsing removed it
@@ -158,12 +157,12 @@ func (m *MattermostService) normalizeChannelName(channel string) string {
 	if strings.HasPrefix(channel, "@") {
 		return strings.TrimPrefix(channel, "@")
 	}
-	
+
 	// Remove # prefix if present
 	if strings.HasPrefix(channel, "#") {
 		return strings.TrimPrefix(channel, "#")
 	}
-	
+
 	return channel
 }
 
@@ -376,25 +375,25 @@ func (m *MattermostService) sendToChannel(ctx context.Context, channelID string,
 // formatMessage formats the title and body into a Mattermost message
 func (m *MattermostService) formatMessage(title, body string, notifyType NotifyType) string {
 	emoji := m.getEmojiForNotifyType(notifyType)
-	
+
 	var message strings.Builder
-	
+
 	if title != "" {
 		message.WriteString(fmt.Sprintf("%s **%s**", emoji, title))
 		if body != "" {
 			message.WriteString("\n\n")
 		}
 	}
-	
+
 	if body != "" {
 		message.WriteString(body)
 	}
-	
+
 	// If neither title nor body, provide a default message
 	if title == "" && body == "" {
 		message.WriteString(fmt.Sprintf("%s Notification", emoji))
 	}
-	
+
 	return message.String()
 }
 

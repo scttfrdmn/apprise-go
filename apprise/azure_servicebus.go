@@ -14,18 +14,18 @@ import (
 
 // AzureServiceBusService implements Azure Service Bus notifications via webhook
 type AzureServiceBusService struct {
-	webhookURL       string
-	namespace        string
-	queueName        string
-	topicName        string
-	subscriptionName string
-	sasKeyName       string
-	sasKey           string
-	connectionString string
+	webhookURL        string
+	namespace         string
+	queueName         string
+	topicName         string
+	subscriptionName  string
+	sasKeyName        string
+	sasKey            string
+	connectionString  string
 	messageProperties map[string]interface{}
-	timeToLive       int // TTL in seconds
-	apiKey           string
-	client           *http.Client
+	timeToLive        int // TTL in seconds
+	apiKey            string
+	client            *http.Client
 }
 
 // NewAzureServiceBusService creates a new Azure Service Bus service instance
@@ -177,10 +177,10 @@ func (a *AzureServiceBusService) Send(ctx context.Context, req NotificationReque
 
 	// Create payload for Service Bus webhook
 	payload := map[string]interface{}{
-		"namespace":       a.namespace,
-		"authentication":  a.buildAuthentication(),
-		"destination":     a.buildDestination(),
-		"message":         a.buildMessage(message, req),
+		"namespace":         a.namespace,
+		"authentication":    a.buildAuthentication(),
+		"destination":       a.buildDestination(),
+		"message":           a.buildMessage(message, req),
 		"messageProperties": a.buildMessageProperties(req.NotifyType),
 	}
 
@@ -196,13 +196,13 @@ func (a *AzureServiceBusService) Send(ctx context.Context, req NotificationReque
 func (a *AzureServiceBusService) formatMessage(title, body string, notifyType NotifyType) string {
 	// Create structured message for Service Bus
 	messageData := map[string]interface{}{
-		"title":       title,
-		"body":        body,
-		"type":        notifyType.String(),
-		"timestamp":   time.Now().UTC().Format(time.RFC3339),
-		"source":      "apprise-go",
-		"severity":    a.getSeverityLevel(notifyType),
-		"category":    "notification",
+		"title":     title,
+		"body":      body,
+		"type":      notifyType.String(),
+		"timestamp": time.Now().UTC().Format(time.RFC3339),
+		"source":    "apprise-go",
+		"severity":  a.getSeverityLevel(notifyType),
+		"category":  "notification",
 	}
 
 	// Add emoji for visual context
@@ -257,7 +257,7 @@ func (a *AzureServiceBusService) getSeverityLevel(notifyType NotifyType) string 
 // buildAuthentication constructs the authentication object for Service Bus
 func (a *AzureServiceBusService) buildAuthentication() map[string]interface{} {
 	auth := make(map[string]interface{})
-	
+
 	if a.sasKeyName != "" && a.sasKey != "" {
 		auth["type"] = "sas"
 		auth["keyName"] = a.sasKeyName
@@ -265,14 +265,14 @@ func (a *AzureServiceBusService) buildAuthentication() map[string]interface{} {
 	} else {
 		auth["type"] = "managed_identity" // Assume managed identity
 	}
-	
+
 	return auth
 }
 
 // buildDestination constructs the destination object (queue or topic)
 func (a *AzureServiceBusService) buildDestination() map[string]interface{} {
 	destination := make(map[string]interface{})
-	
+
 	if a.queueName != "" {
 		destination["type"] = "queue"
 		destination["name"] = a.queueName
@@ -283,7 +283,7 @@ func (a *AzureServiceBusService) buildDestination() map[string]interface{} {
 			destination["subscription"] = a.subscriptionName
 		}
 	}
-	
+
 	return destination
 }
 

@@ -23,15 +23,15 @@ func TestMatrixService_GetDefaultPort(t *testing.T) {
 
 func TestMatrixService_ParseURL(t *testing.T) {
 	tests := []struct {
-		name             string
-		url              string
-		expectError      bool
-		expectedToken    string
-		expectedUsername string
-		expectedPassword string
+		name               string
+		url                string
+		expectError        bool
+		expectedToken      string
+		expectedUsername   string
+		expectedPassword   string
 		expectedHomeserver string
-		expectedRooms    []string
-		expectedMsgType  string
+		expectedRooms      []string
+		expectedMsgType    string
 		expectedHtmlFormat bool
 	}{
 		{
@@ -175,11 +175,11 @@ func TestMatrixService_NormalizeRoomID(t *testing.T) {
 		// Already normalized
 		{"!room:matrix.org", "!room:matrix.org"},
 		{"#room:matrix.org", "#room:matrix.org"},
-		
+
 		// Simple room name - should become alias
 		{"general", "#general:matrix.example.com"},
 		{"support", "#support:matrix.example.com"},
-		
+
 		// Room with server already specified
 		{"room:other.com", "room:other.com"},
 	}
@@ -281,13 +281,13 @@ func TestMatrixService_Properties(t *testing.T) {
 
 func TestMatrixService_FormatMessage(t *testing.T) {
 	tests := []struct {
-		name           string
-		title          string
-		body           string
-		msgType        string
-		htmlFormat     bool
-		expectedBody   string
-		expectedFormat string
+		name            string
+		title           string
+		body            string
+		msgType         string
+		htmlFormat      bool
+		expectedBody    string
+		expectedFormat  string
 		expectFormatted bool
 	}{
 		{
@@ -463,4 +463,3 @@ func TestMatrixService_PayloadGeneration(t *testing.T) {
 		t.Error("Expected HTML format to be enabled from query parameter")
 	}
 }
-

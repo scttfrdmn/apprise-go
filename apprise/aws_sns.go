@@ -170,9 +170,9 @@ func (a *AWSSNSService) Send(ctx context.Context, req NotificationRequest) error
 
 	// Create payload for SNS webhook
 	payload := map[string]interface{}{
-		"topicArn": a.topicArn,
-		"message":  message,
-		"subject":  subject,
+		"topicArn":          a.topicArn,
+		"message":           message,
+		"subject":           subject,
 		"messageAttributes": a.buildMessageAttributes(req.NotifyType),
 	}
 

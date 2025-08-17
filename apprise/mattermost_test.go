@@ -23,17 +23,17 @@ func TestMattermostService_GetDefaultPort(t *testing.T) {
 
 func TestMattermostService_ParseURL(t *testing.T) {
 	tests := []struct {
-		name               string
-		url                string
-		expectError        bool
-		expectedServerURL  string
-		expectedToken      string
-		expectedUsername   string
-		expectedPassword   string
-		expectedChannels   []string
-		expectedBotName    string
-		expectedIconURL    string
-		expectedIconEmoji  string
+		name              string
+		url               string
+		expectError       bool
+		expectedServerURL string
+		expectedToken     string
+		expectedUsername  string
+		expectedPassword  string
+		expectedChannels  []string
+		expectedBotName   string
+		expectedIconURL   string
+		expectedIconEmoji string
 	}{
 		{
 			name:              "Basic HTTP with username/password",
@@ -432,9 +432,9 @@ func TestMattermostService_PayloadGeneration(t *testing.T) {
 
 func TestMattermostService_AuthenticationMethods(t *testing.T) {
 	tests := []struct {
-		name             string
-		url              string
-		expectToken      bool
+		name              string
+		url               string
+		expectToken       bool
 		expectCredentials bool
 	}{
 		{

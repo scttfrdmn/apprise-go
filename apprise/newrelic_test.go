@@ -42,14 +42,14 @@ func TestNewRelicService_GetMaxBodyLength(t *testing.T) {
 
 func TestNewRelicService_ParseURL(t *testing.T) {
 	tests := []struct {
-		name               string
-		url                string
-		expectError        bool
-		expectedAPIKey     string
-		expectedAccountID  string
-		expectedRegion     string
-		expectedWebhook    string
-		expectedProxyKey   string
+		name              string
+		url               string
+		expectError       bool
+		expectedAPIKey    string
+		expectedAccountID string
+		expectedRegion    string
+		expectedWebhook   string
+		expectedProxyKey  string
 	}{
 		{
 			name:              "Basic API key with account ID",

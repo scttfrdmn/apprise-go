@@ -23,12 +23,12 @@ func TestPagerDutyService_GetDefaultPort(t *testing.T) {
 
 func TestPagerDutyService_ParseURL(t *testing.T) {
 	tests := []struct {
-		name        string
-		url         string
-		expectError bool
-		expectedKey string
-		expectedRegion string
-		expectedSource string
+		name              string
+		url               string
+		expectError       bool
+		expectedKey       string
+		expectedRegion    string
+		expectedSource    string
 		expectedComponent string
 	}{
 		{
@@ -53,21 +53,21 @@ func TestPagerDutyService_ParseURL(t *testing.T) {
 			expectedRegion: "eu",
 		},
 		{
-			name:           "Integration key with query parameters",
-			url:            "pagerduty://abc123def456?region=eu&source=monitoring&component=api",
-			expectError:    false,
-			expectedKey:    "abc123def456",
-			expectedRegion: "eu",
-			expectedSource: "monitoring",
+			name:              "Integration key with query parameters",
+			url:               "pagerduty://abc123def456?region=eu&source=monitoring&component=api",
+			expectError:       false,
+			expectedKey:       "abc123def456",
+			expectedRegion:    "eu",
+			expectedSource:    "monitoring",
 			expectedComponent: "api",
 		},
 		{
-			name:           "Integration key with source and component",
-			url:            "pagerduty://abc123def456?source=server-01&component=database",
-			expectError:    false,
-			expectedKey:    "abc123def456",
-			expectedRegion: "us",
-			expectedSource: "server-01",
+			name:              "Integration key with source and component",
+			url:               "pagerduty://abc123def456?source=server-01&component=database",
+			expectError:       false,
+			expectedKey:       "abc123def456",
+			expectedRegion:    "us",
+			expectedSource:    "server-01",
 			expectedComponent: "database",
 		},
 		{
@@ -316,19 +316,19 @@ func TestPagerDutyService_FormatSummary(t *testing.T) {
 
 func TestPagerDutyService_GetSource(t *testing.T) {
 	tests := []struct {
-		name           string
+		name             string
 		configuredSource string
-		expectedSource string
+		expectedSource   string
 	}{
 		{
-			name:           "Custom source",
+			name:             "Custom source",
 			configuredSource: "monitoring-server",
-			expectedSource: "monitoring-server",
+			expectedSource:   "monitoring-server",
 		},
 		{
-			name:           "Default source",
+			name:             "Default source",
 			configuredSource: "",
-			expectedSource: "apprise-go",
+			expectedSource:   "apprise-go",
 		},
 	}
 

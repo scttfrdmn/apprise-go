@@ -97,12 +97,12 @@ func (p *PagerDutyService) ParseURL(serviceURL *url.URL) error {
 
 // PagerDutyPayload represents the PagerDuty Events API v2 payload structure
 type PagerDutyPayload struct {
-	RoutingKey  string                    `json:"routing_key"`
-	EventAction string                    `json:"event_action"`
-	Client      string                    `json:"client,omitempty"`
-	Payload     PagerDutyPayloadDetails   `json:"payload"`
-	Links       []PagerDutyLink          `json:"links,omitempty"`
-	Images      []PagerDutyImage         `json:"images,omitempty"`
+	RoutingKey  string                  `json:"routing_key"`
+	EventAction string                  `json:"event_action"`
+	Client      string                  `json:"client,omitempty"`
+	Payload     PagerDutyPayloadDetails `json:"payload"`
+	Links       []PagerDutyLink         `json:"links,omitempty"`
+	Images      []PagerDutyImage        `json:"images,omitempty"`
 }
 
 // PagerDutyPayloadDetails represents the payload details
@@ -277,6 +277,6 @@ func (p *PagerDutyService) GetMaxBodyLength() int {
 // Example usage and URL formats:
 // pagerduty://integration_key
 // pagerduty://integration_key@us
-// pagerduty://integration_key@eu  
+// pagerduty://integration_key@eu
 // pagerduty://integration_key?region=eu&source=monitoring&component=api
 // pagerduty://integration_key?source=server-01&component=database&group=production

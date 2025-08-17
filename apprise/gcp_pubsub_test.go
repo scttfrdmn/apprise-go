@@ -42,15 +42,15 @@ func TestGCPPubSubService_GetMaxBodyLength(t *testing.T) {
 
 func TestGCPPubSubService_ParseURL(t *testing.T) {
 	tests := []struct {
-		name              string
-		url               string
-		expectError       bool
-		expectedProject   string
-		expectedTopic     string
-		expectedSA        string
-		expectedAPIKey    string
-		expectedOrdering  string
-		expectedAttrs     map[string]string
+		name             string
+		url              string
+		expectError      bool
+		expectedProject  string
+		expectedTopic    string
+		expectedSA       string
+		expectedAPIKey   string
+		expectedOrdering string
+		expectedAttrs    map[string]string
 	}{
 		{
 			name:            "Valid basic Pub/Sub URL",
@@ -168,7 +168,7 @@ func TestGCPPubSubService_ParseURL(t *testing.T) {
 
 func TestGCPPubSubService_TestURL(t *testing.T) {
 	service := NewGCPPubSubService()
-	
+
 	tests := []struct {
 		name        string
 		url         string
@@ -390,7 +390,7 @@ func TestGCPPubSubService_FormatMessage(t *testing.T) {
 		projectID: "test-project",
 		topicName: "test-topic",
 	}
-	
+
 	tests := []struct {
 		name       string
 		title      string
@@ -487,8 +487,8 @@ func TestGCPPubSubService_FormatMessage(t *testing.T) {
 
 func TestGCPPubSubService_BuildAttributes(t *testing.T) {
 	service := &GCPPubSubService{
-		projectID:  "test-project",
-		topicName:  "test-topic",
+		projectID: "test-project",
+		topicName: "test-topic",
 		attributes: map[string]string{
 			"environment": "production",
 			"service":     "web-api",
@@ -539,7 +539,7 @@ func TestGCPPubSubService_BuildAttributes(t *testing.T) {
 
 func TestGCPPubSubService_BuildMessage(t *testing.T) {
 	service := &GCPPubSubService{}
-	
+
 	req := NotificationRequest{
 		Title:      "Test Message",
 		Body:       "Test body",
@@ -577,7 +577,7 @@ func TestGCPPubSubService_BuildMessage(t *testing.T) {
 
 func TestGCPPubSubService_GetSeverityLevel(t *testing.T) {
 	service := &GCPPubSubService{}
-	
+
 	tests := []struct {
 		notifyType NotifyType
 		expected   string

@@ -42,42 +42,42 @@ func TestAWSSESService_GetMaxBodyLength(t *testing.T) {
 
 func TestAWSSESService_ParseURL(t *testing.T) {
 	tests := []struct {
-		name        string
-		url         string
-		expectError bool
-		expectedFrom string
-		expectedTo   []string
-		expectedCC   []string
-		expectedBCC  []string
-		expectedAPIKey string
-		expectedRegion string
+		name             string
+		url              string
+		expectError      bool
+		expectedFrom     string
+		expectedTo       []string
+		expectedCC       []string
+		expectedBCC      []string
+		expectedAPIKey   string
+		expectedRegion   string
 		expectedTemplate string
 	}{
 		{
-			name:        "Valid basic SES URL",
-			url:         "ses://api.example.com/ses?from=sender@example.com&to=recipient@example.com",
-			expectError: false,
+			name:         "Valid basic SES URL",
+			url:          "ses://api.example.com/ses?from=sender@example.com&to=recipient@example.com",
+			expectError:  false,
 			expectedFrom: "sender@example.com",
 			expectedTo:   []string{"recipient@example.com"},
 		},
 		{
-			name:        "Valid SES URL with multiple recipients",
-			url:         "ses://webhook.example.com/ses?from=alerts@company.com&to=admin@company.com,team@company.com&cc=manager@company.com",
-			expectError: false,
+			name:         "Valid SES URL with multiple recipients",
+			url:          "ses://webhook.example.com/ses?from=alerts@company.com&to=admin@company.com,team@company.com&cc=manager@company.com",
+			expectError:  false,
 			expectedFrom: "alerts@company.com",
 			expectedTo:   []string{"admin@company.com", "team@company.com"},
 			expectedCC:   []string{"manager@company.com"},
 		},
 		{
-			name:        "Valid SES URL with API key and all options",
-			url:         "ses://api-key@api.gateway.com/prod/ses?from=noreply@company.com&to=alerts@company.com&cc=team@company.com&bcc=audit@company.com&region=eu-west-1&template=alert-template",
-			expectError: false,
-			expectedAPIKey: "api-key",
-			expectedFrom: "noreply@company.com",
-			expectedTo:   []string{"alerts@company.com"},
-			expectedCC:   []string{"team@company.com"},
-			expectedBCC:  []string{"audit@company.com"},
-			expectedRegion: "eu-west-1",
+			name:             "Valid SES URL with API key and all options",
+			url:              "ses://api-key@api.gateway.com/prod/ses?from=noreply@company.com&to=alerts@company.com&cc=team@company.com&bcc=audit@company.com&region=eu-west-1&template=alert-template",
+			expectError:      false,
+			expectedAPIKey:   "api-key",
+			expectedFrom:     "noreply@company.com",
+			expectedTo:       []string{"alerts@company.com"},
+			expectedCC:       []string{"team@company.com"},
+			expectedBCC:      []string{"audit@company.com"},
+			expectedRegion:   "eu-west-1",
 			expectedTemplate: "alert-template",
 		},
 		{
@@ -169,7 +169,7 @@ func TestAWSSESService_ParseURL(t *testing.T) {
 
 func TestAWSSESService_TestURL(t *testing.T) {
 	service := NewAWSSESService()
-	
+
 	tests := []struct {
 		name        string
 		url         string
@@ -372,7 +372,7 @@ func TestAWSSESService_SendWithAPIKey(t *testing.T) {
 
 func TestAWSSESService_FormatMessageBody(t *testing.T) {
 	service := &AWSSESService{}
-	
+
 	tests := []struct {
 		name       string
 		title      string

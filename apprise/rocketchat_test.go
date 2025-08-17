@@ -64,11 +64,11 @@ func TestRocketChatService_ParseURL(t *testing.T) {
 			expectedPassword: "pass",
 		},
 		{
-			name:            "Username password authentication - HTTPS",
-			url:             "rockets://user:pass@chat.example.com/general",
-			expectError:     false,
-			expectedServer:  "https://chat.example.com",
-			expectedChannel: "#general",
+			name:             "Username password authentication - HTTPS",
+			url:              "rockets://user:pass@chat.example.com/general",
+			expectError:      false,
+			expectedServer:   "https://chat.example.com",
+			expectedChannel:  "#general",
 			expectedUsername: "user",
 			expectedPassword: "pass",
 		},
@@ -82,48 +82,48 @@ func TestRocketChatService_ParseURL(t *testing.T) {
 			expectedToken:   "tokenABC",
 		},
 		{
-			name:            "Channel with @ prefix (direct message)",
-			url:             "rockets://user:pass@chat.example.com/@admin",
-			expectError:     false,
-			expectedServer:  "https://chat.example.com",
-			expectedChannel: "@admin",
+			name:             "Channel with @ prefix (direct message)",
+			url:              "rockets://user:pass@chat.example.com/@admin",
+			expectError:      false,
+			expectedServer:   "https://chat.example.com",
+			expectedChannel:  "@admin",
 			expectedUsername: "user",
 			expectedPassword: "pass",
 		},
 		{
-			name:            "Channel with # prefix",
-			url:             "rockets://user:pass@chat.example.com/#support",
-			expectError:     false,
-			expectedServer:  "https://chat.example.com",
-			expectedChannel: "#support",
+			name:             "Channel with # prefix",
+			url:              "rockets://user:pass@chat.example.com/#support",
+			expectError:      false,
+			expectedServer:   "https://chat.example.com",
+			expectedChannel:  "#support",
 			expectedUsername: "user",
 			expectedPassword: "pass",
 		},
 		{
-			name:            "Channel in fragment",
-			url:             "rockets://user:pass@chat.example.com#development",
-			expectError:     false,
-			expectedServer:  "https://chat.example.com",
-			expectedChannel: "#development",
+			name:             "Channel in fragment",
+			url:              "rockets://user:pass@chat.example.com#development",
+			expectError:      false,
+			expectedServer:   "https://chat.example.com",
+			expectedChannel:  "#development",
 			expectedUsername: "user",
 			expectedPassword: "pass",
 		},
 		{
-			name:            "Query parameters for authentication",
-			url:             "rockets://chat.example.com/general?username=bot&password=secret&bot_name=AlertBot",
-			expectError:     false,
-			expectedServer:  "https://chat.example.com",
-			expectedChannel: "#general",
+			name:             "Query parameters for authentication",
+			url:              "rockets://chat.example.com/general?username=bot&password=secret&bot_name=AlertBot",
+			expectError:      false,
+			expectedServer:   "https://chat.example.com",
+			expectedChannel:  "#general",
 			expectedUsername: "bot",
 			expectedPassword: "secret",
-			expectedBotName: "AlertBot",
+			expectedBotName:  "AlertBot",
 		},
 		{
-			name:            "Custom port",
-			url:             "rockets://user:pass@chat.example.com:8080/team",
-			expectError:     false,
-			expectedServer:  "https://chat.example.com:8080",
-			expectedChannel: "#team",
+			name:             "Custom port",
+			url:              "rockets://user:pass@chat.example.com:8080/team",
+			expectError:      false,
+			expectedServer:   "https://chat.example.com:8080",
+			expectedChannel:  "#team",
 			expectedUsername: "user",
 			expectedPassword: "pass",
 		},
@@ -229,12 +229,12 @@ func TestRocketChatService_NormalizeChannel(t *testing.T) {
 		{"@user", "@user"},
 		{"#channel", "#channel"},
 		{"room_id_123abc", "room_id_123abc"},
-		
+
 		// Simple channel name - should get # prefix
 		{"general", "#general"},
 		{"support", "#support"},
 		{"team-dev", "#team-dev"},
-		
+
 		// Whitespace handling
 		{" general ", "#general"},
 		{" @user ", "@user"},
@@ -253,7 +253,7 @@ func TestRocketChatService_NormalizeChannel(t *testing.T) {
 
 func TestRocketChatService_TestURL(t *testing.T) {
 	service := NewRocketChatService()
-	
+
 	tests := []struct {
 		name        string
 		url         string

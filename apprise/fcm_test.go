@@ -50,10 +50,10 @@ func TestFCMService_ParseURL(t *testing.T) {
 		expectedAPIKey    string
 	}{
 		{
-			name:            "Valid FCM URL with server key",
-			url:             "fcm://webhook.example.com/firebase?project_id=my-project&server_key=AAAA1234567890",
-			expectError:     false,
-			expectedProject: "my-project",
+			name:              "Valid FCM URL with server key",
+			url:               "fcm://webhook.example.com/firebase?project_id=my-project&server_key=AAAA1234567890",
+			expectError:       false,
+			expectedProject:   "my-project",
 			expectedServerKey: "AAAA1234567890",
 		},
 		{
@@ -63,11 +63,11 @@ func TestFCMService_ParseURL(t *testing.T) {
 			expectedProject: "test-project",
 		},
 		{
-			name:            "Valid FCM URL with API key authentication",
-			url:             "fcm://api-key-123@webhook.example.com/fcm?project_id=company-project&server_key=legacy-key",
-			expectError:     false,
-			expectedAPIKey:  "api-key-123",
-			expectedProject: "company-project",
+			name:              "Valid FCM URL with API key authentication",
+			url:               "fcm://api-key-123@webhook.example.com/fcm?project_id=company-project&server_key=legacy-key",
+			expectError:       false,
+			expectedAPIKey:    "api-key-123",
+			expectedProject:   "company-project",
 			expectedServerKey: "legacy-key",
 		},
 		{
@@ -127,7 +127,7 @@ func TestFCMService_ParseURL(t *testing.T) {
 
 func TestFCMService_TestURL(t *testing.T) {
 	service := NewFCMService()
-	
+
 	tests := []struct {
 		name        string
 		url         string

@@ -42,33 +42,33 @@ func TestAWSSNSService_GetMaxBodyLength(t *testing.T) {
 
 func TestAWSSNSService_ParseURL(t *testing.T) {
 	tests := []struct {
-		name        string
-		url         string
-		expectError bool
-		expectedARN string
+		name           string
+		url            string
+		expectError    bool
+		expectedARN    string
 		expectedRegion string
 		expectedAPIKey string
 	}{
 		{
-			name:        "Valid webhook URL with topic ARN",
-			url:         "sns://api.example.com/sns-webhook?topic_arn=arn:aws:sns:us-east-1:123456789:my-topic",
-			expectError: false,
-			expectedARN: "arn:aws:sns:us-east-1:123456789:my-topic",
+			name:           "Valid webhook URL with topic ARN",
+			url:            "sns://api.example.com/sns-webhook?topic_arn=arn:aws:sns:us-east-1:123456789:my-topic",
+			expectError:    false,
+			expectedARN:    "arn:aws:sns:us-east-1:123456789:my-topic",
 			expectedRegion: "us-east-1",
 		},
 		{
-			name:        "Valid webhook URL with topic components",
-			url:         "sns://api.example.com/sns?topic=alerts&region=eu-west-1&account=987654321",
-			expectError: false,
-			expectedARN: "arn:aws:sns:eu-west-1:987654321:alerts",
+			name:           "Valid webhook URL with topic components",
+			url:            "sns://api.example.com/sns?topic=alerts&region=eu-west-1&account=987654321",
+			expectError:    false,
+			expectedARN:    "arn:aws:sns:eu-west-1:987654321:alerts",
 			expectedRegion: "eu-west-1",
 		},
 		{
-			name:        "Valid webhook URL with API key",
-			url:         "sns://abc123@api.example.com/webhook?topic=notifications&account=123456789",
-			expectError: false,
+			name:           "Valid webhook URL with API key",
+			url:            "sns://abc123@api.example.com/webhook?topic=notifications&account=123456789",
+			expectError:    false,
 			expectedAPIKey: "abc123",
-			expectedARN: "arn:aws:sns:us-east-1:123456789:notifications",
+			expectedARN:    "arn:aws:sns:us-east-1:123456789:notifications",
 		},
 		{
 			name:        "Valid webhook URL with topic name only",
@@ -133,7 +133,7 @@ func TestAWSSNSService_ParseURL(t *testing.T) {
 
 func TestAWSSNSService_TestURL(t *testing.T) {
 	service := NewAWSSNSService()
-	
+
 	tests := []struct {
 		name        string
 		url         string
@@ -360,39 +360,39 @@ func TestAWSSNSService_FormatMessage(t *testing.T) {
 		expectedFormat string
 	}{
 		{
-			name:          "Text format info",
-			service:       &AWSSNSService{messageFormat: "text"},
-			title:         "Test Title",
-			body:          "Test Body",
-			notifyType:    NotifyTypeInfo,
-			expectedEmoji: "ℹ️",
+			name:           "Text format info",
+			service:        &AWSSNSService{messageFormat: "text"},
+			title:          "Test Title",
+			body:           "Test Body",
+			notifyType:     NotifyTypeInfo,
+			expectedEmoji:  "ℹ️",
 			expectedFormat: "text",
 		},
 		{
-			name:          "Text format success",
-			service:       &AWSSNSService{messageFormat: "text"},
-			title:         "Success",
-			body:          "Operation completed",
-			notifyType:    NotifyTypeSuccess,
-			expectedEmoji: "✅",
+			name:           "Text format success",
+			service:        &AWSSNSService{messageFormat: "text"},
+			title:          "Success",
+			body:           "Operation completed",
+			notifyType:     NotifyTypeSuccess,
+			expectedEmoji:  "✅",
 			expectedFormat: "text",
 		},
 		{
-			name:          "JSON format warning",
-			service:       &AWSSNSService{messageFormat: "json"},
-			title:         "Warning",
-			body:          "Something needs attention",
-			notifyType:    NotifyTypeWarning,
-			expectedEmoji: "⚠️",
+			name:           "JSON format warning",
+			service:        &AWSSNSService{messageFormat: "json"},
+			title:          "Warning",
+			body:           "Something needs attention",
+			notifyType:     NotifyTypeWarning,
+			expectedEmoji:  "⚠️",
 			expectedFormat: "json",
 		},
 		{
-			name:          "JSON format error",
-			service:       &AWSSNSService{messageFormat: "json"},
-			title:         "Error",
-			body:          "Something went wrong",
-			notifyType:    NotifyTypeError,
-			expectedEmoji: "❌",
+			name:           "JSON format error",
+			service:        &AWSSNSService{messageFormat: "json"},
+			title:          "Error",
+			body:           "Something went wrong",
+			notifyType:     NotifyTypeError,
+			expectedEmoji:  "❌",
 			expectedFormat: "json",
 		},
 	}
@@ -482,12 +482,12 @@ func TestAWSSNSService_MessageAttributes(t *testing.T) {
 
 func TestAWSSNSService_LongMessage(t *testing.T) {
 	service := NewAWSSNSService().(*AWSSNSService)
-	
+
 	// Create a body longer than the max length
 	title := "Long Message Test"
 	maxLength := service.GetMaxBodyLength()
 	longBody := strings.Repeat("a", maxLength+100)
-	
+
 	req := NotificationRequest{
 		Title:      title,
 		Body:       longBody,
@@ -504,12 +504,12 @@ func TestAWSSNSService_LongMessage(t *testing.T) {
 	}
 
 	message := service.formatMessage(req.Title, body, req.NotifyType)
-	
+
 	// The message should now be within reasonable bounds
 	if len(message) > maxLength {
 		t.Errorf("Message should be truncated to reasonable length, got length %d", len(message))
 	}
-	
+
 	// Verify the body was actually truncated
 	if !strings.HasSuffix(body, "...") {
 		t.Error("Expected body to be truncated with '...' suffix")

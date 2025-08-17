@@ -502,19 +502,19 @@ func (e *EmailService) addSingleAttachment(message *strings.Builder, boundary st
 
 	// Determine if this is an inline attachment (image)
 	isInline := strings.HasPrefix(mimeType, "image/")
-	
+
 	// Write attachment headers
 	message.WriteString(fmt.Sprintf("\r\n--%s\r\n", boundary))
 	message.WriteString(fmt.Sprintf("Content-Type: %s; name=\"%s\"\r\n", mimeType, filename))
 	message.WriteString("Content-Transfer-Encoding: base64\r\n")
-	
+
 	if isInline {
 		message.WriteString(fmt.Sprintf("Content-Disposition: inline; filename=\"%s\"\r\n", filename))
 		message.WriteString(fmt.Sprintf("Content-ID: <%s>\r\n", filename))
 	} else {
 		message.WriteString(fmt.Sprintf("Content-Disposition: attachment; filename=\"%s\"\r\n", filename))
 	}
-	
+
 	message.WriteString("\r\n")
 
 	// Write base64 content in 76-character lines (RFC 2045)

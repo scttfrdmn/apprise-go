@@ -14,16 +14,16 @@ import (
 
 // RocketChatService implements Rocket.Chat notifications
 type RocketChatService struct {
-	server      string            // Rocket.Chat server URL
-	userID      string            // User ID for authentication
-	authToken   string            // Authentication token
-	username    string            // Username for login authentication
-	password    string            // Password for login authentication
-	channel     string            // Channel or user to send to (#channel, @user, or room ID)
-	botName     string            // Override bot name
-	botAvatar   string            // Override bot avatar URL
-	webhookURL  string            // Webhook URL (alternative to REST API)
-	client      *http.Client
+	server     string // Rocket.Chat server URL
+	userID     string // User ID for authentication
+	authToken  string // Authentication token
+	username   string // Username for login authentication
+	password   string // Password for login authentication
+	channel    string // Channel or user to send to (#channel, @user, or room ID)
+	botName    string // Override bot name
+	botAvatar  string // Override bot avatar URL
+	webhookURL string // Webhook URL (alternative to REST API)
+	client     *http.Client
 }
 
 // RocketChatLoginRequest represents login request payload
@@ -34,8 +34,8 @@ type RocketChatLoginRequest struct {
 
 // RocketChatLoginResponse represents login response
 type RocketChatLoginResponse struct {
-	Status string                     `json:"status"`
-	Data   RocketChatLoginData        `json:"data"`
+	Status string              `json:"status"`
+	Data   RocketChatLoginData `json:"data"`
 }
 
 // RocketChatLoginData represents login data
@@ -46,27 +46,27 @@ type RocketChatLoginData struct {
 
 // RocketChatMessage represents a Rocket.Chat message
 type RocketChatMessage struct {
-	Channel     string                    `json:"channel,omitempty"`
-	Text        string                    `json:"text,omitempty"`
-	Username    string                    `json:"username,omitempty"`
-	IconURL     string                    `json:"icon_url,omitempty"`
-	IconEmoji   string                    `json:"icon_emoji,omitempty"`
-	Attachments []RocketChatAttachment    `json:"attachments,omitempty"`
+	Channel     string                 `json:"channel,omitempty"`
+	Text        string                 `json:"text,omitempty"`
+	Username    string                 `json:"username,omitempty"`
+	IconURL     string                 `json:"icon_url,omitempty"`
+	IconEmoji   string                 `json:"icon_emoji,omitempty"`
+	Attachments []RocketChatAttachment `json:"attachments,omitempty"`
 }
 
 // RocketChatAttachment represents a rich message attachment
 type RocketChatAttachment struct {
-	Title      string                    `json:"title,omitempty"`
-	TitleLink  string                    `json:"title_link,omitempty"`
-	Text       string                    `json:"text,omitempty"`
-	Color      string                    `json:"color,omitempty"`
-	ImageURL   string                    `json:"image_url,omitempty"`
-	ThumbURL   string                    `json:"thumb_url,omitempty"`
-	AuthorName string                    `json:"author_name,omitempty"`
-	AuthorIcon string                    `json:"author_icon,omitempty"`
-	AuthorLink string                    `json:"author_link,omitempty"`
+	Title      string                      `json:"title,omitempty"`
+	TitleLink  string                      `json:"title_link,omitempty"`
+	Text       string                      `json:"text,omitempty"`
+	Color      string                      `json:"color,omitempty"`
+	ImageURL   string                      `json:"image_url,omitempty"`
+	ThumbURL   string                      `json:"thumb_url,omitempty"`
+	AuthorName string                      `json:"author_name,omitempty"`
+	AuthorIcon string                      `json:"author_icon,omitempty"`
+	AuthorLink string                      `json:"author_link,omitempty"`
 	Fields     []RocketChatAttachmentField `json:"fields,omitempty"`
-	Timestamp  string                    `json:"ts,omitempty"`
+	Timestamp  string                      `json:"ts,omitempty"`
 }
 
 // RocketChatAttachmentField represents an attachment field
@@ -78,11 +78,11 @@ type RocketChatAttachmentField struct {
 
 // RocketChatPostMessageRequest represents REST API message request
 type RocketChatPostMessageRequest struct {
-	Channel string                    `json:"channel"`
-	Text    string                    `json:"text,omitempty"`
-	Alias   string                    `json:"alias,omitempty"`
-	Avatar  string                    `json:"avatar,omitempty"`
-	Emoji   string                    `json:"emoji,omitempty"`
+	Channel     string                 `json:"channel"`
+	Text        string                 `json:"text,omitempty"`
+	Alias       string                 `json:"alias,omitempty"`
+	Avatar      string                 `json:"avatar,omitempty"`
+	Emoji       string                 `json:"emoji,omitempty"`
 	Attachments []RocketChatAttachment `json:"attachments,omitempty"`
 }
 
@@ -127,7 +127,7 @@ func (r *RocketChatService) ParseURL(serviceURL *url.URL) error {
 	if serviceURL.Scheme == "rocket" {
 		scheme = "http"
 	}
-	
+
 	port := serviceURL.Port()
 	if port == "" {
 		if serviceURL.Scheme == "rocket" {
@@ -145,7 +145,7 @@ func (r *RocketChatService) ParseURL(serviceURL *url.URL) error {
 	if strings.Contains(serviceURL.Path, "/hooks/") {
 		// Webhook mode
 		r.webhookURL = r.server + serviceURL.Path
-		
+
 		// Extract channel from query or user info
 		query := serviceURL.Query()
 		if channel := query.Get("channel"); channel != "" {
@@ -153,7 +153,7 @@ func (r *RocketChatService) ParseURL(serviceURL *url.URL) error {
 		} else if serviceURL.User != nil {
 			r.channel = serviceURL.User.Username()
 		}
-		
+
 		if r.channel == "" {
 			r.channel = "#general" // Default channel
 		}
@@ -194,31 +194,31 @@ func (r *RocketChatService) ParseURL(serviceURL *url.URL) error {
 
 		// Parse query parameters
 		query := serviceURL.Query()
-		
+
 		if username := query.Get("username"); username != "" {
 			r.username = username
 		}
-		
+
 		if password := query.Get("password"); password != "" {
 			r.password = password
 		}
-		
+
 		if userID := query.Get("user_id"); userID != "" {
 			r.userID = userID
 		}
-		
+
 		if authToken := query.Get("auth_token"); authToken != "" {
 			r.authToken = authToken
 		}
-		
+
 		if channel := query.Get("channel"); channel != "" {
 			r.channel = channel
 		}
-		
+
 		if botName := query.Get("bot_name"); botName != "" {
 			r.botName = botName
 		}
-		
+
 		if botAvatar := query.Get("bot_avatar"); botAvatar != "" {
 			r.botAvatar = botAvatar
 		}
@@ -226,7 +226,7 @@ func (r *RocketChatService) ParseURL(serviceURL *url.URL) error {
 		// Validate authentication for REST API mode
 		hasTokenAuth := r.userID != "" && r.authToken != ""
 		hasPasswordAuth := r.username != "" && r.password != ""
-		
+
 		if !hasTokenAuth && !hasPasswordAuth {
 			return fmt.Errorf("authentication required: either user_id+auth_token or username+password")
 		}
@@ -248,17 +248,17 @@ func (r *RocketChatService) ParseURL(serviceURL *url.URL) error {
 // normalizeChannel normalizes channel identifiers
 func (r *RocketChatService) normalizeChannel(channel string) string {
 	channel = strings.TrimSpace(channel)
-	
+
 	// If it starts with @ or # or is a room ID, keep as is
 	if strings.HasPrefix(channel, "@") || strings.HasPrefix(channel, "#") {
 		return channel
 	}
-	
+
 	// If it looks like a room ID (contains random characters), keep as is
 	if len(channel) > 10 && strings.ContainsAny(channel, "0123456789abcdef") {
 		return channel
 	}
-	
+
 	// Otherwise, assume it's a channel name and add #
 	return "#" + channel
 }
@@ -523,15 +523,15 @@ func (r *RocketChatService) createAttachment(req NotificationRequest) RocketChat
 func (r *RocketChatService) getColorForNotifyType(notifyType NotifyType) string {
 	switch notifyType {
 	case NotifyTypeSuccess:
-		return "good"      // Green
+		return "good" // Green
 	case NotifyTypeWarning:
-		return "warning"   // Yellow
+		return "warning" // Yellow
 	case NotifyTypeError:
-		return "danger"    // Red
+		return "danger" // Red
 	case NotifyTypeInfo:
 		fallthrough
 	default:
-		return "#439FE0"   // Blue
+		return "#439FE0" // Blue
 	}
 }
 
@@ -553,7 +553,7 @@ func (r *RocketChatService) getEmojiForNotifyType(notifyType NotifyType) string 
 func (r *RocketChatService) getIconForNotifyType(notifyType NotifyType) string {
 	// URL to notification type icons (these would need to be hosted somewhere)
 	baseURL := "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/"
-	
+
 	switch notifyType {
 	case NotifyTypeSuccess:
 		return baseURL + "checkmarx.svg"
@@ -590,7 +590,7 @@ func (r *RocketChatService) GetMaxBodyLength() int {
 
 // Example usage and URL formats:
 // rocket://username:password@rocketchat.company.com/general
-// rockets://userid:token@rocketchat.company.com/#alerts  
+// rockets://userid:token@rocketchat.company.com/#alerts
 // rocket://webhook@rocketchat.company.com/hooks/webhook_id/webhook_token
 // rocket://rocketchat.company.com/support?username=bot&password=secret&bot_name=AlertBot
 // rockets://rocketchat.company.com:443/team-dev?user_id=abc123&auth_token=xyz789

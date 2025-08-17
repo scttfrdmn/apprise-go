@@ -322,8 +322,8 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("pover", func() Service { return NewPushoverService() })
 	registry.Register("pushbullet", func() Service { return NewPushbulletService() })
 	registry.Register("pball", func() Service { return NewPushbulletService() })
-	
-	// Mobile push services  
+
+	// Mobile push services
 	registry.Register("fcm", func() Service { return NewFCMService() })
 	registry.Register("apns", func() Service { return NewAPNSService() })
 
@@ -333,11 +333,11 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("mmosts", func() Service { return NewMattermostService() })
 	registry.Register("rocketchat", func() Service { return NewRocketChatService() })
 	registry.Register("rocket", func() Service { return NewRocketChatService() })
-	
+
 	// Incident management
 	registry.Register("pagerduty", func() Service { return NewPagerDutyService() })
 	registry.Register("opsgenie", func() Service { return NewOpsgenieService() })
-	
+
 	// Decentralized messaging
 	registry.Register("matrix", func() Service { return NewMatrixService() })
 
@@ -359,7 +359,7 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	// Monitoring services
 	registry.Register("datadog", func() Service { return NewDatadogService() })
 	registry.Register("newrelic", func() Service { return NewNewRelicService() })
-	
+
 	// Note: Cloud services use webhook proxy patterns for secure credential management
 
 	// Desktop notification services

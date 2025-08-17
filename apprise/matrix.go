@@ -14,14 +14,14 @@ import (
 
 // MatrixService implements Matrix messaging notifications
 type MatrixService struct {
-	homeserver   string
-	accessToken  string
-	username     string
-	password     string
-	rooms        []string
-	msgType      string // "m.text" or "m.notice"
-	htmlFormat   bool
-	client       *http.Client
+	homeserver  string
+	accessToken string
+	username    string
+	password    string
+	rooms       []string
+	msgType     string // "m.text" or "m.notice"
+	htmlFormat  bool
+	client      *http.Client
 }
 
 // NewMatrixService creates a new Matrix service instance
@@ -75,7 +75,7 @@ func (m *MatrixService) ParseURL(serviceURL *url.URL) error {
 		} else {
 			// Could be token as username, or username with token in query
 			// We'll check query parameters first
-			m.username = username  // Preserve username for potential query token
+			m.username = username // Preserve username for potential query token
 		}
 	}
 
@@ -90,7 +90,7 @@ func (m *MatrixService) ParseURL(serviceURL *url.URL) error {
 			}
 		}
 	}
-	
+
 	// Handle room in fragment (URLs like matrix://token@server/#room)
 	if serviceURL.Fragment != "" {
 		// Fragment was likely a room alias that started with # but URL parsing removed it
@@ -165,11 +165,11 @@ func (m *MatrixService) normalizeRoomID(room string) string {
 
 // MatrixLoginRequest represents login request payload
 type MatrixLoginRequest struct {
-	Type                     string `json:"type"`
-	User                     string `json:"user,omitempty"`
-	Password                 string `json:"password,omitempty"`
+	Type                     string                `json:"type"`
+	User                     string                `json:"user,omitempty"`
+	Password                 string                `json:"password,omitempty"`
 	Identifier               *MatrixUserIdentifier `json:"identifier,omitempty"`
-	InitialDeviceDisplayName string `json:"initial_device_display_name,omitempty"`
+	InitialDeviceDisplayName string                `json:"initial_device_display_name,omitempty"`
 }
 
 // MatrixUserIdentifier represents user identifier in login

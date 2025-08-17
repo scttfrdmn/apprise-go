@@ -14,14 +14,14 @@ import (
 
 // GCPPubSubService implements Google Cloud Pub/Sub notifications via webhook
 type GCPPubSubService struct {
-	webhookURL    string
-	projectID     string
-	topicName     string
+	webhookURL     string
+	projectID      string
+	topicName      string
 	serviceAccount string
-	orderingKey   string
-	attributes    map[string]string
-	apiKey        string
-	client        *http.Client
+	orderingKey    string
+	attributes     map[string]string
+	apiKey         string
+	client         *http.Client
 }
 
 // NewGCPPubSubService creates a new Google Cloud Pub/Sub service instance
@@ -139,10 +139,10 @@ func (g *GCPPubSubService) Send(ctx context.Context, req NotificationRequest) er
 
 	// Create payload for Pub/Sub webhook
 	payload := map[string]interface{}{
-		"projectId":    g.projectID,
-		"topicName":    g.topicName,
-		"message":      g.buildMessage(messageData, req),
-		"attributes":   g.buildAttributes(req.NotifyType),
+		"projectId":  g.projectID,
+		"topicName":  g.topicName,
+		"message":    g.buildMessage(messageData, req),
+		"attributes": g.buildAttributes(req.NotifyType),
 	}
 
 	// Add optional fields
@@ -161,14 +161,14 @@ func (g *GCPPubSubService) Send(ctx context.Context, req NotificationRequest) er
 func (g *GCPPubSubService) formatMessage(title, body string, notifyType NotifyType) string {
 	// Create structured message for Pub/Sub
 	messageData := map[string]interface{}{
-		"title":       title,
-		"body":        body,
-		"type":        notifyType.String(),
-		"timestamp":   time.Now().UTC().Format(time.RFC3339),
-		"source":      "apprise-go",
-		"version":     GetVersion(),
-		"severity":    g.getSeverityLevel(notifyType),
-		"category":    "notification",
+		"title":     title,
+		"body":      body,
+		"type":      notifyType.String(),
+		"timestamp": time.Now().UTC().Format(time.RFC3339),
+		"source":    "apprise-go",
+		"version":   GetVersion(),
+		"severity":  g.getSeverityLevel(notifyType),
+		"category":  "notification",
 	}
 
 	// Add visual indicators

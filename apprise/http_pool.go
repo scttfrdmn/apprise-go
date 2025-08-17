@@ -17,15 +17,15 @@ type HTTPClientPool struct {
 
 // HTTPClientConfig represents configuration for HTTP client creation
 type HTTPClientConfig struct {
-	Timeout              time.Duration
-	MaxIdleConns         int
-	MaxConnsPerHost      int
-	MaxIdleConnsPerHost  int
-	IdleConnTimeout      time.Duration
-	TLSHandshakeTimeout  time.Duration
+	Timeout               time.Duration
+	MaxIdleConns          int
+	MaxConnsPerHost       int
+	MaxIdleConnsPerHost   int
+	IdleConnTimeout       time.Duration
+	TLSHandshakeTimeout   time.Duration
 	ExpectContinueTimeout time.Duration
-	DisableKeepAlives    bool
-	InsecureSkipVerify   bool
+	DisableKeepAlives     bool
+	InsecureSkipVerify    bool
 }
 
 // DefaultHTTPClientConfig returns default HTTP client configuration
@@ -46,12 +46,12 @@ func DefaultHTTPClientConfig() HTTPClientConfig {
 // CloudHTTPClientConfig returns optimized configuration for cloud services
 func CloudHTTPClientConfig() HTTPClientConfig {
 	return HTTPClientConfig{
-		Timeout:               60 * time.Second, // Longer timeout for cloud APIs
-		MaxIdleConns:          200,              // More connections for cloud scale
-		MaxConnsPerHost:       50,               // Higher per-host limit
-		MaxIdleConnsPerHost:   20,               // More idle connections per host
+		Timeout:               60 * time.Second,  // Longer timeout for cloud APIs
+		MaxIdleConns:          200,               // More connections for cloud scale
+		MaxConnsPerHost:       50,                // Higher per-host limit
+		MaxIdleConnsPerHost:   20,                // More idle connections per host
 		IdleConnTimeout:       120 * time.Second, // Longer idle timeout
-		TLSHandshakeTimeout:   15 * time.Second, // Longer TLS handshake
+		TLSHandshakeTimeout:   15 * time.Second,  // Longer TLS handshake
 		ExpectContinueTimeout: 2 * time.Second,
 		DisableKeepAlives:     false,
 		InsecureSkipVerify:    false,
@@ -103,19 +103,19 @@ func (p *HTTPClientPool) GetClient(key string, config HTTPClientConfig) *http.Cl
 	p.mu.RLock()
 	client, exists := p.clients[key]
 	p.mu.RUnlock()
-	
+
 	if exists {
 		return client
 	}
-	
+
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	
+
 	// Double-check pattern
 	if client, exists := p.clients[key]; exists {
 		return client
 	}
-	
+
 	// Create new transport
 	transport := &http.Transport{
 		DialContext: (&net.Dialer{
@@ -135,16 +135,16 @@ func (p *HTTPClientPool) GetClient(key string, config HTTPClientConfig) *http.Cl
 		// Enable HTTP/2
 		ForceAttemptHTTP2: true,
 	}
-	
+
 	// Create new client
 	client = &http.Client{
 		Transport: transport,
 		Timeout:   config.Timeout,
 	}
-	
+
 	p.clients[key] = client
 	p.transports[key] = transport
-	
+
 	return client
 }
 
@@ -152,7 +152,7 @@ func (p *HTTPClientPool) GetClient(key string, config HTTPClientConfig) *http.Cl
 func (p *HTTPClientPool) CloseIdleConnections() {
 	p.mu.RLock()
 	defer p.mu.RUnlock()
-	
+
 	for _, transport := range p.transports {
 		transport.CloseIdleConnections()
 	}
@@ -162,12 +162,12 @@ func (p *HTTPClientPool) CloseIdleConnections() {
 func (p *HTTPClientPool) RemoveClient(key string) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	
+
 	if transport, exists := p.transports[key]; exists {
 		transport.CloseIdleConnections()
 		delete(p.transports, key)
 	}
-	
+
 	delete(p.clients, key)
 }
 

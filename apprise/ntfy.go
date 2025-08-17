@@ -14,20 +14,20 @@ import (
 
 // NtfyService implements Ntfy push notification service
 type NtfyService struct {
-	baseURL    string
-	topic      string
-	username   string
-	password   string
-	token      string
-	priority   int
-	tags       []string
-	delay      string
-	actions    []string
-	attach     string
-	filename   string
-	click      string
-	email      string
-	client     *http.Client
+	baseURL  string
+	topic    string
+	username string
+	password string
+	token    string
+	priority int
+	tags     []string
+	delay    string
+	actions  []string
+	attach   string
+	filename string
+	click    string
+	email    string
+	client   *http.Client
 }
 
 // NewNtfyService creates a new Ntfy service instance

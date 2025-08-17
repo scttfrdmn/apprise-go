@@ -149,7 +149,7 @@ func TestAzureServiceBusService_ParseURL(t *testing.T) {
 
 func TestAzureServiceBusService_TestURL(t *testing.T) {
 	service := NewAzureServiceBusService()
-	
+
 	tests := []struct {
 		name        string
 		url         string
@@ -378,7 +378,7 @@ func TestAzureServiceBusService_SendWithAPIKey(t *testing.T) {
 
 func TestAzureServiceBusService_FormatMessage(t *testing.T) {
 	service := &AzureServiceBusService{}
-	
+
 	tests := []struct {
 		name       string
 		title      string
@@ -451,10 +451,10 @@ func TestAzureServiceBusService_FormatMessage(t *testing.T) {
 
 func TestAzureServiceBusService_BuildAuthentication(t *testing.T) {
 	tests := []struct {
-		name             string
-		service          *AzureServiceBusService
-		expectedType     string
-		expectedKeyName  string
+		name            string
+		service         *AzureServiceBusService
+		expectedType    string
+		expectedKeyName string
 	}{
 		{
 			name:            "SAS authentication",
@@ -488,10 +488,10 @@ func TestAzureServiceBusService_BuildAuthentication(t *testing.T) {
 
 func TestAzureServiceBusService_BuildDestination(t *testing.T) {
 	tests := []struct {
-		name             string
-		service          *AzureServiceBusService
-		expectedType     string
-		expectedName     string
+		name                 string
+		service              *AzureServiceBusService
+		expectedType         string
+		expectedName         string
 		expectedSubscription string
 	}{
 		{
@@ -575,7 +575,7 @@ func TestAzureServiceBusService_BuildMessageProperties(t *testing.T) {
 
 func TestAzureServiceBusService_GetSeverityLevel(t *testing.T) {
 	service := &AzureServiceBusService{}
-	
+
 	tests := []struct {
 		notifyType NotifyType
 		expected   string

@@ -14,19 +14,19 @@ import (
 
 // AWSSESService implements Amazon SES notifications via API Gateway webhook
 type AWSSESService struct {
-	webhookURL    string
-	region        string
-	fromEmail     string
-	fromName      string
-	toEmails      []string
-	ccEmails      []string
-	bccEmails     []string
-	replyTo       string
-	subject       string
-	template      string
-	templateData  map[string]interface{}
-	apiKey        string
-	client        *http.Client
+	webhookURL   string
+	region       string
+	fromEmail    string
+	fromName     string
+	toEmails     []string
+	ccEmails     []string
+	bccEmails    []string
+	replyTo      string
+	subject      string
+	template     string
+	templateData map[string]interface{}
+	apiKey       string
+	client       *http.Client
 }
 
 // NewAWSSESService creates a new AWS SES service instance
@@ -182,10 +182,10 @@ func (a *AWSSESService) Send(ctx context.Context, req NotificationRequest) error
 
 	// Create payload for SES webhook
 	payload := map[string]interface{}{
-		"region":     a.region,
-		"source":     a.buildFromEmail(),
+		"region":      a.region,
+		"source":      a.buildFromEmail(),
 		"destination": a.buildDestination(),
-		"message":    a.buildMessage(req, subject),
+		"message":     a.buildMessage(req, subject),
 	}
 
 	// Add reply-to if specified
@@ -234,19 +234,19 @@ func (a *AWSSESService) buildFromEmail() string {
 // buildDestination constructs the SES destination object
 func (a *AWSSESService) buildDestination() map[string]interface{} {
 	destination := make(map[string]interface{})
-	
+
 	if len(a.toEmails) > 0 {
 		destination["toAddresses"] = a.toEmails
 	}
-	
+
 	if len(a.ccEmails) > 0 {
 		destination["ccAddresses"] = a.ccEmails
 	}
-	
+
 	if len(a.bccEmails) > 0 {
 		destination["bccAddresses"] = a.bccEmails
 	}
-	
+
 	return destination
 }
 
@@ -309,21 +309,21 @@ func (a *AWSSESService) formatMessageBody(title, body string, notifyType NotifyT
 	// Create HTML version
 	var htmlBuilder strings.Builder
 	htmlBuilder.WriteString(`<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>`)
-	htmlBuilder.WriteString(fmt.Sprintf(`<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">"`))
-	
+	htmlBuilder.WriteString(`<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">`)
+
 	if title != "" {
-		htmlBuilder.WriteString(fmt.Sprintf(`<h2 style="color: %s; margin-bottom: 20px;">%s %s</h2>`, 
+		htmlBuilder.WriteString(fmt.Sprintf(`<h2 style="color: %s; margin-bottom: 20px;">%s %s</h2>`,
 			color, emoji, htmlEscape(title)))
 	}
-	
+
 	if body != "" {
 		// Convert newlines to HTML
 		htmlBody := strings.ReplaceAll(htmlEscape(body), "\n", "<br>")
 		htmlBuilder.WriteString(fmt.Sprintf(`<div style="margin-bottom: 30px; line-height: 1.6;">%s</div>`, htmlBody))
 	}
-	
+
 	htmlBuilder.WriteString(`<hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">`)
-	htmlBuilder.WriteString(fmt.Sprintf(`<p style="color: #666; font-size: 12px; margin: 0;">Sent via Apprise-Go on %s</p>`, 
+	htmlBuilder.WriteString(fmt.Sprintf(`<p style="color: #666; font-size: 12px; margin: 0;">Sent via Apprise-Go on %s</p>`,
 		time.Now().Format("January 2, 2006 at 15:04:05 UTC")))
 	htmlBuilder.WriteString(`</div></body></html>`)
 	html = htmlBuilder.String()

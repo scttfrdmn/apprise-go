@@ -14,35 +14,35 @@ import (
 
 // DatadogService implements Datadog monitoring notifications
 type DatadogService struct {
-	apiKey      string            // Datadog API key
-	appKey      string            // Datadog application key (optional)
-	region      string            // Datadog region (us, eu, us3, us5, gov, ap1)
-	tags        []string          // Default tags to apply
-	webhookURL  string            // Webhook proxy URL for secure credential management
-	proxyAPIKey string            // API key for webhook authentication
+	apiKey      string   // Datadog API key
+	appKey      string   // Datadog application key (optional)
+	region      string   // Datadog region (us, eu, us3, us5, gov, ap1)
+	tags        []string // Default tags to apply
+	webhookURL  string   // Webhook proxy URL for secure credential management
+	proxyAPIKey string   // API key for webhook authentication
 	client      *http.Client
 }
 
 // DatadogEvent represents a Datadog event
 type DatadogEvent struct {
-	Title          string    `json:"title"`
-	Text           string    `json:"text"`
-	DateHappened   int64     `json:"date_happened,omitempty"`
-	Priority       string    `json:"priority,omitempty"`          // "normal" or "low"
-	AlertType      string    `json:"alert_type,omitempty"`        // "error", "warning", "info", "success"
-	AggregationKey string    `json:"aggregation_key,omitempty"`
-	SourceTypeName string    `json:"source_type_name,omitempty"`
-	Host           string    `json:"host,omitempty"`
-	Tags           []string  `json:"tags,omitempty"`
+	Title          string   `json:"title"`
+	Text           string   `json:"text"`
+	DateHappened   int64    `json:"date_happened,omitempty"`
+	Priority       string   `json:"priority,omitempty"`   // "normal" or "low"
+	AlertType      string   `json:"alert_type,omitempty"` // "error", "warning", "info", "success"
+	AggregationKey string   `json:"aggregation_key,omitempty"`
+	SourceTypeName string   `json:"source_type_name,omitempty"`
+	Host           string   `json:"host,omitempty"`
+	Tags           []string `json:"tags,omitempty"`
 }
 
 // DatadogMetric represents a Datadog metric submission
 type DatadogMetric struct {
-	Metric string                 `json:"metric"`
-	Points [][]interface{}        `json:"points"`
-	Type   string                 `json:"type,omitempty"`    // "count", "rate", "gauge"
-	Host   string                 `json:"host,omitempty"`
-	Tags   []string               `json:"tags,omitempty"`
+	Metric string          `json:"metric"`
+	Points [][]interface{} `json:"points"`
+	Type   string          `json:"type,omitempty"` // "count", "rate", "gauge"
+	Host   string          `json:"host,omitempty"`
+	Tags   []string        `json:"tags,omitempty"`
 }
 
 // DatadogMetricsPayload represents the metrics submission payload
@@ -52,25 +52,25 @@ type DatadogMetricsPayload struct {
 
 // DatadogLog represents a Datadog log entry
 type DatadogLog struct {
-	Message   string                 `json:"message"`
-	Level     string                 `json:"level,omitempty"`     // "DEBUG", "INFO", "WARN", "ERROR"
-	Timestamp int64                  `json:"timestamp,omitempty"`
-	Hostname  string                 `json:"hostname,omitempty"`
-	Service   string                 `json:"service,omitempty"`
-	Tags      []string               `json:"tags,omitempty"`
+	Message    string                 `json:"message"`
+	Level      string                 `json:"level,omitempty"` // "DEBUG", "INFO", "WARN", "ERROR"
+	Timestamp  int64                  `json:"timestamp,omitempty"`
+	Hostname   string                 `json:"hostname,omitempty"`
+	Service    string                 `json:"service,omitempty"`
+	Tags       []string               `json:"tags,omitempty"`
 	Attributes map[string]interface{} `json:"attributes,omitempty"`
 }
 
 // DatadogWebhookPayload represents webhook proxy payload
 type DatadogWebhookPayload struct {
-	Service     string                 `json:"service"`
-	Region      string                 `json:"region"`
-	Event       *DatadogEvent          `json:"event,omitempty"`
-	Metrics     *DatadogMetricsPayload `json:"metrics,omitempty"`
-	Log         *DatadogLog            `json:"log,omitempty"`
-	Timestamp   string                 `json:"timestamp"`
-	Source      string                 `json:"source"`
-	Version     string                 `json:"version"`
+	Service   string                 `json:"service"`
+	Region    string                 `json:"region"`
+	Event     *DatadogEvent          `json:"event,omitempty"`
+	Metrics   *DatadogMetricsPayload `json:"metrics,omitempty"`
+	Log       *DatadogLog            `json:"log,omitempty"`
+	Timestamp string                 `json:"timestamp"`
+	Source    string                 `json:"source"`
+	Version   string                 `json:"version"`
 }
 
 // NewDatadogService creates a new Datadog service instance
@@ -131,7 +131,7 @@ func (d *DatadogService) ParseURL(serviceURL *url.URL) error {
 
 		d.apiKey = serviceURL.User.Username()
 		if d.apiKey == "" {
-			return fmt.Errorf("Datadog API key is required")
+			return fmt.Errorf("datadog API key is required")
 		}
 
 		// Extract app key if provided as password
@@ -237,8 +237,8 @@ func (d *DatadogService) createLog(req NotificationRequest) *DatadogLog {
 		Tags:      d.mergeTags(req.Tags),
 		Attributes: map[string]interface{}{
 			"notification_type": req.NotifyType.String(),
-			"title":            req.Title,
-			"source":           "apprise-go",
+			"title":             req.Title,
+			"source":            "apprise-go",
 		},
 	}
 
@@ -251,14 +251,14 @@ func (d *DatadogService) createLog(req NotificationRequest) *DatadogLog {
 	if req.AttachmentMgr != nil && req.AttachmentMgr.Count() > 0 {
 		attachments := req.AttachmentMgr.GetAll()
 		attachmentInfo := make([]map[string]string, len(attachments))
-		
+
 		for i, attachment := range attachments {
 			attachmentInfo[i] = map[string]string{
 				"name":      attachment.GetName(),
 				"mime_type": attachment.GetMimeType(),
 			}
 		}
-		
+
 		log.Attributes["attachments"] = attachmentInfo
 	}
 
@@ -268,11 +268,11 @@ func (d *DatadogService) createLog(req NotificationRequest) *DatadogLog {
 // sendViaWebhook sends data via webhook proxy
 func (d *DatadogService) sendViaWebhook(ctx context.Context, event *DatadogEvent, metric *DatadogMetric, log *DatadogLog) error {
 	payload := DatadogWebhookPayload{
-		Service: "datadog",
-		Region:  d.region,
-		Event:   event,
-		Metrics: &DatadogMetricsPayload{Series: []DatadogMetric{*metric}},
-		Log:     log,
+		Service:   "datadog",
+		Region:    d.region,
+		Event:     event,
+		Metrics:   &DatadogMetricsPayload{Series: []DatadogMetric{*metric}},
+		Log:       log,
 		Timestamp: time.Now().UTC().Format(time.RFC3339),
 		Source:    "apprise-go",
 		Version:   GetVersion(),
@@ -304,7 +304,7 @@ func (d *DatadogService) sendViaWebhook(ctx context.Context, event *DatadogEvent
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("Datadog webhook error (status %d): %s", resp.StatusCode, string(body))
+		return fmt.Errorf("datadog webhook error (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	return nil
@@ -357,7 +357,7 @@ func (d *DatadogService) sendEvent(ctx context.Context, baseURL string, event *D
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("Datadog event API error (status %d): %s", resp.StatusCode, string(body))
+		return fmt.Errorf("datadog event API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	return nil
@@ -391,7 +391,7 @@ func (d *DatadogService) sendMetric(ctx context.Context, baseURL string, metric 
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("Datadog metrics API error (status %d): %s", resp.StatusCode, string(body))
+		return fmt.Errorf("datadog metrics API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	return nil
@@ -422,7 +422,7 @@ func (d *DatadogService) sendLogToURL(ctx context.Context, logsBaseURL string, l
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("Datadog logs API error (status %d): %s", resp.StatusCode, string(body))
+		return fmt.Errorf("datadog logs API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	return nil
@@ -468,7 +468,7 @@ func (d *DatadogService) setAuthHeaders(req *http.Request) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", GetUserAgent())
 	req.Header.Set("DD-API-KEY", d.apiKey)
-	
+
 	if d.appKey != "" {
 		req.Header.Set("DD-APPLICATION-KEY", d.appKey)
 	}

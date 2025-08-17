@@ -14,25 +14,25 @@ import (
 
 // NewRelicService implements New Relic monitoring notifications
 type NewRelicService struct {
-	apiKey        string            // New Relic API key (Ingest - License or User API Key)
-	accountID     string            // New Relic account ID
-	region        string            // New Relic region (us, eu)
-	webhookURL    string            // Webhook proxy URL for secure credential management
-	proxyAPIKey   string            // API key for webhook authentication
-	client        *http.Client
+	apiKey      string // New Relic API key (Ingest - License or User API Key)
+	accountID   string // New Relic account ID
+	region      string // New Relic region (us, eu)
+	webhookURL  string // Webhook proxy URL for secure credential management
+	proxyAPIKey string // API key for webhook authentication
+	client      *http.Client
 }
 
 // NewRelicEvent represents a New Relic custom event
 type NewRelicEvent struct {
-	EventType      string                 `json:"eventType"`
-	Timestamp      int64                  `json:"timestamp,omitempty"`
-	Title          string                 `json:"title"`
-	Message        string                 `json:"message"`
-	NotificationType string               `json:"notificationType"`
-	Source         string                 `json:"source"`
-	Severity       string                 `json:"severity"`
-	Tags           map[string]string      `json:"tags,omitempty"`
-	Attributes     map[string]interface{} `json:"attributes,omitempty"`
+	EventType        string                 `json:"eventType"`
+	Timestamp        int64                  `json:"timestamp,omitempty"`
+	Title            string                 `json:"title"`
+	Message          string                 `json:"message"`
+	NotificationType string                 `json:"notificationType"`
+	Source           string                 `json:"source"`
+	Severity         string                 `json:"severity"`
+	Tags             map[string]string      `json:"tags,omitempty"`
+	Attributes       map[string]interface{} `json:"attributes,omitempty"`
 }
 
 // NewRelicLogEntry represents a New Relic log entry
@@ -49,7 +49,7 @@ type NewRelicLogEntry struct {
 // NewRelicMetric represents a New Relic metric
 type NewRelicMetric struct {
 	Name       string                 `json:"name"`
-	Type       string                 `json:"type"`        // "gauge", "count", "summary"
+	Type       string                 `json:"type"` // "gauge", "count", "summary"
 	Value      interface{}            `json:"value"`
 	Timestamp  int64                  `json:"timestamp,omitempty"`
 	Interval   int64                  `json:"interval,omitempty"`
@@ -73,15 +73,15 @@ type NewRelicLogsPayload struct {
 
 // NewRelicWebhookPayload represents webhook proxy payload
 type NewRelicWebhookPayload struct {
-	Service     string                  `json:"service"`
-	AccountID   string                  `json:"account_id"`
-	Region      string                  `json:"region"`
-	Events      *NewRelicEventsPayload  `json:"events,omitempty"`
-	Metrics     *NewRelicMetricsPayload `json:"metrics,omitempty"`
-	Logs        *NewRelicLogsPayload    `json:"logs,omitempty"`
-	Timestamp   string                  `json:"timestamp"`
-	Source      string                  `json:"source"`
-	Version     string                  `json:"version"`
+	Service   string                  `json:"service"`
+	AccountID string                  `json:"account_id"`
+	Region    string                  `json:"region"`
+	Events    *NewRelicEventsPayload  `json:"events,omitempty"`
+	Metrics   *NewRelicMetricsPayload `json:"metrics,omitempty"`
+	Logs      *NewRelicLogsPayload    `json:"logs,omitempty"`
+	Timestamp string                  `json:"timestamp"`
+	Source    string                  `json:"source"`
+	Version   string                  `json:"version"`
 }
 
 // NewNewRelicService creates a new New Relic service instance
@@ -200,15 +200,15 @@ func (n *NewRelicService) Send(ctx context.Context, req NotificationRequest) err
 // createEvent creates a New Relic event from notification request
 func (n *NewRelicService) createEvent(req NotificationRequest) *NewRelicEvent {
 	event := &NewRelicEvent{
-		EventType:            "AppriseNotification",
-		Timestamp:            time.Now().Unix() * 1000, // New Relic expects milliseconds
-		Title:                req.Title,
-		Message:              req.Body,
-		NotificationType:     req.NotifyType.String(),
-		Source:               "apprise-go",
-		Severity:             n.getSeverityForNotifyType(req.NotifyType),
-		Tags:                 make(map[string]string),
-		Attributes:           make(map[string]interface{}),
+		EventType:        "AppriseNotification",
+		Timestamp:        time.Now().Unix() * 1000, // New Relic expects milliseconds
+		Title:            req.Title,
+		Message:          req.Body,
+		NotificationType: req.NotifyType.String(),
+		Source:           "apprise-go",
+		Severity:         n.getSeverityForNotifyType(req.NotifyType),
+		Tags:             make(map[string]string),
+		Attributes:       make(map[string]interface{}),
 	}
 
 	// Convert tags to map format
@@ -236,7 +236,7 @@ func (n *NewRelicService) createEvent(req NotificationRequest) *NewRelicEvent {
 	// Add attachment info
 	if req.AttachmentMgr != nil && req.AttachmentMgr.Count() > 0 {
 		event.Attributes["attachment_count"] = req.AttachmentMgr.Count()
-		
+
 		attachments := req.AttachmentMgr.GetAll()
 		attachmentTypes := make([]string, len(attachments))
 		for i, attachment := range attachments {
@@ -257,7 +257,7 @@ func (n *NewRelicService) createMetric(req NotificationRequest) *NewRelicMetric 
 		Timestamp: time.Now().Unix() * 1000,
 		Attributes: map[string]interface{}{
 			"notification_type": req.NotifyType.String(),
-			"source":           "apprise-go",
+			"source":            "apprise-go",
 		},
 	}
 
@@ -305,14 +305,14 @@ func (n *NewRelicService) createLog(req NotificationRequest) *NewRelicLogEntry {
 	if req.AttachmentMgr != nil && req.AttachmentMgr.Count() > 0 {
 		attachments := req.AttachmentMgr.GetAll()
 		attachmentInfo := make([]map[string]string, len(attachments))
-		
+
 		for i, attachment := range attachments {
 			attachmentInfo[i] = map[string]string{
 				"name":      attachment.GetName(),
 				"mime_type": attachment.GetMimeType(),
 			}
 		}
-		
+
 		log.Attributes["attachments"] = attachmentInfo
 	}
 

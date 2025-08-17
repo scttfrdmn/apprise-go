@@ -13,18 +13,18 @@ import (
 
 // OpsgenieService implements Opsgenie alerting and incident management
 type OpsgenieService struct {
-	apiKey     string
-	region     string // us, eu
-	targets    []string
-	tags       []string
-	teams      []string
-	priority   string // P1, P2, P3, P4, P5
-	alias      string
-	entity     string
-	source     string
-	user       string
-	note       string
-	client     *http.Client
+	apiKey   string
+	region   string // us, eu
+	targets  []string
+	tags     []string
+	teams    []string
+	priority string // P1, P2, P3, P4, P5
+	alias    string
+	entity   string
+	source   string
+	user     string
+	note     string
+	client   *http.Client
 }
 
 // NewOpsgenieService creates a new Opsgenie service instance
@@ -59,7 +59,7 @@ func (o *OpsgenieService) ParseURL(serviceURL *url.URL) error {
 		if o.apiKey == "" {
 			return fmt.Errorf("opsgenie API key is required")
 		}
-		
+
 		// Extract region from host (optional, defaults to 'us')
 		if serviceURL.Host != "" {
 			region := strings.ToLower(serviceURL.Host)

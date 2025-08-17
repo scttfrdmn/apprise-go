@@ -230,7 +230,7 @@ func TestEmailService_MultipleAttachments(t *testing.T) {
 
 	// Create attachment manager with multiple attachments
 	attachmentMgr := NewAttachmentManager()
-	
+
 	err := attachmentMgr.AddData([]byte("Document content"), "doc.txt", "text/plain")
 	if err != nil {
 		t.Fatalf("Failed to add text attachment: %v", err)
