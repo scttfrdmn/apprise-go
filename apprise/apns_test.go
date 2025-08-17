@@ -260,7 +260,7 @@ func TestAPNSService_Send(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"uuid":"550e8400-e29b-41d4-a716-446655440000"}`))
+		_, _ = w.Write([]byte(`{"uuid":"550e8400-e29b-41d4-a716-446655440000"}`))
 	}))
 	defer server.Close()
 
@@ -270,7 +270,7 @@ func TestAPNSService_Send(t *testing.T) {
 
 	service := NewAPNSService().(*APNSService)
 	parsedURL, _ := url.Parse(apnsURL)
-	service.ParseURL(parsedURL)
+	_ = service.ParseURL(parsedURL)
 
 	// Test different notification types
 	tests := []struct {
@@ -339,7 +339,7 @@ func TestAPNSService_SendWithAPIKey(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"uuid":"test-uuid"}`))
+		_, _ = w.Write([]byte(`{"uuid":"test-uuid"}`))
 	}))
 	defer server.Close()
 
@@ -348,7 +348,7 @@ func TestAPNSService_SendWithAPIKey(t *testing.T) {
 
 	service := NewAPNSService().(*APNSService)
 	parsedURL, _ := url.Parse(apnsURL)
-	service.ParseURL(parsedURL)
+	_ = service.ParseURL(parsedURL)
 
 	req := NotificationRequest{
 		Title:      "API Key Test",

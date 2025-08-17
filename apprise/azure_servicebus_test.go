@@ -271,7 +271,7 @@ func TestAzureServiceBusService_Send(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"MessageId":"12345-67890-abcdef","SequenceNumber":12345}`))
+		_, _ = w.Write([]byte(`{"MessageId":"12345-67890-abcdef","SequenceNumber":12345}`))
 	}))
 	defer server.Close()
 
@@ -281,7 +281,7 @@ func TestAzureServiceBusService_Send(t *testing.T) {
 
 	service := NewAzureServiceBusService().(*AzureServiceBusService)
 	parsedURL, _ := url.Parse(sbURL)
-	service.ParseURL(parsedURL)
+	_ = service.ParseURL(parsedURL)
 
 	// Test different notification types
 	tests := []struct {
@@ -350,7 +350,7 @@ func TestAzureServiceBusService_SendWithAPIKey(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"MessageId":"test-message-id"}`))
+		_, _ = w.Write([]byte(`{"MessageId":"test-message-id"}`))
 	}))
 	defer server.Close()
 
@@ -359,7 +359,7 @@ func TestAzureServiceBusService_SendWithAPIKey(t *testing.T) {
 
 	service := NewAzureServiceBusService().(*AzureServiceBusService)
 	parsedURL, _ := url.Parse(sbURL)
-	service.ParseURL(parsedURL)
+	_ = service.ParseURL(parsedURL)
 
 	req := NotificationRequest{
 		Title:      "API Key Test",

@@ -378,7 +378,7 @@ func (a *AzureServiceBusService) sendWebhookRequest(ctx context.Context, payload
 	if err != nil {
 		return fmt.Errorf("failed to send Service Bus webhook request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Check response status
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {

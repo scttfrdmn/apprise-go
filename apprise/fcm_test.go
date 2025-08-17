@@ -204,7 +204,7 @@ func TestFCMService_Send(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"name":"projects/test/messages/12345"}`))
+		_, _ = w.Write([]byte(`{"name":"projects/test/messages/12345"}`))
 	}))
 	defer server.Close()
 
@@ -214,7 +214,7 @@ func TestFCMService_Send(t *testing.T) {
 
 	service := NewFCMService().(*FCMService)
 	parsedURL, _ := url.Parse(fcmURL)
-	service.ParseURL(parsedURL)
+	_ = service.ParseURL(parsedURL)
 
 	// Test different notification types
 	tests := []struct {
@@ -283,7 +283,7 @@ func TestFCMService_SendWithAPIKey(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"name":"projects/test/messages/67890"}`))
+		_, _ = w.Write([]byte(`{"name":"projects/test/messages/67890"}`))
 	}))
 	defer server.Close()
 
@@ -292,7 +292,7 @@ func TestFCMService_SendWithAPIKey(t *testing.T) {
 
 	service := NewFCMService().(*FCMService)
 	parsedURL, _ := url.Parse(fcmURL)
-	service.ParseURL(parsedURL)
+	_ = service.ParseURL(parsedURL)
 
 	req := NotificationRequest{
 		Title:      "API Key Test",

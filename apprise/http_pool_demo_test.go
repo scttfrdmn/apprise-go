@@ -22,7 +22,7 @@ func TestHTTPConnectionPoolingDemo(t *testing.T) {
 		mu.Unlock()
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -38,7 +38,7 @@ func TestHTTPConnectionPoolingDemo(t *testing.T) {
 			defer wg.Done()
 			resp, err := pooledClient.Get(server.URL)
 			if err == nil {
-				resp.Body.Close()
+				_ = resp.Body.Close()
 				mu.Lock()
 				pooledCount++
 				mu.Unlock()
@@ -59,7 +59,7 @@ func TestHTTPPoolPerformanceComparison(t *testing.T) {
 		// Simulate some processing time
 		time.Sleep(1 * time.Millisecond)
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	}))
 	defer server.Close()
 
@@ -76,7 +76,7 @@ func TestHTTPPoolPerformanceComparison(t *testing.T) {
 			defer wg.Done()
 			resp, err := pooledClient.Get(server.URL)
 			if err == nil {
-				resp.Body.Close()
+				_ = resp.Body.Close()
 			}
 		}()
 	}
@@ -92,7 +92,7 @@ func TestHTTPPoolPerformanceComparison(t *testing.T) {
 			client := &http.Client{Timeout: 30 * time.Second}
 			resp, err := client.Get(server.URL)
 			if err == nil {
-				resp.Body.Close()
+				_ = resp.Body.Close()
 			}
 		}()
 	}

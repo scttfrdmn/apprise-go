@@ -326,7 +326,7 @@ func (g *GCPPubSubService) sendWebhookRequest(ctx context.Context, payload map[s
 	if err != nil {
 		return fmt.Errorf("failed to send Pub/Sub webhook request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Check response status
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {

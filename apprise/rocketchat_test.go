@@ -342,7 +342,7 @@ func TestRocketChatService_SendWebhook(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"success": true}`))
+		_, _ = w.Write([]byte(`{"success": true}`))
 	}))
 	defer server.Close()
 
@@ -431,7 +431,7 @@ func TestRocketChatService_SendAPI(t *testing.T) {
 			}
 
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(response)
+			_ = json.NewEncoder(w).Encode(response)
 
 		} else if strings.HasSuffix(r.URL.Path, "/chat.postMessage") {
 			// Mock message posting endpoint
@@ -459,7 +459,7 @@ func TestRocketChatService_SendAPI(t *testing.T) {
 			}
 
 			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte(`{"success": true}`))
+			_, _ = w.Write([]byte(`{"success": true}`))
 
 		} else {
 			t.Errorf("Unexpected API endpoint: %s", r.URL.Path)

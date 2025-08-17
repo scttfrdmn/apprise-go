@@ -265,7 +265,7 @@ func TestAWSSESService_Send(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"MessageId":"12345-67890-abcdef"}`))
+		_, _ = w.Write([]byte(`{"MessageId":"12345-67890-abcdef"}`))
 	}))
 	defer server.Close()
 
@@ -275,7 +275,7 @@ func TestAWSSESService_Send(t *testing.T) {
 
 	service := NewAWSSESService().(*AWSSESService)
 	parsedURL, _ := url.Parse(sesURL)
-	service.ParseURL(parsedURL)
+	_ = service.ParseURL(parsedURL)
 
 	// Test different notification types
 	tests := []struct {
@@ -344,7 +344,7 @@ func TestAWSSESService_SendWithAPIKey(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"MessageId":"test-message-id"}`))
+		_, _ = w.Write([]byte(`{"MessageId":"test-message-id"}`))
 	}))
 	defer server.Close()
 
@@ -353,7 +353,7 @@ func TestAWSSESService_SendWithAPIKey(t *testing.T) {
 
 	service := NewAWSSESService().(*AWSSESService)
 	parsedURL, _ := url.Parse(sesURL)
-	service.ParseURL(parsedURL)
+	_ = service.ParseURL(parsedURL)
 
 	req := NotificationRequest{
 		Title:      "API Key Test",

@@ -37,7 +37,7 @@ func TestMSTeamsService_AttachmentSupport(t *testing.T) {
 			t.Fatalf("Failed to decode payload: %v", err)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("1"))
+		_, _ = w.Write([]byte("1"))
 	}))
 	defer server.Close()
 
@@ -87,7 +87,7 @@ func TestMSTeamsService_SendWithAttachments(t *testing.T) {
 			t.Fatalf("Failed to decode payload: %v", err)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("1"))
+		_, _ = w.Write([]byte("1"))
 	}))
 	defer server.Close()
 
@@ -153,7 +153,7 @@ func TestMSTeamsService_SendWithImageAttachment(t *testing.T) {
 			t.Fatalf("Failed to decode payload: %v", err)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("1"))
+		_, _ = w.Write([]byte("1"))
 	}))
 	defer server.Close()
 
@@ -363,7 +363,7 @@ func TestMSTeamsService_SendWithMultipleAttachments(t *testing.T) {
 			t.Fatalf("Failed to decode payload: %v", err)
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("1"))
+		_, _ = w.Write([]byte("1"))
 	}))
 	defer server.Close()
 

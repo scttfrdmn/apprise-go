@@ -209,7 +209,7 @@ func TestAWSSNSService_Send(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"MessageId":"12345-67890-abcdef"}`))
+		_, _ = w.Write([]byte(`{"MessageId":"12345-67890-abcdef"}`))
 	}))
 	defer server.Close()
 
@@ -219,7 +219,7 @@ func TestAWSSNSService_Send(t *testing.T) {
 
 	service := NewAWSSNSService().(*AWSSNSService)
 	parsedURL, _ := url.Parse(snsURL)
-	service.ParseURL(parsedURL)
+	_ = service.ParseURL(parsedURL)
 
 	// Test different notification types
 	tests := []struct {
@@ -288,7 +288,7 @@ func TestAWSSNSService_SendWithAPIKey(t *testing.T) {
 		}
 
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"MessageId":"test-message-id"}`))
+		_, _ = w.Write([]byte(`{"MessageId":"test-message-id"}`))
 	}))
 	defer server.Close()
 
@@ -298,7 +298,7 @@ func TestAWSSNSService_SendWithAPIKey(t *testing.T) {
 
 	service := NewAWSSNSService().(*AWSSNSService)
 	parsedURL, _ := url.Parse(snsURL)
-	service.ParseURL(parsedURL)
+	_ = service.ParseURL(parsedURL)
 
 	req := NotificationRequest{
 		Title:      "API Key Test",
@@ -319,7 +319,7 @@ func TestAWSSNSService_SendError(t *testing.T) {
 	// Create mock server that returns error
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(`{"Error":{"Code":"InvalidParameter","Message":"Invalid topic ARN"}}`))
+		_, _ = w.Write([]byte(`{"Error":{"Code":"InvalidParameter","Message":"Invalid topic ARN"}}`))
 	}))
 	defer server.Close()
 
@@ -328,7 +328,7 @@ func TestAWSSNSService_SendError(t *testing.T) {
 
 	service := NewAWSSNSService().(*AWSSNSService)
 	parsedURL, _ := url.Parse(snsURL)
-	service.ParseURL(parsedURL)
+	_ = service.ParseURL(parsedURL)
 
 	req := NotificationRequest{
 		Title:      "Error Test",

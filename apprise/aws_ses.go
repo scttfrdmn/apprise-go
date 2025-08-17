@@ -427,7 +427,7 @@ func (a *AWSSESService) sendWebhookRequest(ctx context.Context, payload map[stri
 	if err != nil {
 		return fmt.Errorf("failed to send SES webhook request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Check response status
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
