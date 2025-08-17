@@ -350,6 +350,7 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 
 	// IoT services
 	registry.Register("aws-iot", func() Service { return NewAWSIoTService() })
+	registry.Register("gcp-iot", func() Service { return NewGCPIoTService() })
 
 	// Self-hosted services
 	registry.Register("gotify", func() Service { return NewGotifyService() })
