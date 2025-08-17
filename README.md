@@ -153,7 +153,7 @@ This Go port follows a structured versioning approach that tracks the upstream P
 | Feature | Original Python | This Go Port |
 |---------|----------------|--------------|
 | **Language** | Python 3.6+ | Go 1.21+ |
-| **Current Version** | v1.9.4 | v1.9.4-1 |
+| **Current Version** | v1.9.4 | v1.9.4-7 |
 | **Deployment** | pip install + dependencies | Single static binary |
 | **Performance** | ~1ms per notification | ~0.88ms per notification |
 | **Memory Usage** | ~50MB runtime | ~10MB runtime |
@@ -161,11 +161,11 @@ This Go port follows a structured versioning approach that tracks the upstream P
 | **Attachments** | Basic file support | Advanced multi-source framework |
 | **CLI Tool** | `apprise` command | `apprise-cli` binary |
 | **Configuration** | YAML/Text files | YAML/Text files ✅ |
-| **Services** | 90+ services | 18 core services (expanding) |
+| **Services** | 109+ services | 36 core services (expanding) |
 | **Type Safety** | Runtime validation | Compile-time validation |
 
 **Go Port Advantages:**
-- **Performance**: 2x faster with 80% less memory usage
+- **Performance**: ~14% faster with 80% less memory usage
 - **Static Compilation**: Single binary deployment with no external dependencies  
 - **Cross-Platform**: Native compilation for multiple architectures (ARM64, AMD64, etc.)
 - **Concurrency**: Built-in goroutine-based concurrent notification sending
