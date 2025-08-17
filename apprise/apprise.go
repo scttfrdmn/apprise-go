@@ -343,6 +343,9 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 
 	// SMS services
 	registry.Register("twilio", func() Service { return NewTwilioService() })
+	
+	// Voice services
+	registry.Register("twilio-voice", func() Service { return NewTwilioVoiceService() })
 
 	// Self-hosted services
 	registry.Register("gotify", func() Service { return NewGotifyService() })
