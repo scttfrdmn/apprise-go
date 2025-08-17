@@ -363,6 +363,7 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	// DevOps & CI/CD services
 	registry.Register("gitlab", func() Service { return NewGitLabService() })
 	registry.Register("github", func() Service { return NewGitHubService() })
+	registry.Register("jira", func() Service { return NewJiraService() })
 
 	// Note: Cloud services use webhook proxy patterns for secure credential management
 
