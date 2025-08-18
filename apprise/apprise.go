@@ -342,12 +342,25 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 
 	// Decentralized messaging
 	registry.Register("matrix", func() Service { return NewMatrixService() })
+	
+	// Social platforms
+	registry.Register("reddit", func() Service { return NewRedditService() })
+	registry.Register("mastodon", func() Service { return NewMastodonService() })
+	registry.Register("facebook", func() Service { return NewFacebookService() })
+	registry.Register("instagram", func() Service { return NewInstagramService() })
+	registry.Register("youtube", func() Service { return NewYouTubeService() })
+	registry.Register("tiktok", func() Service { return NewTikTokService() })
 
 	// SMS services
 	registry.Register("twilio", func() Service { return NewTwilioService() })
 	registry.Register("bulksms", func() Service { return NewBulkSMSService() })
 	registry.Register("clicksend", func() Service { return NewClickSendService() })
 	registry.Register("messagebird", func() Service { return NewMessageBirdService() })
+	registry.Register("nexmo", func() Service { return NewNexmoService() })
+	registry.Register("vonage", func() Service { return NewNexmoService() }) // Alias for Nexmo
+	registry.Register("plivo", func() Service { return NewPlivoService() })
+	registry.Register("textmagic", func() Service { return NewTextMagicService() })
+	registry.Register("aws-sns-sms", func() Service { return NewAWSSNSSMSService() })
 	registry.Register("signal", func() Service { return NewSignalService() })
 	registry.Register("whatsapp", func() Service { return NewWhatsAppService() })
 	
@@ -355,6 +368,13 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("twilio-voice", func() Service { return NewTwilioVoiceService() })
 	registry.Register("polly", func() Service { return NewPollyService() })
 
+	// IoT and webhook platforms
+	registry.Register("ifttt", func() Service { return NewIFTTTService() })
+	registry.Register("zapier", func() Service { return NewZapierService() })
+	registry.Register("homeassistant", func() Service { return NewHomeAssistantService() })
+	registry.Register("hass", func() Service { return NewHomeAssistantService() }) // Alias
+	registry.Register("nodered", func() Service { return NewNodeREDService() })
+	
 	// IoT services
 	registry.Register("aws-iot", func() Service { return NewAWSIoTService() })
 	registry.Register("gcp-iot", func() Service { return NewGCPIoTService() })

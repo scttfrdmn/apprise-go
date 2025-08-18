@@ -9,11 +9,13 @@ import (
 func GetSupportedServices() []string {
 	return []string{
 		"discord", "slack", "telegram", "email", "sendgrid", "mailgun", "webhook", "msteams",
-		"pushover", "pushbullet", "twilio", "bulksms", "clicksend", "messagebird", "signal", "whatsapp",
-		"desktop", "gotify", "ntfy", "matrix", "mattermost", "pagerduty", "opsgenie",
+		"pushover", "pushbullet", "twilio", "bulksms", "clicksend", "messagebird", "nexmo", "vonage", "plivo", "textmagic", "aws-sns-sms", "signal", "whatsapp",
+		"desktop", "gotify", "ntfy", "matrix", "reddit", "mastodon", "facebook", "instagram", "youtube", "tiktok",
+		"mattermost", "pagerduty", "opsgenie",
 		"aws-sns", "aws-ses", "gcp-pubsub", "azure-servicebus", "github", "gitlab",
 		"jira", "datadog", "newrelic", "linkedin", "twitter", "apns", "fcm",
 		"aws-iot", "gcp-iot", "polly", "twilio-voice", "rocketchat",
+		"ifttt", "zapier", "homeassistant", "hass", "nodered",
 	}
 }
 
@@ -48,6 +50,14 @@ func CreateService(serviceID string) Service {
 		return &ClickSendService{}
 	case "messagebird":
 		return &MessageBirdService{}
+	case "nexmo", "vonage":
+		return &NexmoService{}
+	case "plivo":
+		return &PlivoService{}
+	case "textmagic":
+		return &TextMagicService{}
+	case "aws-sns-sms":
+		return &AWSSNSSMSService{}
 	case "signal":
 		return &SignalService{}
 	case "whatsapp":
@@ -56,6 +66,18 @@ func CreateService(serviceID string) Service {
 		return &DesktopService{}
 	case "matrix":
 		return &MatrixService{}
+	case "reddit":
+		return &RedditService{}
+	case "mastodon":
+		return &MastodonService{}
+	case "facebook":
+		return &FacebookService{}
+	case "instagram":
+		return &InstagramService{}
+	case "youtube":
+		return &YouTubeService{}
+	case "tiktok":
+		return &TikTokService{}
 	case "mattermost":
 		return &MattermostService{}
 	case "pagerduty":
@@ -82,6 +104,14 @@ func CreateService(serviceID string) Service {
 		return &FCMService{}
 	case "rocketchat":
 		return &RocketChatService{}
+	case "ifttt":
+		return &IFTTTService{}
+	case "zapier":
+		return &ZapierService{}
+	case "homeassistant", "hass":
+		return &HomeAssistantService{}
+	case "nodered":
+		return &NodeREDService{}
 	default:
 		return nil
 	}
@@ -131,6 +161,16 @@ func GetServiceFriendlyName(serviceID string) string {
 		return "ClickSend SMS"
 	case "messagebird":
 		return "MessageBird SMS"
+	case "nexmo":
+		return "Nexmo SMS"
+	case "vonage":
+		return "Vonage SMS"
+	case "plivo":
+		return "Plivo SMS"
+	case "textmagic":
+		return "TextMagic SMS"
+	case "aws-sns-sms":
+		return "AWS SNS SMS"
 	case "signal":
 		return "Signal Messenger"
 	case "whatsapp":
@@ -139,6 +179,18 @@ func GetServiceFriendlyName(serviceID string) string {
 		return "Desktop Notifications"
 	case "matrix":
 		return "Matrix"
+	case "reddit":
+		return "Reddit"
+	case "mastodon":
+		return "Mastodon"
+	case "facebook":
+		return "Facebook Pages"
+	case "instagram":
+		return "Instagram"
+	case "youtube":
+		return "YouTube"
+	case "tiktok":
+		return "TikTok"
 	case "mattermost":
 		return "Mattermost"
 	case "pagerduty":
@@ -181,6 +233,14 @@ func GetServiceFriendlyName(serviceID string) string {
 		return "Twilio Voice"
 	case "rocketchat":
 		return "Rocket.Chat"
+	case "ifttt":
+		return "IFTTT Webhooks"
+	case "zapier":
+		return "Zapier Webhooks"
+	case "homeassistant", "hass":
+		return "Home Assistant"
+	case "nodered":
+		return "Node-RED"
 	default:
 		return fmt.Sprintf("Unknown Service (%s)", serviceID)
 	}
