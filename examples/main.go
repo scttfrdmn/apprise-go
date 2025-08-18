@@ -77,7 +77,7 @@ func configExample() {
 	fmt.Println("=== Configuration Example ===")
 
 	app := apprise.New()
-	config := apprise.NewAppriseConfig(app)
+	config := apprise.NewConfigLoader(app)
 
 	// Load from file (assuming config.yaml exists)
 	err := config.AddFromFile("config.yaml")

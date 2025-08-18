@@ -25,32 +25,32 @@ type URLConfig struct {
 	Tags []string `yaml:"tag,omitempty"`
 }
 
-// AppriseConfig manages configuration loading and parsing
-type AppriseConfig struct {
+// ConfigLoader manages configuration loading and parsing
+type ConfigLoader struct {
 	configs []Config
 	apprise *Apprise
 }
 
-// NewAppriseConfig creates a new configuration manager
-func NewAppriseConfig(apprise *Apprise) *AppriseConfig {
-	return &AppriseConfig{
+// NewConfigLoader creates a new configuration manager
+func NewConfigLoader(apprise *Apprise) *ConfigLoader {
+	return &ConfigLoader{
 		configs: make([]Config, 0),
 		apprise: apprise,
 	}
 }
 
 // AddFromFile loads configuration from a local file
-func (ac *AppriseConfig) AddFromFile(configPath string) error {
+func (cl *ConfigLoader) AddFromFile(configPath string) error {
 	content, err := os.ReadFile(configPath)
 	if err != nil {
 		return fmt.Errorf("failed to read config file %s: %w", configPath, err)
 	}
 
-	return ac.parseConfig(string(content), configPath)
+	return cl.parseConfig(string(content), configPath)
 }
 
 // AddFromURL loads configuration from a remote URL
-func (ac *AppriseConfig) AddFromURL(configURL string) error {
+func (cl *ConfigLoader) AddFromURL(configURL string) error {
 	resp, err := http.Get(configURL)
 	if err != nil {
 		return fmt.Errorf("failed to fetch config from %s: %w", configURL, err)
@@ -66,16 +66,16 @@ func (ac *AppriseConfig) AddFromURL(configURL string) error {
 		return fmt.Errorf("failed to read config response from %s: %w", configURL, err)
 	}
 
-	return ac.parseConfig(string(content), configURL)
+	return cl.parseConfig(string(content), configURL)
 }
 
 // LoadDefaultConfigs loads configuration from default locations
-func (ac *AppriseConfig) LoadDefaultConfigs() error {
+func (cl *ConfigLoader) LoadDefaultConfigs() error {
 	defaultPaths := getDefaultConfigPaths()
 
 	for _, path := range defaultPaths {
 		if _, err := os.Stat(path); err == nil {
-			if err := ac.AddFromFile(path); err != nil {
+			if err := cl.AddFromFile(path); err != nil {
 				// Log error but continue with other config files
 				fmt.Printf("Warning: failed to load config from %s: %v\n", path, err)
 			}
@@ -86,10 +86,10 @@ func (ac *AppriseConfig) LoadDefaultConfigs() error {
 }
 
 // ApplyToApprise applies all loaded configurations to the Apprise instance
-func (ac *AppriseConfig) ApplyToApprise() error {
-	for _, config := range ac.configs {
+func (cl *ConfigLoader) ApplyToApprise() error {
+	for _, config := range cl.configs {
 		for _, urlConfig := range config.URLs {
-			if err := ac.apprise.Add(urlConfig.URL, urlConfig.Tags...); err != nil {
+			if err := cl.apprise.Add(urlConfig.URL, urlConfig.Tags...); err != nil {
 				return fmt.Errorf("failed to add URL %s: %w", urlConfig.URL, err)
 			}
 		}
@@ -98,19 +98,19 @@ func (ac *AppriseConfig) ApplyToApprise() error {
 }
 
 // parseConfig determines the format and parses the configuration content
-func (ac *AppriseConfig) parseConfig(content, source string) error {
+func (cl *ConfigLoader) parseConfig(content, source string) error {
 	content = strings.TrimSpace(content)
 
 	// Try to determine if it's YAML or text format
-	if ac.isYAMLFormat(content) {
-		return ac.parseYAMLConfig(content, source)
+	if cl.isYAMLFormat(content) {
+		return cl.parseYAMLConfig(content, source)
 	}
 
-	return ac.parseTextConfig(content, source)
+	return cl.parseTextConfig(content, source)
 }
 
 // isYAMLFormat attempts to determine if content is in YAML format
-func (ac *AppriseConfig) isYAMLFormat(content string) bool {
+func (cl *ConfigLoader) isYAMLFormat(content string) bool {
 	// Simple heuristics to detect YAML
 	lines := strings.Split(content, "\n")
 	for _, line := range lines {
@@ -137,19 +137,19 @@ func (ac *AppriseConfig) isYAMLFormat(content string) bool {
 }
 
 // parseYAMLConfig parses YAML format configuration
-func (ac *AppriseConfig) parseYAMLConfig(content, source string) error {
+func (cl *ConfigLoader) parseYAMLConfig(content, source string) error {
 	var config Config
 
 	if err := yaml.Unmarshal([]byte(content), &config); err != nil {
 		return fmt.Errorf("failed to parse YAML config from %s: %w", source, err)
 	}
 
-	ac.configs = append(ac.configs, config)
+	cl.configs = append(cl.configs, config)
 	return nil
 }
 
 // parseTextConfig parses simple text format configuration
-func (ac *AppriseConfig) parseTextConfig(content, source string) error {
+func (cl *ConfigLoader) parseTextConfig(content, source string) error {
 	config := Config{
 		URLs: make([]URLConfig, 0),
 	}
@@ -165,7 +165,7 @@ func (ac *AppriseConfig) parseTextConfig(content, source string) error {
 		}
 
 		// Parse URL and optional tags
-		urlConfig := ac.parseTextLine(line)
+		urlConfig := cl.parseTextLine(line)
 		if urlConfig.URL != "" {
 			config.URLs = append(config.URLs, urlConfig)
 		}
@@ -175,12 +175,12 @@ func (ac *AppriseConfig) parseTextConfig(content, source string) error {
 		return fmt.Errorf("error reading config from %s: %w", source, err)
 	}
 
-	ac.configs = append(ac.configs, config)
+	cl.configs = append(cl.configs, config)
 	return nil
 }
 
 // parseTextLine parses a single line from text format config
-func (ac *AppriseConfig) parseTextLine(line string) URLConfig {
+func (cl *ConfigLoader) parseTextLine(line string) URLConfig {
 	// Format: URL [tag1,tag2,tag3]
 	// or just: URL
 

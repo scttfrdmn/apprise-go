@@ -104,7 +104,7 @@ func setupConfigurations(app *apprise.Apprise, opts CLIOptions) error {
 		return loadConfigurations(app, opts.ConfigPaths, opts.Verbose)
 	}
 
-	config := apprise.NewAppriseConfig(app)
+	config := apprise.NewConfigLoader(app)
 	if err := config.LoadDefaultConfigs(); err != nil {
 		if opts.Verbose > 0 {
 			fmt.Printf("Warning: %v\n", err)
@@ -260,7 +260,7 @@ func parseFlags() CLIOptions {
 
 // loadConfigurations loads configuration files
 func loadConfigurations(app *apprise.Apprise, configPaths []string, verbose int) error {
-	config := apprise.NewAppriseConfig(app)
+	config := apprise.NewConfigLoader(app)
 
 	for _, path := range configPaths {
 		path = strings.TrimSpace(path)
