@@ -10,10 +10,10 @@ func GetSupportedServices() []string {
 	return []string{
 		"discord", "slack", "telegram", "email", "sendgrid", "mailgun", "webhook", "msteams",
 		"pushover", "pushbullet", "twilio", "bulksms", "clicksend", "messagebird", "nexmo", "vonage", "plivo", "textmagic", "aws-sns-sms", "signal", "whatsapp",
-		"desktop", "gotify", "ntfy", "matrix", "reddit", "mastodon", "facebook", "instagram", "youtube", "tiktok",
+		"desktop", "desktop-advanced", "desktop-interactive", "desktop-persistent", "gotify", "ntfy", "matrix", "reddit", "mastodon", "facebook", "instagram", "youtube", "tiktok",
 		"mattermost", "pagerduty", "opsgenie",
 		"aws-sns", "aws-ses", "gcp-pubsub", "azure-servicebus", "github", "gitlab",
-		"jira", "datadog", "newrelic", "linkedin", "twitter", "apns", "fcm",
+		"jira", "datadog", "newrelic", "linkedin", "twitter", "apns", "fcm", "rich-mobile-push", "batch-mobile-push",
 		"aws-iot", "gcp-iot", "polly", "twilio-voice", "rocketchat",
 		"ifttt", "zapier", "homeassistant", "hass", "nodered",
 	}
@@ -64,6 +64,12 @@ func CreateService(serviceID string) Service {
 		return &WhatsAppService{}
 	case "desktop":
 		return &DesktopService{}
+	case "desktop-advanced":
+		return NewAdvancedDesktopService()
+	case "desktop-interactive":
+		return NewInteractiveDesktopService()
+	case "desktop-persistent":
+		return NewPersistentDesktopService()
 	case "matrix":
 		return &MatrixService{}
 	case "reddit":
@@ -102,6 +108,10 @@ func CreateService(serviceID string) Service {
 		return &APNSService{}
 	case "fcm":
 		return &FCMService{}
+	case "rich-mobile-push":
+		return NewRichMobilePushService()
+	case "batch-mobile-push":
+		return NewBatchMobilePushService()
 	case "rocketchat":
 		return &RocketChatService{}
 	case "ifttt":
@@ -177,6 +187,12 @@ func GetServiceFriendlyName(serviceID string) string {
 		return "WhatsApp Business API"
 	case "desktop":
 		return "Desktop Notifications"
+	case "desktop-advanced":
+		return "Advanced Desktop Notifications"
+	case "desktop-interactive":
+		return "Interactive Desktop Notifications"
+	case "desktop-persistent":
+		return "Persistent Desktop Notifications"
 	case "matrix":
 		return "Matrix"
 	case "reddit":
@@ -223,6 +239,10 @@ func GetServiceFriendlyName(serviceID string) string {
 		return "Apple Push Notification Service"
 	case "fcm":
 		return "Firebase Cloud Messaging"
+	case "rich-mobile-push":
+		return "Rich Mobile Push Notifications"
+	case "batch-mobile-push":
+		return "Batch Mobile Push Notifications"
 	case "aws-iot":
 		return "AWS IoT Core"
 	case "gcp-iot":

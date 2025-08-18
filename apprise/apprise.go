@@ -328,6 +328,8 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	// Mobile push services
 	registry.Register("fcm", func() Service { return NewFCMService() })
 	registry.Register("apns", func() Service { return NewAPNSService() })
+	registry.Register("rich-mobile-push", func() Service { return NewRichMobilePushService() })
+	registry.Register("batch-mobile-push", func() Service { return NewBatchMobilePushService() })
 
 	// Enterprise messaging
 	registry.Register("msteams", func() Service { return NewMSTeamsService() })
@@ -416,6 +418,11 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("kde", func() Service { return NewLinuxDBusService() })
 	registry.Register("glib", func() Service { return NewLinuxDBusService() })
 	registry.Register("qt", func() Service { return NewLinuxDBusService() })
+	
+	// Advanced desktop notification services
+	registry.Register("desktop-advanced", func() Service { return NewAdvancedDesktopService() })
+	registry.Register("desktop-interactive", func() Service { return NewInteractiveDesktopService() })
+	registry.Register("desktop-persistent", func() Service { return NewPersistentDesktopService() })
 
 	// Add more services as needed...
 }
