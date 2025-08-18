@@ -1,0 +1,17 @@
+{
+  "base_url": "http://localhost:8080",
+  "concurrency": 100,
+  "requests_per_second": 500,
+  "duration": "5m",
+  "test_type": "mixed",
+  "notification_types": ["info", "success", "warning", "error"],
+  "service_urls": [
+    "webhook://httpbin.org/post",
+    "webhook://httpbin.org/put",
+    "webhook://httpbin.org/patch"
+  ],
+  "warmup_duration": "15s",
+  "cooldown_duration": "10s",
+  "enable_metrics": true,
+  "metrics_interval": "1s"
+}

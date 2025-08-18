@@ -1,0 +1,13 @@
+{
+  "base_url": "http://localhost:8080",
+  "concurrency": 10,
+  "requests_per_second": 50,
+  "duration": "30s",
+  "test_type": "api",
+  "notification_types": ["info", "success", "warning"],
+  "service_urls": ["webhook://httpbin.org/post"],
+  "warmup_duration": "5s",
+  "cooldown_duration": "2s",
+  "enable_metrics": true,
+  "metrics_interval": "1s"
+}
