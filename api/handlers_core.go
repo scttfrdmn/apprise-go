@@ -44,6 +44,7 @@ func (s *Server) handleRoot(w http.ResponseWriter, r *http.Request) {
 		"version":     apprise.GetVersion(),
 		"description": "REST API for Apprise-Go notification library",
 		"endpoints": map[string]string{
+			"dashboard":     "/dashboard",
 			"health":        "/health",
 			"version":       "/version",
 			"documentation": "/docs",

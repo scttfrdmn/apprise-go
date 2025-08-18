@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apprise-Go Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--card-background);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .header .subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            background-color: var(--background-color);
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-healthy {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .service-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            transition: all 0.2s;
+        }
+
+        .service-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+        }
+
+        .service-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-left-color: var(--success-color);
+            color: #065f46;
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left-color: var(--error-color);
+            color: #7f1d1d;
+        }
+
+        .alert-info {
+            background-color: rgba(37, 99, 235, 0.1);
+            border-left-color: var(--primary-color);
+            color: #1e40af;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--border-color);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                padding: 0.75rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Apprise-Go Dashboard</h1>
+        <div class="subtitle">Enterprise Notification Management System</div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" data-tab="overview">Overview</div>
+            <div class="tab" data-tab="notifications">Send Notifications</div>
+            <div class="tab" data-tab="services">Services</div>
+            <div class="tab" data-tab="scheduler">Scheduler</div>
+            <div class="tab" data-tab="config">Configuration</div>
+        </div>
+
+        <!-- Overview Tab -->
+        <div class="tab-content active" id="overview">
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-services">-</div>
+                    <div class="stat-label">Supported Services</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="server-status">-</div>
+                    <div class="stat-label">Server Status</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="scheduler-status">-</div>
+                    <div class="stat-label">Scheduler</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="api-version">-</div>
+                    <div class="stat-label">Version</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎯 Quick Start</h2>
+                <p>Welcome to the Apprise-Go dashboard! This interface allows you to manage your notification services, send notifications, and monitor your system.</p>
+                <br>
+                <div class="code-block" id="api-examples">
+# Send a notification via API
+curl -X POST http://localhost:8080/api/v1/notify \
+  -H "Content-Type: application/json" \
+  -d '{"body": "Hello World!", "urls": ["webhook://httpbin.org/post"]}'
+
+# List all supported services
+curl http://localhost:8080/api/v1/services
+
+# Check server health
+curl http://localhost:8080/health
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📊 System Information</h2>
+                <div id="system-info">
+                    <div class="loading"></div> Loading system information...
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Tab -->
+        <div class="tab-content" id="notifications">
+            <div class="card">
+                <h2>📧 Send Notification</h2>
+                <form id="notification-form">
+                    <div class="form-group">
+                        <label for="notification-title">Title (Optional)</label>
+                        <input type="text" id="notification-title" class="form-control" placeholder="Notification Title">
+                    </div>
+                    <div class="form-group">
+                        <label for="notification-body">Message *</label>
+                        <textarea id="notification-body" class="form-control" rows="4" placeholder="Your notification message..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="notification-type">Type</label>
+                        <select id="notification-type" class="form-control">
+                            <option value="info">Info</option>
+                            <option value="success">Success</option>
+                            <option value="warning">Warning</option>
+                            <option value="error">Error</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="notification-urls">Service URLs *</label>
+                        <textarea id="notification-urls" class="form-control" rows="3" placeholder="One service URL per line, e.g.:&#10;webhook://httpbin.org/post&#10;discord://webhook_id/webhook_token" required></textarea>
+                        <small style="color: var(--text-muted);">Enter one service URL per line</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="btn-text">Send Notification</span>
+                        <span class="loading hidden" style="margin-left: 0.5rem;"></span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>🔄 Bulk Notifications</h2>
+                <p>Send multiple notifications at once by uploading a JSON file or using the bulk API endpoint.</p>
+                <div class="code-block">
+POST /api/v1/notify/bulk
+{
+  "notifications": [
+    {"body": "Message 1", "urls": ["service://..."]},
+    {"body": "Message 2", "urls": ["service://..."]}
+  ]
+}
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Tab -->
+        <div class="tab-content" id="services">
+            <div class="card">
+                <h2>🔧 Supported Services</h2>
+                <div id="services-loading">
+                    <div class="loading"></div> Loading services...
+                </div>
+                <div class="services-grid hidden" id="services-grid">
+                    <!-- Services will be populated here -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>➕ Add Service Configuration</h2>
+                <form id="service-form">
+                    <div class="form-group">
+                        <label for="service-url">Service URL *</label>
+                        <input type="text" id="service-url" class="form-control" placeholder="discord://webhook_id/webhook_token" required>
+                        <small style="color: var(--text-muted);">Examples: discord://webhook_id/token, slack://webhook_url, email://user:pass@smtp.gmail.com</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Service</button>
+                    <button type="button" class="btn btn-secondary" onclick="testService()">Test Service</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Scheduler Tab -->
+        <div class="tab-content" id="scheduler">
+            <div class="card">
+                <h2>⏰ Scheduled Jobs</h2>
+                <div id="scheduler-loading">
+                    <div class="loading"></div> Loading scheduled jobs...
+                </div>
+                <div id="scheduler-content" class="hidden">
+                    <div id="jobs-list">
+                        <!-- Jobs will be populated here -->
+                    </div>
+                    <button class="btn btn-primary" onclick="showCreateJobForm()">Create New Job</button>
+                </div>
+                <div id="scheduler-unavailable" class="alert alert-info hidden">
+                    <strong>Scheduler Not Available</strong><br>
+                    The scheduler is not enabled on this server. To enable scheduling, start the server with a database path:<br>
+                    <code>./apprise-api --db ./scheduler.db</code>
+                </div>
+            </div>
+
+            <div class="card hidden" id="create-job-form">
+                <h2>📝 Create Scheduled Job</h2>
+                <form id="job-form">
+                    <div class="form-group">
+                        <label for="job-name">Job Name *</label>
+                        <input type="text" id="job-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="job-cron">Cron Expression *</label>
+                        <input type="text" id="job-cron" class="form-control" placeholder="0 9 * * 1-5" required>
+                        <small style="color: var(--text-muted);">Examples: "0 9 * * 1-5" (weekdays at 9 AM), "*/15 * * * *" (every 15 minutes)</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="job-title">Title</label>
+                        <input type="text" id="job-title" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="job-body">Message *</label>
+                        <textarea id="job-body" class="form-control" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="job-services">Service URLs *</label>
+                        <textarea id="job-services" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Create Job</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideCreateJobForm()">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Configuration Tab -->
+        <div class="tab-content" id="config">
+            <div class="card">
+                <h2>⚙️ Server Configuration</h2>
+                <div id="config-loading">
+                    <div class="loading"></div> Loading configuration...
+                </div>
+                <div id="config-content" class="hidden">
+                    <!-- Configuration will be populated here -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🔍 API Documentation</h2>
+                <p>Complete API documentation is available at <a href="/docs" target="_blank">/docs</a></p>
+                
+                <h3 style="margin-top: 1.5rem; margin-bottom: 1rem;">Key Endpoints:</h3>
+                <div class="code-block">
+GET  /health                     - Health check
+GET  /api/v1/services           - List supported services
+POST /api/v1/notify             - Send single notification
+POST /api/v1/notify/bulk        - Send multiple notifications
+GET  /api/v1/scheduler/jobs     - List scheduled jobs
+POST /api/v1/scheduler/jobs     - Create scheduled job
+GET  /api/v1/config             - Get server configuration
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -17,22 +18,26 @@ import (
 
 // ServerConfig holds the configuration for the API server
 type ServerConfig struct {
-	Host         string   `json:"host"`
-	Port         string   `json:"port"`
-	DatabasePath string   `json:"database_path"`
-	CORSOrigins  []string `json:"cors_origins"`
-	JWTSecret    string   `json:"jwt_secret"`
-	LogLevel     string   `json:"log_level"`
+	Host           string          `json:"host"`
+	Port           string          `json:"port"`
+	DatabasePath   string          `json:"database_path"`
+	CORSOrigins    []string        `json:"cors_origins"`
+	JWTSecret      string          `json:"jwt_secret"`
+	LogLevel       string          `json:"log_level"`
+	RequireAuth    bool            `json:"require_auth"`
+	TokenDuration  int             `json:"token_duration"` // hours
+	RateLimit      RateLimitConfig `json:"rate_limit"`
 }
 
 // Server represents the REST API server
 type Server struct {
-	config    *ServerConfig
-	apprise   *apprise.Apprise
-	scheduler *apprise.NotificationScheduler
-	logger    *log.Logger
-	router    *mux.Router
-	server    *http.Server
+	config      *ServerConfig
+	apprise     *apprise.Apprise
+	scheduler   *apprise.NotificationScheduler
+	logger      *log.Logger
+	router      *mux.Router
+	server      *http.Server
+	rateLimiter *RateLimiter
 }
 
 // APIResponse represents a standard API response
@@ -46,11 +51,21 @@ type APIResponse struct {
 
 // NewServer creates a new API server instance
 func NewServer(config *ServerConfig, apprise *apprise.Apprise, scheduler *apprise.NotificationScheduler, logger *log.Logger) (*Server, error) {
+	// Create default logger if none provided
+	if logger == nil {
+		logger = log.New(os.Stderr, "apprise-api: ", log.LstdFlags)
+	}
+	
 	s := &Server{
 		config:    config,
 		apprise:   apprise,
 		scheduler: scheduler,
 		logger:    logger,
+	}
+
+	// Initialize rate limiter if enabled
+	if config.RateLimit.Enabled {
+		s.rateLimiter = NewRateLimiter(config.RateLimit)
 	}
 
 	s.setupRoutes()
@@ -69,8 +84,23 @@ func (s *Server) setupRoutes() {
 	s.router.HandleFunc("/version", s.handleVersion).Methods("GET")
 	s.router.HandleFunc("/metrics", s.handleMetrics).Methods("GET")
 
-	// Documentation
+	// Authentication endpoints (public)
+	authV1 := apiV1.PathPrefix("/auth").Subrouter()
+	authV1.HandleFunc("/login", s.handleLogin).Methods("POST")
+	authV1.HandleFunc("/register", s.handleRegister).Methods("POST")
+	authV1.HandleFunc("/whoami", s.handleWhoAmI).Methods("GET")
+	authV1.HandleFunc("/refresh", s.handleRefreshToken).Methods("POST")
+	authV1.HandleFunc("/apikeys", s.handleListAPIKeys).Methods("GET")
+	authV1.HandleFunc("/apikeys", s.handleCreateAPIKey).Methods("POST")
+	authV1.HandleFunc("/apikeys/{key_id}", s.handleDeleteAPIKey).Methods("DELETE")
+	authV1.HandleFunc("/ratelimit", s.handleGetRateLimitStatus).Methods("GET")
+
+	// Documentation and Dashboard
 	s.router.HandleFunc("/docs", s.handleDocs).Methods("GET")
+	s.router.HandleFunc("/dashboard", s.handleDashboard).Methods("GET")
+	s.router.HandleFunc("/dashboard/", s.handleDashboard).Methods("GET")
+	s.router.HandleFunc("/dashboard.html", s.handleDashboard).Methods("GET")
+	s.router.HandleFunc("/dashboard.js", s.handleDashboard).Methods("GET")
 	s.router.HandleFunc("/", s.handleRoot).Methods("GET")
 
 	// Notification endpoints
@@ -124,9 +154,11 @@ func (s *Server) setupRoutes() {
 		schedulerV1.HandleFunc("/metrics/report", s.handleMetricsReport).Methods("POST")
 	}
 
-	// Add middleware
+	// Add middleware (order matters!)
 	s.router.Use(s.loggingMiddleware)
 	s.router.Use(s.recoverMiddleware)
+	s.router.Use(s.RateLimitMiddleware)  // Apply rate limiting first
+	s.router.Use(s.AuthMiddleware)       // Then authentication
 }
 
 // ListenAndServe starts the HTTP server
@@ -154,6 +186,11 @@ func (s *Server) ListenAndServe(addr string) error {
 
 // Shutdown gracefully shuts down the server
 func (s *Server) Shutdown(ctx context.Context) error {
+	// Stop rate limiter first
+	if s.rateLimiter != nil {
+		s.rateLimiter.Stop()
+	}
+	
 	if s.server != nil {
 		return s.server.Shutdown(ctx)
 	}

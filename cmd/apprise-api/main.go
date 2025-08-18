@@ -16,14 +16,18 @@ import (
 )
 
 var (
-	port       = flag.String("port", "8080", "Port to listen on")
-	host       = flag.String("host", "0.0.0.0", "Host to bind to")
-	dbPath     = flag.String("db", "./apprise-api.db", "Database path for scheduler and config storage")
-	configPath = flag.String("config", "", "Path to configuration file")
-	logLevel   = flag.String("log-level", "info", "Log level (debug, info, warn, error)")
-	corsOrigin = flag.String("cors-origin", "*", "CORS allowed origins")
-	jwtSecret  = flag.String("jwt-secret", "", "JWT secret for authentication (generate if empty)")
-	version    = flag.Bool("version", false, "Show version information")
+	port            = flag.String("port", "8080", "Port to listen on")
+	host            = flag.String("host", "0.0.0.0", "Host to bind to")
+	dbPath          = flag.String("db", "./apprise-api.db", "Database path for scheduler and config storage")
+	configPath      = flag.String("config", "", "Path to configuration file")
+	logLevel        = flag.String("log-level", "info", "Log level (debug, info, warn, error)")
+	corsOrigin      = flag.String("cors-origin", "*", "CORS allowed origins")
+	jwtSecret       = flag.String("jwt-secret", "", "JWT secret for authentication (generate if empty)")
+	requireAuth     = flag.Bool("require-auth", false, "Require authentication for API access")
+	tokenDuration   = flag.Int("token-duration", 24, "JWT token duration in hours")
+	enableRateLimit = flag.Bool("enable-ratelimit", true, "Enable rate limiting")
+	rateLimit       = flag.Int("rate-limit", 60, "Requests per minute per client")
+	version         = flag.Bool("version", false, "Show version information")
 )
 
 func main() {
@@ -76,12 +80,20 @@ func main() {
 
 	// Create API server configuration
 	serverConfig := &api.ServerConfig{
-		Host:         *host,
-		Port:         *port,
-		DatabasePath: *dbPath,
-		CORSOrigins:  []string{*corsOrigin},
-		JWTSecret:    *jwtSecret,
-		LogLevel:     *logLevel,
+		Host:          *host,
+		Port:          *port,
+		DatabasePath:  *dbPath,
+		CORSOrigins:   []string{*corsOrigin},
+		JWTSecret:     *jwtSecret,
+		LogLevel:      *logLevel,
+		RequireAuth:   *requireAuth,
+		TokenDuration: *tokenDuration,
+		RateLimit: api.RateLimitConfig{
+			Enabled:        *enableRateLimit,
+			RequestsPerMin: *rateLimit,
+			BurstSize:      *rateLimit / 4, // 25% of limit as burst
+			WindowSize:     time.Minute,
+		},
 	}
 
 	// Create and configure the API server
