@@ -1,0 +1,642 @@
+{
+  "categories": {
+    "cloud": {
+      "Name": "Cloud Services",
+      "Description": "Cloud platform notification and messaging services",
+      "Services": [
+        "aws-sns",
+        "gcp-pubsub",
+        "azure-servicebus",
+        "aws-iot",
+        "gcp-iot"
+      ]
+    },
+    "desktop": {
+      "Name": "Desktop Notifications",
+      "Description": "Desktop notification systems for local alerts",
+      "Services": [
+        "desktop",
+        "desktop-advanced",
+        "desktop-interactive",
+        "desktop-persistent"
+      ]
+    },
+    "devops": {
+      "Name": "DevOps \u0026 Monitoring",
+      "Description": "Development operations and system monitoring platforms",
+      "Services": [
+        "github",
+        "gitlab",
+        "jira",
+        "datadog",
+        "newrelic",
+        "pagerduty",
+        "opsgenie"
+      ]
+    },
+    "email": {
+      "Name": "Email Services",
+      "Description": "Email notification services and providers",
+      "Services": [
+        "email",
+        "sendgrid",
+        "mailgun",
+        "aws-ses"
+      ]
+    },
+    "instant": {
+      "Name": "Instant Messaging",
+      "Description": "Instant messaging and secure communication platforms",
+      "Services": [
+        "signal",
+        "whatsapp"
+      ]
+    },
+    "iot": {
+      "Name": "IoT \u0026 Automation",
+      "Description": "Internet of Things and home automation platforms",
+      "Services": [
+        "ifttt",
+        "zapier",
+        "homeassistant",
+        "hass",
+        "nodered"
+      ]
+    },
+    "messaging": {
+      "Name": "Messaging \u0026 Chat",
+      "Description": "Real-time messaging platforms and chat services",
+      "Services": [
+        "discord",
+        "slack",
+        "telegram",
+        "msteams",
+        "matrix",
+        "mattermost",
+        "rocketchat"
+      ]
+    },
+    "mobile": {
+      "Name": "Mobile Push Notifications",
+      "Description": "Mobile push notification services for iOS and Android",
+      "Services": [
+        "apns",
+        "fcm",
+        "rich-mobile-push",
+        "batch-mobile-push"
+      ]
+    },
+    "push": {
+      "Name": "Push Notification Services",
+      "Description": "Push notification platforms and services",
+      "Services": [
+        "pushover",
+        "pushbullet",
+        "gotify",
+        "ntfy"
+      ]
+    },
+    "sms": {
+      "Name": "SMS \u0026 Text Messaging",
+      "Description": "SMS and text messaging services",
+      "Services": [
+        "twilio",
+        "bulksms",
+        "clicksend",
+        "messagebird",
+        "nexmo",
+        "vonage",
+        "plivo",
+        "textmagic",
+        "aws-sns-sms"
+      ]
+    },
+    "social": {
+      "Name": "Social Media",
+      "Description": "Social media platforms for public notifications",
+      "Services": [
+        "reddit",
+        "mastodon",
+        "facebook",
+        "instagram",
+        "youtube",
+        "tiktok",
+        "linkedin",
+        "twitter"
+      ]
+    },
+    "voice": {
+      "Name": "Voice \u0026 Audio",
+      "Description": "Voice calling and audio notification services",
+      "Services": [
+        "polly",
+        "twilio-voice"
+      ]
+    },
+    "webhook": {
+      "Name": "Webhooks \u0026 APIs",
+      "Description": "Generic webhook and API notification endpoints",
+      "Services": [
+        "webhook",
+        "json"
+      ]
+    }
+  },
+  "services": {
+    "desktop-advanced": {
+      "ID": "desktop-advanced",
+      "Name": "Advanced Desktop Notifications",
+      "Description": "Enhanced desktop notifications with actions, timeouts, and custom UI",
+      "Category": "desktop",
+      "URLFormat": "desktop-advanced://",
+      "Parameters": [
+        {
+          "Name": "sound",
+          "Type": "string",
+          "Required": false,
+          "Description": "Notification sound",
+          "Default": "default",
+          "Example": ""
+        },
+        {
+          "Name": "timeout",
+          "Type": "int",
+          "Required": false,
+          "Description": "Timeout in seconds",
+          "Default": "5",
+          "Example": ""
+        },
+        {
+          "Name": "category",
+          "Type": "string",
+          "Required": false,
+          "Description": "Notification category",
+          "Default": "",
+          "Example": "ALERT"
+        },
+        {
+          "Name": "action1",
+          "Type": "string",
+          "Required": false,
+          "Description": "First action (id:title:url)",
+          "Default": "",
+          "Example": "view:View Details:https://example.com"
+        },
+        {
+          "Name": "action2",
+          "Type": "string",
+          "Required": false,
+          "Description": "Second action",
+          "Default": "",
+          "Example": "dismiss:Dismiss"
+        }
+      ],
+      "Examples": [
+        {
+          "Description": "Advanced desktop notification with actions",
+          "URL": "desktop-advanced://?sound=alert\u0026timeout=10\u0026action1=view:View:https://example.com\u0026action2=dismiss:Dismiss",
+          "Code": "app.Add(\"desktop-advanced://?sound=alert\u0026timeout=10\u0026action1=view:View:https://example.com\u0026action2=dismiss:Dismiss\")"
+        }
+      ],
+      "Setup": [
+        "1. No setup required for basic functionality",
+        "2. On Linux: Install notify-send or similar",
+        "3. On macOS: Uses built-in notification center",
+        "4. On Windows: Uses Windows toast notifications"
+      ],
+      "Limitations": null,
+      "Since": "1.9.0"
+    },
+    "discord": {
+      "ID": "discord",
+      "Name": "Discord",
+      "Description": "Send notifications to Discord channels via webhooks",
+      "Category": "messaging",
+      "URLFormat": "discord://webhook_id/webhook_token",
+      "Parameters": [
+        {
+          "Name": "webhook_id",
+          "Type": "string",
+          "Required": true,
+          "Description": "Discord webhook ID",
+          "Default": "",
+          "Example": "123456789012345678"
+        },
+        {
+          "Name": "webhook_token",
+          "Type": "string",
+          "Required": true,
+          "Description": "Discord webhook token",
+          "Default": "",
+          "Example": "abcdef123456789"
+        },
+        {
+          "Name": "avatar",
+          "Type": "string",
+          "Required": false,
+          "Description": "Custom avatar URL or name",
+          "Default": "",
+          "Example": "MyBot"
+        },
+        {
+          "Name": "username",
+          "Type": "string",
+          "Required": false,
+          "Description": "Custom username for the bot",
+          "Default": "",
+          "Example": "NotificationBot"
+        },
+        {
+          "Name": "tts",
+          "Type": "bool",
+          "Required": false,
+          "Description": "Enable text-to-speech",
+          "Default": "",
+          "Example": "true"
+        },
+        {
+          "Name": "format",
+          "Type": "string",
+          "Required": false,
+          "Description": "Message format (text/markdown)",
+          "Default": "text",
+          "Example": "markdown"
+        }
+      ],
+      "Examples": [
+        {
+          "Description": "Basic Discord notification",
+          "URL": "discord://123456789012345678/abcdef123456789",
+          "Code": "app.Add(\"discord://123456789012345678/abcdef123456789\")"
+        },
+        {
+          "Description": "Discord with custom avatar and username",
+          "URL": "discord://123456789012345678/abcdef123456789?avatar=MyBot\u0026username=NotificationBot",
+          "Code": "app.Add(\"discord://123456789012345678/abcdef123456789?avatar=MyBot\u0026username=NotificationBot\")"
+        },
+        {
+          "Description": "Discord with markdown formatting",
+          "URL": "discord://123456789012345678/abcdef123456789?format=markdown",
+          "Code": "app.Add(\"discord://123456789012345678/abcdef123456789?format=markdown\")"
+        }
+      ],
+      "Setup": [
+        "1. Go to your Discord server settings",
+        "2. Navigate to 'Integrations' → 'Webhooks'",
+        "3. Click 'New Webhook' or 'Create Webhook'",
+        "4. Configure the webhook name and channel",
+        "5. Copy the webhook URL",
+        "6. Extract webhook_id and webhook_token from the URL"
+      ],
+      "Limitations": [
+        "Requires webhook permissions in Discord server",
+        "Rate limited by Discord's webhook limits",
+        "Message length limited to 2000 characters"
+      ],
+      "Since": "1.0.0"
+    },
+    "email": {
+      "ID": "email",
+      "Name": "Email (SMTP)",
+      "Description": "Send email notifications via SMTP servers",
+      "Category": "email",
+      "URLFormat": "mailto://user:pass@server:port/to_email",
+      "Parameters": [
+        {
+          "Name": "user",
+          "Type": "string",
+          "Required": true,
+          "Description": "SMTP username",
+          "Default": "",
+          "Example": "myemail@gmail.com"
+        },
+        {
+          "Name": "pass",
+          "Type": "string",
+          "Required": true,
+          "Description": "SMTP password or app password",
+          "Default": "",
+          "Example": "mypassword"
+        },
+        {
+          "Name": "server",
+          "Type": "string",
+          "Required": true,
+          "Description": "SMTP server hostname",
+          "Default": "",
+          "Example": "smtp.gmail.com"
+        },
+        {
+          "Name": "port",
+          "Type": "int",
+          "Required": false,
+          "Description": "SMTP port",
+          "Default": "587",
+          "Example": "587"
+        },
+        {
+          "Name": "to",
+          "Type": "string",
+          "Required": true,
+          "Description": "Recipient email address",
+          "Default": "",
+          "Example": "recipient@example.com"
+        },
+        {
+          "Name": "from",
+          "Type": "string",
+          "Required": false,
+          "Description": "Sender name",
+          "Default": "",
+          "Example": "Notification System"
+        },
+        {
+          "Name": "name",
+          "Type": "string",
+          "Required": false,
+          "Description": "Sender display name",
+          "Default": "",
+          "Example": "MyApp Notifications"
+        }
+      ],
+      "Examples": [
+        {
+          "Description": "Gmail SMTP email notification",
+          "URL": "mailto://myemail@gmail.com:mypassword@smtp.gmail.com:587/recipient@example.com",
+          "Code": "app.Add(\"mailto://myemail@gmail.com:mypassword@smtp.gmail.com:587/recipient@example.com\")"
+        },
+        {
+          "Description": "Custom SMTP email with sender name",
+          "URL": "mailto://user:pass@mail.company.com:587/admin@company.com?name=Alert+System",
+          "Code": "app.Add(\"mailto://user:pass@mail.company.com:587/admin@company.com?name=Alert+System\")"
+        }
+      ],
+      "Setup": [
+        "1. Configure your SMTP server credentials",
+        "2. For Gmail: Enable 2FA and generate an app password",
+        "3. For other providers: Use provided SMTP settings",
+        "4. Test connectivity to SMTP server"
+      ],
+      "Limitations": [
+        "Requires SMTP server access",
+        "May be rate-limited by email provider",
+        "Credentials stored in configuration"
+      ],
+      "Since": "1.0.0"
+    },
+    "rich-mobile-push": {
+      "ID": "rich-mobile-push",
+      "Name": "Rich Mobile Push Notifications",
+      "Description": "Advanced mobile push notifications with rich content for iOS and Android",
+      "Category": "mobile",
+      "URLFormat": "rich-mobile-push://platform@device_tokens",
+      "Parameters": [
+        {
+          "Name": "platform",
+          "Type": "string",
+          "Required": true,
+          "Description": "Target platform (ios/android/both)",
+          "Default": "",
+          "Example": "both"
+        },
+        {
+          "Name": "device_tokens",
+          "Type": "string",
+          "Required": true,
+          "Description": "Comma-separated device tokens",
+          "Default": "",
+          "Example": "token1,token2,token3"
+        },
+        {
+          "Name": "priority",
+          "Type": "string",
+          "Required": false,
+          "Description": "Notification priority (low/normal/high)",
+          "Default": "normal",
+          "Example": ""
+        },
+        {
+          "Name": "sound",
+          "Type": "string",
+          "Required": false,
+          "Description": "Notification sound",
+          "Default": "",
+          "Example": "alert"
+        },
+        {
+          "Name": "badge",
+          "Type": "int",
+          "Required": false,
+          "Description": "App badge count",
+          "Default": "",
+          "Example": "1"
+        },
+        {
+          "Name": "category",
+          "Type": "string",
+          "Required": false,
+          "Description": "Notification category",
+          "Default": "",
+          "Example": "ALERT"
+        }
+      ],
+      "Examples": [
+        {
+          "Description": "Rich mobile push for both platforms",
+          "URL": "rich-mobile-push://both@token1,token2,token3?priority=high\u0026sound=alert\u0026badge=1",
+          "Code": "app.Add(\"rich-mobile-push://both@token1,token2,token3?priority=high\u0026sound=alert\u0026badge=1\")"
+        }
+      ],
+      "Setup": [
+        "1. Configure push certificates for iOS (APNS)",
+        "2. Configure service account for Android (FCM)",
+        "3. Collect device tokens from client applications",
+        "4. Test with development tokens first"
+      ],
+      "Limitations": null,
+      "Since": "1.9.0"
+    },
+    "sendgrid": {
+      "ID": "sendgrid",
+      "Name": "SendGrid Email",
+      "Description": "Send email notifications via SendGrid API",
+      "Category": "email",
+      "URLFormat": "sendgrid://api_key@from_email/to_email",
+      "Parameters": [
+        {
+          "Name": "api_key",
+          "Type": "string",
+          "Required": true,
+          "Description": "SendGrid API key",
+          "Default": "",
+          "Example": "SG.abc123..."
+        },
+        {
+          "Name": "from_email",
+          "Type": "string",
+          "Required": true,
+          "Description": "Verified sender email",
+          "Default": "",
+          "Example": "noreply@myapp.com"
+        },
+        {
+          "Name": "to_email",
+          "Type": "string",
+          "Required": true,
+          "Description": "Recipient email address",
+          "Default": "",
+          "Example": "user@example.com"
+        },
+        {
+          "Name": "name",
+          "Type": "string",
+          "Required": false,
+          "Description": "Sender name",
+          "Default": "",
+          "Example": "MyApp Notifications"
+        }
+      ],
+      "Examples": [
+        {
+          "Description": "SendGrid email notification",
+          "URL": "sendgrid://SG.abc123@noreply@myapp.com/user@example.com",
+          "Code": "app.Add(\"sendgrid://SG.abc123@noreply@myapp.com/user@example.com\")"
+        }
+      ],
+      "Setup": [
+        "1. Create SendGrid account at https://sendgrid.com",
+        "2. Verify your sender identity",
+        "3. Generate an API key with Mail Send permissions",
+        "4. Configure your from address"
+      ],
+      "Limitations": null,
+      "Since": "1.5.0"
+    },
+    "slack": {
+      "ID": "slack",
+      "Name": "Slack",
+      "Description": "Send notifications to Slack channels and users",
+      "Category": "messaging",
+      "URLFormat": "slack://TokenA/TokenB/TokenC/Channel",
+      "Parameters": [
+        {
+          "Name": "token",
+          "Type": "string",
+          "Required": true,
+          "Description": "Slack bot token or webhook URL",
+          "Default": "",
+          "Example": "xoxb-123-456-789"
+        },
+        {
+          "Name": "channel",
+          "Type": "string",
+          "Required": true,
+          "Description": "Channel name or ID",
+          "Default": "",
+          "Example": "#general"
+        },
+        {
+          "Name": "username",
+          "Type": "string",
+          "Required": false,
+          "Description": "Bot username",
+          "Default": "",
+          "Example": "NotificationBot"
+        },
+        {
+          "Name": "icon",
+          "Type": "string",
+          "Required": false,
+          "Description": "Bot icon emoji or URL",
+          "Default": "",
+          "Example": ":robot_face:"
+        },
+        {
+          "Name": "format",
+          "Type": "string",
+          "Required": false,
+          "Description": "Message format (text/markdown)",
+          "Default": "text",
+          "Example": ""
+        }
+      ],
+      "Examples": [
+        {
+          "Description": "Slack webhook notification",
+          "URL": "slack://T123456/B123456/xyz789abc/#general",
+          "Code": "app.Add(\"slack://T123456/B123456/xyz789abc/#general\")"
+        },
+        {
+          "Description": "Slack with custom username and icon",
+          "URL": "slack://T123456/B123456/xyz789abc/#alerts?username=AlertBot\u0026icon=:warning:",
+          "Code": "app.Add(\"slack://T123456/B123456/xyz789abc/#alerts?username=AlertBot\u0026icon=:warning:\")"
+        }
+      ],
+      "Setup": [
+        "1. Create a Slack app at https://api.slack.com/apps",
+        "2. Add bot token scopes: chat:write, chat:write.public",
+        "3. Install the app to your workspace",
+        "4. Copy the bot token (starts with xoxb-)",
+        "5. Invite the bot to your channels"
+      ],
+      "Limitations": null,
+      "Since": "1.0.0"
+    },
+    "twilio": {
+      "ID": "twilio",
+      "Name": "Twilio SMS",
+      "Description": "Send SMS notifications via Twilio",
+      "Category": "sms",
+      "URLFormat": "twilio://account_sid:auth_token@from_number/to_number",
+      "Parameters": [
+        {
+          "Name": "account_sid",
+          "Type": "string",
+          "Required": true,
+          "Description": "Twilio Account SID",
+          "Default": "",
+          "Example": "AC123456789abcdef"
+        },
+        {
+          "Name": "auth_token",
+          "Type": "string",
+          "Required": true,
+          "Description": "Twilio Auth Token",
+          "Default": "",
+          "Example": "your_auth_token"
+        },
+        {
+          "Name": "from_number",
+          "Type": "string",
+          "Required": true,
+          "Description": "Twilio phone number",
+          "Default": "",
+          "Example": "+1234567890"
+        },
+        {
+          "Name": "to_number",
+          "Type": "string",
+          "Required": true,
+          "Description": "Recipient phone number",
+          "Default": "",
+          "Example": "+9876543210"
+        }
+      ],
+      "Examples": [
+        {
+          "Description": "Twilio SMS notification",
+          "URL": "twilio://AC123456789abcdef:auth_token@+1234567890/+9876543210",
+          "Code": "app.Add(\"twilio://AC123456789abcdef:auth_token@+1234567890/+9876543210\")"
+        }
+      ],
+      "Setup": [
+        "1. Create Twilio account at https://twilio.com",
+        "2. Purchase a phone number",
+        "3. Get Account SID and Auth Token from console",
+        "4. Verify recipient numbers (for trial accounts)"
+      ],
+      "Limitations": null,
+      "Since": "1.0.0"
+    }
+  }
+}

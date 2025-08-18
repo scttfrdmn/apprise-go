@@ -1,0 +1,43 @@
+# Dockerfile for CLI-only image
+FROM golang:1.21-alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache git ca-certificates tzdata gcc musl-dev
+
+# Set working directory
+WORKDIR /app
+
+# Copy go mod and sum files
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the CLI application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o apprise-cli cmd/apprise/main.go
+
+# Final stage - minimal runtime image
+FROM alpine:latest
+
+# Install runtime dependencies
+RUN apk --no-cache add ca-certificates tzdata
+
+# Create app user and directory
+RUN adduser -D -s /bin/sh apprise
+WORKDIR /home/apprise
+
+# Copy binary from builder
+COPY --from=builder /app/apprise-cli ./apprise-cli
+
+# Set permissions
+RUN chown apprise:apprise /home/apprise/apprise-cli
+RUN chmod +x /home/apprise/apprise-cli
+
+# Switch to app user
+USER apprise
+
+# Default command shows help
+CMD ["./apprise-cli", "--help"]

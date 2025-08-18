@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apprise-go-api
+  namespace: apprise-go
+  labels:
+    app: apprise-go
+    component: api
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: apprise-go
+      component: api
+  template:
+    metadata:
+      labels:
+        app: apprise-go
+        component: api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: apprise-go-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: apprise-go
+        image: apprise-go:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        env:
+        - name: APPRISE_CONFIG_FILE
+          value: "/etc/apprise/app.yaml"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: apprise-go-secrets
+              key: JWT_SECRET
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: apprise-go-secrets
+              key: ADMIN_PASSWORD
+        envFrom:
+        - secretRef:
+            name: apprise-go-service-secrets
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/apprise
+          readOnly: true
+        - name: data-volume
+          mountPath: /app/data
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+      volumes:
+      - name: config-volume
+        configMap:
+          name: apprise-go-config
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: apprise-go-data
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30

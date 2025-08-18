@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apprise-go-config
+  namespace: apprise-go
+  labels:
+    app: apprise-go
+data:
+  app.yaml: |
+    server:
+      host: "0.0.0.0"
+      port: 8080
+      read_timeout: "30s"
+      write_timeout: "30s"
+      idle_timeout: "60s"
+    
+    logging:
+      level: "info"
+      format: "json"
+    
+    cors:
+      enabled: true
+      allowed_origins: ["*"]
+      allowed_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+      allowed_headers: ["*"]
+    
+    rate_limiting:
+      enabled: true
+      requests_per_minute: 100
+      burst_size: 20
+    
+    authentication:
+      enabled: true
+      jwt_secret: "${JWT_SECRET}"
+      token_expiry: "24h"
+    
+    storage:
+      type: "sqlite"
+      connection_string: "/app/data/apprise.db"
+    
+    metrics:
+      enabled: true
+      path: "/metrics"
+      namespace: "apprise_go"
+    
+    health:
+      enabled: true
+      path: "/health"
+      
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    
+    rule_files:
+      - "/etc/prometheus/rules/*.yml"
+    
+    scrape_configs:
+      - job_name: 'apprise-go'
+        static_configs:
+          - targets: ['apprise-go-service:8080']
+        metrics_path: '/metrics'
+        scrape_interval: 10s
+        scrape_timeout: 5s
+        
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']

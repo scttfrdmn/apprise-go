@@ -1,0 +1,13 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: apprise-go-pdb
+  namespace: apprise-go
+  labels:
+    app: apprise-go
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: apprise-go
+      component: api

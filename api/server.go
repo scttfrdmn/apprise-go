@@ -171,7 +171,9 @@ func (s *Server) ListenAndServe(addr string) error {
 		AllowCredentials: true,
 	})
 
-	handler := c.Handler(s.router)
+	// Add metrics middleware
+	metricsHandler := s.apprise.GetMetrics().HTTPMiddleware(s.router)
+	handler := c.Handler(metricsHandler)
 
 	s.server = &http.Server{
 		Addr:         addr,

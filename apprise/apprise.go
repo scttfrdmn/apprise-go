@@ -140,6 +140,7 @@ type Apprise struct {
 	timeout       time.Duration
 	tags          []string
 	attachmentMgr *AttachmentManager
+	metrics       *MetricsManager
 }
 
 // New creates a new Apprise instance
@@ -149,11 +150,15 @@ func New() *Apprise {
 	// Register built-in services
 	registerBuiltinServices(registry)
 
+	metrics := NewMetricsManager("apprise")
+	metrics.Register()
+
 	return &Apprise{
 		services:      make([]Service, 0),
 		registry:      registry,
 		timeout:       30 * time.Second,
 		attachmentMgr: NewAttachmentManager(),
+		metrics:       metrics,
 	}
 }
 
@@ -174,6 +179,10 @@ func (a *Apprise) Add(serviceURL string, tags ...string) error {
 	}
 
 	a.services = append(a.services, service)
+	
+	// Update metrics
+	a.metrics.UpdateServicesConfigured(len(a.services))
+	
 	return nil
 }
 
@@ -219,10 +228,22 @@ func (a *Apprise) NotifyAll(req NotificationRequest) []NotificationResponse {
 				Duration:   duration,
 				ServiceID:  svc.GetServiceID(),
 			}
+			
+			// Record metrics
+			status := "success"
+			if err != nil {
+				status = "failed"
+				a.metrics.RecordNotificationError(svc.GetServiceID(), "send_failed", "unknown")
+			}
+			a.metrics.RecordNotification(svc.GetServiceID(), req.NotifyType.String(), status, duration)
 		}(i, service)
 	}
 
 	wg.Wait()
+	
+	// Record batch size
+	a.metrics.RecordBatchSize(len(a.services))
+	
 	return responses
 }
 
@@ -239,6 +260,8 @@ func (a *Apprise) SetTags(tags ...string) {
 // Clear removes all configured services
 func (a *Apprise) Clear() {
 	a.services = a.services[:0]
+	// Update metrics
+	a.metrics.UpdateServicesConfigured(0)
 }
 
 // Count returns the number of configured services
@@ -254,6 +277,21 @@ func (a *Apprise) AddAttachment(source string, name ...string) error {
 // AddAttachmentData adds an attachment from raw data
 func (a *Apprise) AddAttachmentData(data []byte, filename, mimeType string) error {
 	return a.attachmentMgr.AddData(data, filename, mimeType)
+}
+
+// GetMetrics returns the metrics manager for accessing Prometheus metrics
+func (a *Apprise) GetMetrics() *MetricsManager {
+	return a.metrics
+}
+
+// GetServiceMetrics returns metrics for a specific service
+func (a *Apprise) GetServiceMetrics(serviceID string) *PrometheusServiceMetrics {
+	return a.metrics.GetServiceMetrics(serviceID)
+}
+
+// GetAllServiceMetrics returns metrics for all services
+func (a *Apprise) GetAllServiceMetrics() map[string]*PrometheusServiceMetrics {
+	return a.metrics.GetAllServiceMetrics()
 }
 
 // GetAttachments returns all attachments

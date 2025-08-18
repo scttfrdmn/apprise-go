@@ -1,0 +1,59 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: apprise-go
+  namespace: apprise-go
+
+resources:
+- namespace.yaml
+- configmap.yaml
+- secret.yaml
+- pvc.yaml
+- deployment.yaml
+- service.yaml
+- ingress.yaml
+- hpa.yaml
+- networkpolicy.yaml
+- poddisruptionbudget.yaml
+- monitoring.yaml
+
+images:
+- name: apprise-go
+  newTag: latest
+
+commonLabels:
+  app: apprise-go
+  version: v1.0.0
+
+configMapGenerator:
+- name: apprise-go-environment
+  literals:
+  - ENVIRONMENT=production
+  - LOG_LEVEL=info
+  - METRICS_ENABLED=true
+
+secretGenerator:
+- name: apprise-go-generated-secrets
+  literals:
+  - JWT_SECRET=replace-with-actual-secret
+
+replicas:
+- name: apprise-go-api
+  count: 3
+
+patchesStrategicMerge:
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: apprise-go-api
+    namespace: apprise-go
+  spec:
+    template:
+      spec:
+        containers:
+        - name: apprise-go
+          env:
+          - name: ENVIRONMENT
+            value: production

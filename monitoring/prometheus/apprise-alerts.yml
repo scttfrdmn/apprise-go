@@ -1,0 +1,185 @@
+groups:
+  - name: apprise-go.rules
+    interval: 30s
+    rules:
+      # SLA and Health Alerts
+      - alert: AppriseHighErrorRate
+        expr: |
+          (
+            sum(rate(apprise_notifications_failed_total[5m])) /
+            sum(rate(apprise_notifications_total[5m]))
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          service: apprise-go
+        annotations:
+          summary: "Apprise-Go has high error rate"
+          description: "Apprise-Go error rate is {{ $value | humanizePercentage }} over the last 5 minutes. This exceeds the 5% threshold."
+
+      - alert: AppriseServiceDown
+        expr: up{job="apprise-go"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          service: apprise-go
+        annotations:
+          summary: "Apprise-Go service is down"
+          description: "Apprise-Go service has been down for more than 30 seconds."
+
+      - alert: AppriseHighResponseTime
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(apprise_notification_duration_seconds_bucket[5m])) by (le)
+          ) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          service: apprise-go
+        annotations:
+          summary: "Apprise-Go has high response time"
+          description: "Apprise-Go 95th percentile response time is {{ $value }}s, which exceeds the 500ms threshold."
+
+      - alert: AppriseSuccessRateLow
+        expr: |
+          (
+            sum(rate(apprise_notifications_total{status="success"}[5m])) /
+            sum(rate(apprise_notifications_total[5m]))
+          ) < 0.95
+        for: 5m
+        labels:
+          severity: warning
+          service: apprise-go
+        annotations:
+          summary: "Apprise-Go success rate below SLA"
+          description: "Apprise-Go success rate is {{ $value | humanizePercentage }}, which is below the 95% SLA threshold."
+
+      # Resource and Infrastructure Alerts
+      - alert: AppriseHighMemoryUsage
+        expr: apprise_memory_usage_bytes > 1073741824  # 1GB
+        for: 10m
+        labels:
+          severity: warning
+          service: apprise-go
+        annotations:
+          summary: "Apprise-Go using high memory"
+          description: "Apprise-Go memory usage is {{ $value | humanizeBytes }}, which exceeds 1GB threshold."
+
+      - alert: AppriseHighGoroutineCount
+        expr: apprise_goroutines_total > 1000
+        for: 5m
+        labels:
+          severity: warning
+          service: apprise-go
+        annotations:
+          summary: "Apprise-Go has high goroutine count"
+          description: "Apprise-Go has {{ $value }} active goroutines, which may indicate a goroutine leak."
+
+      - alert: AppriseQueueBacklog
+        expr: apprise_notification_queue_size > 100
+        for: 2m
+        labels:
+          severity: warning
+          service: apprise-go
+        annotations:
+          summary: "Apprise-Go notification queue backlog"
+          description: "Apprise-Go notification queue has {{ $value }} pending items, indicating processing delays."
+
+      # Service-Specific Alerts
+      - alert: AppriseServiceHighErrorRate
+        expr: |
+          (
+            sum(rate(apprise_notifications_failed_total[5m])) by (service) /
+            sum(rate(apprise_notifications_total[5m])) by (service)
+          ) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: apprise-go
+        annotations:
+          summary: "High error rate for Apprise service {{ $labels.service }}"
+          description: "Service {{ $labels.service }} has error rate of {{ $value | humanizePercentage }} over the last 5 minutes."
+
+      - alert: AppriseNoRecentNotifications
+        expr: |
+          sum(rate(apprise_notifications_total[10m])) == 0
+        for: 30m
+        labels:
+          severity: info
+          service: apprise-go
+        annotations:
+          summary: "No recent Apprise notifications"
+          description: "Apprise-Go has not processed any notifications in the last 30 minutes. This may be normal or indicate an issue."
+
+      # HTTP API Alerts
+      - alert: AppriseHighHTTPErrorRate
+        expr: |
+          (
+            sum(rate(apprise_http_requests_failed_total[5m])) /
+            sum(rate(apprise_http_requests_total[5m]))
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          service: apprise-go
+        annotations:
+          summary: "Apprise-Go API has high HTTP error rate"
+          description: "Apprise-Go API HTTP error rate is {{ $value | humanizePercentage }} over the last 5 minutes."
+
+      - alert: AppriseHighHTTPResponseTime
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(apprise_http_request_duration_seconds_bucket[5m])) by (le)
+          ) > 1.0
+        for: 5m
+        labels:
+          severity: warning
+          service: apprise-go
+        annotations:
+          summary: "Apprise-Go API has high HTTP response time"
+          description: "Apprise-Go API 95th percentile HTTP response time is {{ $value }}s, exceeding 1 second threshold."
+
+  # Recording Rules for Efficiency
+  - name: apprise-go.recording
+    interval: 30s
+    rules:
+      - record: apprise:notification_success_rate:5m
+        expr: |
+          sum(rate(apprise_notifications_total{status="success"}[5m])) /
+          sum(rate(apprise_notifications_total[5m]))
+
+      - record: apprise:notification_error_rate:5m
+        expr: |
+          sum(rate(apprise_notifications_failed_total[5m])) /
+          sum(rate(apprise_notifications_total[5m]))
+
+      - record: apprise:notification_rate:5m
+        expr: sum(rate(apprise_notifications_total[5m]))
+
+      - record: apprise:response_time_p95:5m
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(apprise_notification_duration_seconds_bucket[5m])) by (le)
+          )
+
+      - record: apprise:response_time_p50:5m
+        expr: |
+          histogram_quantile(0.50,
+            sum(rate(apprise_notification_duration_seconds_bucket[5m])) by (le)
+          )
+
+      # Per-service recording rules
+      - record: apprise:notification_success_rate_by_service:5m
+        expr: |
+          sum(rate(apprise_notifications_total{status="success"}[5m])) by (service) /
+          sum(rate(apprise_notifications_total[5m])) by (service)
+
+      - record: apprise:notification_error_rate_by_service:5m
+        expr: |
+          sum(rate(apprise_notifications_failed_total[5m])) by (service) /
+          sum(rate(apprise_notifications_total[5m])) by (service)
+
+      - record: apprise:response_time_by_service:5m
+        expr: |
+          sum(rate(apprise_notification_duration_seconds_sum[5m])) by (service) /
+          sum(rate(apprise_notification_duration_seconds_count[5m])) by (service)

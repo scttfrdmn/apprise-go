@@ -1,0 +1,24 @@
+apiVersion: 1
+
+deleteDatasources:
+  - name: Prometheus
+    orgId: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    basicAuth: false
+    withCredentials: false
+    jsonData:
+      timeInterval: "5s"
+      queryTimeout: "60s"
+      httpMethod: POST
+      manageAlerts: true
+      alertmanagerUid: ""
+    secureJsonData: {}
+    orgId: 1
+    version: 1

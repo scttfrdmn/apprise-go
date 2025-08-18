@@ -73,10 +73,26 @@ func (s *Server) handleVersion(w http.ResponseWriter, r *http.Request) {
 
 // handleMetrics provides basic metrics endpoint
 func (s *Server) handleMetrics(w http.ResponseWriter, r *http.Request) {
+	// Check if client wants Prometheus format
+	acceptHeader := r.Header.Get("Accept")
+	if strings.Contains(acceptHeader, "text/plain") || strings.Contains(r.URL.RawQuery, "format=prometheus") {
+		// Serve Prometheus metrics
+		s.apprise.GetMetrics().Handler().ServeHTTP(w, r)
+		return
+	}
+	
+	// Serve JSON metrics for API clients
 	metrics := map[string]interface{}{
 		"services_registered": len(apprise.GetSupportedServices()),
+		"services_configured": s.apprise.Count(),
 		"version":            apprise.GetVersion(),
 		"scheduler_enabled":   s.scheduler != nil,
+	}
+	
+	// Add service-specific metrics
+	serviceMetrics := s.apprise.GetAllServiceMetrics()
+	if len(serviceMetrics) > 0 {
+		metrics["service_stats"] = serviceMetrics
 	}
 	
 	if s.scheduler != nil {
