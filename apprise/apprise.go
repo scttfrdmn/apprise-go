@@ -311,6 +311,8 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	// Email services
 	registry.Register("mailto", func() Service { return NewEmailService() })
 	registry.Register("mailtos", func() Service { return NewEmailService() })
+	registry.Register("sendgrid", func() Service { return NewSendGridService() })
+	registry.Register("mailgun", func() Service { return NewMailgunService() })
 
 	// Webhook services
 	registry.Register("webhook", func() Service { return NewWebhookService() })
@@ -343,6 +345,11 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 
 	// SMS services
 	registry.Register("twilio", func() Service { return NewTwilioService() })
+	registry.Register("bulksms", func() Service { return NewBulkSMSService() })
+	registry.Register("clicksend", func() Service { return NewClickSendService() })
+	registry.Register("messagebird", func() Service { return NewMessageBirdService() })
+	registry.Register("signal", func() Service { return NewSignalService() })
+	registry.Register("whatsapp", func() Service { return NewWhatsAppService() })
 	
 	// Voice services
 	registry.Register("twilio-voice", func() Service { return NewTwilioVoiceService() })

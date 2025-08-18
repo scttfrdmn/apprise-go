@@ -8,11 +8,11 @@ import (
 // GetSupportedServices returns a list of all supported service IDs
 func GetSupportedServices() []string {
 	return []string{
-		"discord", "slack", "telegram", "email", "webhook", "msteams",
-		"pushover", "pushbullet", "twilio", "desktop", "gotify", "ntfy",
-		"matrix", "mattermost", "pagerduty", "opsgenie", "aws-sns", "aws-ses",
-		"gcp-pubsub", "azure-servicebus", "github", "gitlab", "jira",
-		"datadog", "newrelic", "linkedin", "twitter", "apns", "fcm",
+		"discord", "slack", "telegram", "email", "sendgrid", "mailgun", "webhook", "msteams",
+		"pushover", "pushbullet", "twilio", "bulksms", "clicksend", "messagebird", "signal", "whatsapp",
+		"desktop", "gotify", "ntfy", "matrix", "mattermost", "pagerduty", "opsgenie",
+		"aws-sns", "aws-ses", "gcp-pubsub", "azure-servicebus", "github", "gitlab",
+		"jira", "datadog", "newrelic", "linkedin", "twitter", "apns", "fcm",
 		"aws-iot", "gcp-iot", "polly", "twilio-voice", "rocketchat",
 	}
 }
@@ -28,6 +28,10 @@ func CreateService(serviceID string) Service {
 		return &TelegramService{}
 	case "email", "smtp":
 		return &EmailService{}
+	case "sendgrid":
+		return &SendGridService{}
+	case "mailgun":
+		return &MailgunService{}
 	case "webhook", "json":
 		return &WebhookService{}
 	case "msteams", "teams":
@@ -38,6 +42,16 @@ func CreateService(serviceID string) Service {
 		return &PushbulletService{}
 	case "twilio":
 		return &TwilioService{}
+	case "bulksms":
+		return &BulkSMSService{}
+	case "clicksend":
+		return &ClickSendService{}
+	case "messagebird":
+		return &MessageBirdService{}
+	case "signal":
+		return &SignalService{}
+	case "whatsapp":
+		return &WhatsAppService{}
 	case "desktop":
 		return &DesktopService{}
 	case "matrix":
@@ -97,6 +111,10 @@ func GetServiceFriendlyName(serviceID string) string {
 		return "Telegram"
 	case "email", "smtp":
 		return "Email (SMTP)"
+	case "sendgrid":
+		return "SendGrid Email"
+	case "mailgun":
+		return "Mailgun Email"
 	case "webhook", "json":
 		return "Webhook"
 	case "msteams", "teams":
@@ -107,6 +125,16 @@ func GetServiceFriendlyName(serviceID string) string {
 		return "Pushbullet"
 	case "twilio":
 		return "Twilio SMS"
+	case "bulksms":
+		return "BulkSMS"
+	case "clicksend":
+		return "ClickSend SMS"
+	case "messagebird":
+		return "MessageBird SMS"
+	case "signal":
+		return "Signal Messenger"
+	case "whatsapp":
+		return "WhatsApp Business API"
 	case "desktop":
 		return "Desktop Notifications"
 	case "matrix":
