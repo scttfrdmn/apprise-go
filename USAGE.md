@@ -55,13 +55,25 @@ slack://TokenA/TokenB/TokenC/@username
 slack://bot_token/general
 slack://bot_token/@username
 slack://TokenA/TokenB/TokenC?username=MyBot&icon_emoji=:ghost:
+
+# With timestamp control (v1.9.5+)
+slack://TokenA/TokenB/TokenC/general?timestamp=no
+slack://bot_token/general?timestamp=yes
 ```
+
+**Query Parameters:**
+- `username=string` - Custom bot name
+- `icon_url=url` - Custom bot avatar URL
+- `icon_emoji=:emoji:` - Custom emoji icon (e.g., :ghost:, :rocket:)
+- `channel=string` - Override channel (alternative to path)
+- `timestamp=yes|no` - Include timestamp in messages (default: yes, v1.9.5+)
 
 **Features:**
 - Webhook and bot API support
 - Channel and direct message support
 - Rich attachments with colors
 - Custom bot appearance
+- Optional timestamp display control
 
 ### Telegram
 
