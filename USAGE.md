@@ -652,6 +652,78 @@ desktop://?image=/path/to/image.png
 - Support for custom sounds and images
 - Graceful fallbacks when notification tools are unavailable
 
+### Bark
+
+iOS push notification service for sending custom notifications to your iPhone via the Bark app.
+
+**URL Formats:**
+```
+# HTTP
+bark://devicekey@api.day.app/
+bark://devicekey@bark.example.com:8080/
+
+# HTTPS (secure)
+barks://devicekey@api.day.app/
+barks://devicekey@bark.example.com:8443/
+
+# With icon support (v1.9.5+)
+bark://devicekey@api.day.app/?icon=https://example.com/icon.png
+
+# With all parameters
+bark://devicekey@api.day.app/?icon=https://example.com/icon.png&sound=alarm&badge=5&url=https://example.com&category=news&group=alerts
+```
+
+**Query Parameters:**
+- `icon=url` - Custom icon URL (v1.9.5+)
+- `sound=name` - Sound name (e.g., alarm, bell, chime)
+- `badge=int` - Badge count to display on app icon
+- `url=url` - URL to open when notification is tapped
+- `category=string` - Notification category for grouping
+- `group=string` - Notification group for organization
+
+**Features:**
+- iOS push notifications via Bark app
+- Custom icon URLs (new in v1.9.5)
+- Custom sounds and badges
+- Action URLs for tappable notifications
+- Category and group organization
+- Self-hosted server support
+- HTTP and HTTPS support
+
+**Example Usage:**
+```go
+app := apprise.New()
+
+// Basic notification to official Bark server
+app.Add("bark://your-device-key@api.day.app/")
+
+// With custom icon
+app.Add("bark://your-device-key@api.day.app/?icon=https://example.com/logo.png")
+
+// Self-hosted with HTTPS and custom sound
+app.Add("barks://your-device-key@bark.myserver.com/?sound=alarm&badge=3")
+
+// Full featured with action URL
+app.Add("bark://your-device-key@api.day.app/?icon=https://example.com/icon.png&sound=bell&badge=1&url=https://example.com/article&category=news")
+
+app.Notify("Alert", "Server CPU usage high!", apprise.NotifyTypeWarning)
+```
+
+**Bark Setup:**
+1. Install Bark app from iOS App Store
+2. Open app and get your device key
+3. Use official server (api.day.app) or set up your own Bark server
+4. Configure notifications using your device key
+
+**Supported Sounds:**
+- alarm, anticipate, bell, birdsong, bloom
+- calypso, chime, choo, descent, electronic
+- fanfare, glass, gotosleep, healthnotification
+- horn, ladder, mailsent, minuet, multiwayinvitation
+- newmail, newsflash, noir, paymentsuccess
+- shake, sherwoodforest, silence, spell, suspense
+- telegraph, tiptoes, typewriters, update
+
 ### Gotify
 
 Self-hosted push notification server for sending messages to devices and applications.

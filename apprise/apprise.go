@@ -459,6 +459,8 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("gotifys", func() Service { return NewGotifyService() })
 	registry.Register("ntfy", func() Service { return NewNtfyService() })
 	registry.Register("ntfys", func() Service { return NewNtfyService() })
+	registry.Register("bark", func() Service { return NewBarkService() })
+	registry.Register("barks", func() Service { return NewBarkService() })
 
 	// Cloud services
 	registry.Register("sns", func() Service { return NewAWSSNSService() })

@@ -107,6 +107,7 @@ func main() {
 - **Desktop Notifications** - Cross-platform desktop notifications (macOS, Windows, Linux)
 - **Gotify** - Self-hosted push notifications
 - **Ntfy** - Simple HTTP push notifications with priority levels
+- **Bark** - iOS push notifications with custom icons and sounds
 
 ### 🚧 Coming Soon
 - AWS SNS
