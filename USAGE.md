@@ -487,6 +487,98 @@ twilio://ACCOUNT_SID:AUTH_TOKEN@+15551234567/+15559876543?apikey=KEY
 - US/Canada number auto-formatting
 - SMS message length optimization
 
+### Twilio Voice
+
+Voice call notifications with text-to-speech synthesis via Twilio Voice API.
+
+**URL Formats:**
+```
+# Direct Twilio API
+twilio-voice://ACCOUNT_SID:AUTH_TOKEN@api.twilio.com/+15551234567/+15559876543
+twilio-voice://ACCOUNT_SID:AUTH_TOKEN@api.twilio.com/+15551234567/+15559876543/+15551111111
+twilio-voice://ACCOUNT_SID:AUTH_TOKEN@api.twilio.com/+15551234567?to=+15559876543,+15551111111
+
+# With voice customization
+twilio-voice://ACCOUNT_SID:AUTH_TOKEN@api.twilio.com/+15551234567/+15559876543?language=en-US&gender=female
+twilio-voice://ACCOUNT_SID:AUTH_TOKEN@api.twilio.com/+15551234567/+15559876543?language=es-ES&gender=male
+
+# Webhook proxy mode (for secure credential management)
+twilio-voice://proxy-key@webhook.example.com/twilio-voice?account_sid=ACCOUNT_SID&auth_token=AUTH_TOKEN&from=+15551234567&to=+15559876543
+```
+
+**Query Parameters:**
+- `language=code` - Voice language (e.g., en-US, es-ES, fr-FR, de-DE) - default: en-US
+- `gender=male|female` - Voice gender - default: female
+- `to=+1234,+5678` - Comma-separated destination numbers (alternative to path)
+
+**Supported Languages:**
+- `en-US` - English (US)
+- `en-GB` - English (UK)
+- `es-ES` - Spanish (Spain)
+- `es-MX` - Spanish (Mexico)
+- `fr-FR` - French
+- `de-DE` - German
+- `it-IT` - Italian
+- `ja-JP` - Japanese
+- `ko-KR` - Korean
+- `pt-BR` - Portuguese (Brazil)
+- `ru-RU` - Russian
+- `zh-CN` - Chinese (Simplified)
+- `zh-TW` - Chinese (Traditional)
+- And more...
+
+**Features:**
+- Text-to-speech using Twilio's voice synthesis
+- Multiple language and voice options
+- Automatic TwiML generation
+- Multiple recipient support
+- Phone number validation (E.164 format)
+- Webhook proxy support for secure credentials
+- Message cleaning for voice synthesis
+- Notification type prefixes (Alert, Warning, Success)
+- Direct Twilio API or webhook proxy modes
+
+**TwiML Generation:**
+The service automatically generates TwiML (Twilio Markup Language) for voice synthesis:
+- Combines title and body into spoken message
+- Adds context based on notification type (Alert, Warning, Success)
+- Cleans special characters for proper voice synthesis
+- Configures voice language and gender
+
+**Example Usage:**
+```go
+app := apprise.New()
+
+// Basic voice call
+app.Add("twilio-voice://AC123:token@api.twilio.com/+15551234567/+15559876543")
+
+// Spanish voice, male
+app.Add("twilio-voice://AC123:token@api.twilio.com/+15551234567/+15559876543?language=es-ES&gender=male")
+
+// Multiple recipients via webhook proxy
+app.Add("twilio-voice://api-key@webhook.company.com/twilio-voice?account_sid=AC123&auth_token=token&from=+15551234567&to=+15559876543,+15551111111")
+
+// Send critical alert
+app.Notify("System Failure", "Database connection lost", apprise.NotifyTypeError)
+// Voice will say: "Alert: System Failure. Database connection lost"
+```
+
+**Webhook Proxy Mode:**
+For production environments, use webhook proxy mode to keep Twilio credentials secure:
+```go
+// Webhook proxy handles actual Twilio API calls with stored credentials
+app.Add("twilio-voice://proxy-api-key@webhook.yourcompany.com/twilio-voice?account_sid=AC123&auth_token=token&from=+15551234567&to=+15559876543")
+```
+
+The webhook receives a JSON payload with TwiML and call details, then makes the actual Twilio API call server-side.
+
+**Voice Synthesis Features:**
+- Special character replacement (& → "and", < → "less than", etc.)
+- Quote handling for natural speech
+- Multiple space normalization
+- Automatic message trimming
+- Context-aware prefixes based on notification type
+
 ### Desktop Notifications
 
 Cross-platform desktop notifications using native OS notification systems.
