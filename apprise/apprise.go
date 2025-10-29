@@ -406,6 +406,9 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 
 	// Enterprise messaging
 	registry.Register("msteams", func() Service { return NewMSTeamsService() })
+	registry.Register("powerautomate", func() Service { return NewMSTeamsService() }) // Alias for Power Automate
+	registry.Register("workflows", func() Service { return NewMSTeamsService() })      // Alias for Workflows
+	registry.Register("msflow", func() Service { return NewMSTeamsService() })         // Alias for MS Flow (legacy name)
 	registry.Register("mattermost", func() Service { return NewMattermostService() })
 	registry.Register("mmosts", func() Service { return NewMattermostService() })
 	registry.Register("rocketchat", func() Service { return NewRocketChatService() })

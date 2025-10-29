@@ -316,3 +316,128 @@ func containsString(s, substr string) bool {
 	}
 	return false
 }
+
+func TestMSTeamsService_PowerAutomate_ParseURL(t *testing.T) {
+	testCases := []struct {
+		name            string
+		url             string
+		expectError     bool
+		expectedVersion int
+		expectedWebhook string
+	}{
+		{
+			name:            "Power Automate format",
+			url:             "powerautomate://prod-01.eastus.logic.azure.com:443/workflows/abc123/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xyz789",
+			expectError:     false,
+			expectedVersion: 4,
+			expectedWebhook: "https://prod-01.eastus.logic.azure.com:443/workflows/abc123/triggers/manual/paths/invoke?api-version=2016-10-01&sig=xyz789&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0",
+		},
+		{
+			name:            "Workflows format",
+			url:             "workflows://prod-02.westus.logic.azure.com/workflows/def456/triggers/manual/paths/invoke",
+			expectError:     false,
+			expectedVersion: 4,
+			expectedWebhook: "https://prod-02.westus.logic.azure.com/workflows/def456/triggers/manual/paths/invoke",
+		},
+		{
+			name:            "MS Flow format",
+			url:             "msflow://prod-03.centralus.logic.azure.com:443/workflows/ghi789/triggers/manual/paths/invoke",
+			expectError:     false,
+			expectedVersion: 4,
+			expectedWebhook: "https://prod-03.centralus.logic.azure.com:443/workflows/ghi789/triggers/manual/paths/invoke",
+		},
+		{
+			name:            "Power Automate with image parameter",
+			url:             "powerautomate://prod-01.eastus.logic.azure.com/workflows/abc123/triggers/manual/paths/invoke?image=no&api-version=2016-10-01",
+			expectError:     false,
+			expectedVersion: 4,
+			expectedWebhook: "https://prod-01.eastus.logic.azure.com/workflows/abc123/triggers/manual/paths/invoke?api-version=2016-10-01",
+		},
+		{
+			name:        "Power Automate missing hostname",
+			url:         "powerautomate:///workflows/abc123/triggers/manual/paths/invoke",
+			expectError: true,
+		},
+		{
+			name:        "Invalid scheme",
+			url:         "invalidscheme://prod-01.eastus.logic.azure.com/workflows/abc123",
+			expectError: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := NewMSTeamsService().(*MSTeamsService)
+			parsedURL, err := url.Parse(tc.url)
+			if err != nil {
+				t.Fatalf("Failed to parse URL: %v", err)
+			}
+
+			err = service.ParseURL(parsedURL)
+
+			if tc.expectError {
+				if err == nil {
+					t.Error("Expected error but got none")
+				}
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
+
+			if service.version != tc.expectedVersion {
+				t.Errorf("Expected version %d, got %d", tc.expectedVersion, service.version)
+			}
+
+			if tc.expectedWebhook != "" && service.webhookURL != tc.expectedWebhook {
+				t.Errorf("Expected webhook URL '%s', got '%s'", tc.expectedWebhook, service.webhookURL)
+			}
+		})
+	}
+}
+
+func TestMSTeamsService_PowerAutomate_TestURL(t *testing.T) {
+	service := NewMSTeamsService()
+
+	validURLs := []string{
+		"powerautomate://prod-01.eastus.logic.azure.com/workflows/abc123/triggers/manual/paths/invoke",
+		"workflows://prod-02.westus.logic.azure.com:443/workflows/def456/triggers/manual/paths/invoke",
+		"msflow://prod-03.centralus.logic.azure.com/workflows/ghi789/triggers/manual/paths/invoke",
+	}
+
+	for _, testURL := range validURLs {
+		t.Run("Valid_"+testURL, func(t *testing.T) {
+			err := service.TestURL(testURL)
+			if err != nil {
+				t.Errorf("Expected valid URL %s to pass, got error: %v", testURL, err)
+			}
+		})
+	}
+
+	invalidURLs := []string{
+		"powerautomate:///workflows/abc123", // Missing hostname
+		"workflows:///invalid",               // Missing hostname
+	}
+
+	for _, testURL := range invalidURLs {
+		t.Run("Invalid_"+testURL, func(t *testing.T) {
+			err := service.TestURL(testURL)
+			if err == nil {
+				t.Errorf("Expected invalid URL %s to fail", testURL)
+			}
+		})
+	}
+}
+
+func TestMSTeamsService_PowerAutomate_BuildWebhookURL(t *testing.T) {
+	service := NewMSTeamsService().(*MSTeamsService)
+	service.version = 4
+	expectedURL := "https://prod-01.eastus.logic.azure.com/workflows/abc123/triggers/manual/paths/invoke"
+	service.webhookURL = expectedURL
+
+	actualURL := service.buildWebhookURL()
+	if actualURL != expectedURL {
+		t.Errorf("Expected URL '%s', got '%s'", expectedURL, actualURL)
+	}
+}
