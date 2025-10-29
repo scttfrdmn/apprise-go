@@ -103,6 +103,7 @@ func main() {
 - **Pushover** - Mobile push notifications with priority levels
 - **Pushbullet** - Cross-platform push notifications
 - **Twilio SMS** - SMS/MMS messaging with rate limiting
+- **Twilio Voice** - Voice call notifications with text-to-speech (multi-language support)
 - **Desktop Notifications** - Cross-platform desktop notifications (macOS, Windows, Linux)
 - **Gotify** - Self-hosted push notifications
 - **Ntfy** - Simple HTTP push notifications with priority levels
