@@ -1,0 +1,240 @@
+# GitHub Labels Configuration for Apprise-Go
+# This file defines all labels used for issue and PR management
+#
+# To apply these labels, use: gh label sync --labels .github/labels.yml --force
+
+# ============================================================================
+# Type Labels - What kind of issue is this?
+# ============================================================================
+
+- name: "bug"
+  color: "d73a4a"
+  description: "Something isn't working correctly"
+
+- name: "enhancement"
+  color: "a2eeef"
+  description: "New feature or request"
+
+- name: "documentation"
+  color: "0075ca"
+  description: "Improvements or additions to documentation"
+
+- name: "technical-debt"
+  color: "fbca04"
+  description: "Code refactoring or improvement needed"
+
+- name: "service-request"
+  color: "00d4aa"
+  description: "Request for new notification service support"
+
+# ============================================================================
+# Priority Labels - How urgent is this?
+# ============================================================================
+
+- name: "priority: critical"
+  color: "b60205"
+  description: "Highest priority - blocking usage or severe impact"
+
+- name: "priority: high"
+  color: "d93f0b"
+  description: "High priority - should be addressed soon"
+
+- name: "priority: medium"
+  color: "fbca04"
+  description: "Medium priority - important but not urgent"
+
+- name: "priority: low"
+  color: "0e8a16"
+  description: "Low priority - nice to have"
+
+# ============================================================================
+# Area Labels - Which component is affected?
+# ============================================================================
+
+- name: "area: core"
+  color: "c5def5"
+  description: "Core library (apprise/ package)"
+
+- name: "area: services"
+  color: "c5def5"
+  description: "Notification services implementation"
+
+- name: "area: cli"
+  color: "c5def5"
+  description: "Command-line interface (cmd/apprise-cli)"
+
+- name: "area: api"
+  color: "c5def5"
+  description: "REST API server (cmd/apprise-api)"
+
+- name: "area: config"
+  color: "c5def5"
+  description: "Configuration system and templates"
+
+- name: "area: attachments"
+  color: "c5def5"
+  description: "Attachment handling framework"
+
+- name: "area: http"
+  color: "c5def5"
+  description: "HTTP client and connection pooling"
+
+- name: "area: tests"
+  color: "c5def5"
+  description: "Testing infrastructure and test coverage"
+
+- name: "area: docs"
+  color: "c5def5"
+  description: "Documentation and examples"
+
+- name: "area: build"
+  color: "c5def5"
+  description: "Build system, CI/CD, releases"
+
+# ============================================================================
+# Service Labels - Which notification service?
+# ============================================================================
+
+- name: "service: discord"
+  color: "7289da"
+  description: "Discord notification service"
+
+- name: "service: slack"
+  color: "4a154b"
+  description: "Slack notification service"
+
+- name: "service: telegram"
+  color: "0088cc"
+  description: "Telegram notification service"
+
+- name: "service: email"
+  color: "ea4335"
+  description: "Email (SMTP) service"
+
+- name: "service: teams"
+  color: "505ac9"
+  description: "Microsoft Teams service"
+
+- name: "service: webhook"
+  color: "28a745"
+  description: "Generic webhook service"
+
+- name: "service: cloud"
+  color: "ff9900"
+  description: "Cloud platform services (AWS, Azure, GCP)"
+
+- name: "service: other"
+  color: "bfdadc"
+  description: "Other notification services"
+
+# ============================================================================
+# Status Labels - Issue lifecycle
+# ============================================================================
+
+- name: "triage"
+  color: "ededed"
+  description: "Needs initial review and prioritization"
+
+- name: "needs-info"
+  color: "d876e3"
+  description: "Waiting for more information from reporter"
+
+- name: "blocked"
+  color: "b60205"
+  description: "Blocked by external dependency or other issue"
+
+- name: "ready"
+  color: "0e8a16"
+  description: "Ready to be worked on"
+
+- name: "in-progress"
+  color: "fbca04"
+  description: "Currently being worked on"
+
+- name: "in-review"
+  color: "fef2c0"
+  description: "In code review"
+
+- name: "awaiting-merge"
+  color: "c2e0c6"
+  description: "Approved and ready to merge"
+
+# ============================================================================
+# Resolution Labels - Why was this closed?
+# ============================================================================
+
+- name: "duplicate"
+  color: "cfd3d7"
+  description: "This issue or PR already exists"
+
+- name: "wontfix"
+  color: "ffffff"
+  description: "This will not be worked on"
+
+- name: "invalid"
+  color: "e4e669"
+  description: "This doesn't seem right or is not applicable"
+
+- name: "works-as-designed"
+  color: "fef2c0"
+  description: "Behavior is intentional"
+
+- name: "upstream"
+  color: "c2e0c6"
+  description: "Issue should be reported to upstream Python Apprise"
+
+# ============================================================================
+# Special Labels
+# ============================================================================
+
+- name: "good first issue"
+  color: "7057ff"
+  description: "Good for newcomers to the project"
+
+- name: "help wanted"
+  color: "008672"
+  description: "Extra attention is needed from community"
+
+- name: "breaking-change"
+  color: "d73a4a"
+  description: "Changes that break backward compatibility"
+
+- name: "security"
+  color: "ee0701"
+  description: "Security-related issue or improvement"
+
+- name: "performance"
+  color: "1d76db"
+  description: "Performance optimization or issue"
+
+- name: "dependencies"
+  color: "0366d6"
+  description: "Pull requests that update a dependency file"
+
+- name: "question"
+  color: "d876e3"
+  description: "Further information is requested"
+
+- name: "upstream-sync"
+  color: "bfdadc"
+  description: "Syncing with upstream Apprise features"
+
+# ============================================================================
+# Milestone/Version Labels
+# ============================================================================
+
+- name: "milestone: v1.9.5-1"
+  color: "bfd4f2"
+  description: "Part of v1.9.5-1 release"
+
+- name: "milestone: v1.9.5-2"
+  color: "bfd4f2"
+  description: "Part of v1.9.5-2 release"
+
+- name: "milestone: v1.10.0"
+  color: "bfd4f2"
+  description: "Part of v1.10.0 release (next upstream sync)"
+
+- name: "milestone: v2.0"
+  color: "bfd4f2"
+  description: "Part of v2.0 major release"

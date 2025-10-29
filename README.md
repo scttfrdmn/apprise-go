@@ -18,7 +18,7 @@
 
 A Go port of the [Apprise notification library](https://github.com/caronc/apprise) by [Chris Caron](https://github.com/caronc). Apprise allows you to send a notification to almost all of the most popular notification services available to us today such as: Telegram, Discord, Slack, Amazon SNS, Gotify, etc.
 
-> **Upstream Project**: This is a Go implementation inspired by the original [Apprise v1.9.4](https://github.com/caronc/apprise/releases/tag/v1.9.4) (⭐ 14,186) Python library. While maintaining API compatibility and feature parity, this Go version offers improved performance, static compilation, and native cross-platform support.
+> **Upstream Project**: This is a Go implementation inspired by the original [Apprise v1.9.5](https://github.com/caronc/apprise/releases/tag/v1.9.5) (⭐ 14,186) Python library. While maintaining API compatibility and feature parity, this Go version offers improved performance, static compilation, and native cross-platform support.
 > 
 > **Version Strategy**: This project tracks the upstream version with a Go-specific suffix (e.g., `1.9.4-1` tracks upstream `1.9.4` with Go port revision `1`).
 
@@ -120,7 +120,7 @@ This project is a Go port of the original [Apprise](https://github.com/caronc/ap
 ### Upstream Project
 
 - **Original Apprise**: https://github.com/caronc/apprise
-- **Version Reference**: v1.9.4 (Latest as of January 2025)
+- **Version Reference**: v1.9.5 (Latest as of October 2025)
 - **Language**: Python
 - **Stars**: ⭐ 14,186+
 - **License**: BSD-2-Clause
@@ -153,7 +153,7 @@ This Go port follows a structured versioning approach that tracks the upstream P
 | Feature | Original Python | This Go Port |
 |---------|----------------|--------------|
 | **Language** | Python 3.6+ | Go 1.21+ |
-| **Current Version** | v1.9.4 | v1.9.4-7 |
+| **Current Version** | v1.9.5 | v1.9.5-1 |
 | **Deployment** | pip install + dependencies | Single static binary |
 | **Performance** | ~1ms per notification | ~0.88ms per notification |
 | **Memory Usage** | ~50MB runtime | ~10MB runtime |

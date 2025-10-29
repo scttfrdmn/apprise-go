@@ -1,0 +1,163 @@
+name: 🔌 New Service Request
+description: Request support for a new notification service
+title: "[Service]: "
+labels: ["enhancement", "service-request", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for requesting a new notification service! Please provide as much detail as possible to help us evaluate and implement this service.
+
+  - type: input
+    id: service-name
+    attributes:
+      label: Service Name
+      description: What is the name of the notification service?
+      placeholder: e.g., Pushover, Rocket.Chat, Signal
+    validations:
+      required: true
+
+  - type: input
+    id: service-website
+    attributes:
+      label: Service Website/Documentation
+      description: Link to the service's official website or API documentation
+      placeholder: https://example.com/api-docs
+    validations:
+      required: true
+
+  - type: dropdown
+    id: service-type
+    attributes:
+      label: Service Type
+      description: What kind of notification service is this?
+      options:
+        - Messaging Platform (Slack, Teams, etc.)
+        - Push Notification (Mobile/Desktop)
+        - Email Service
+        - SMS/Phone Service
+        - Incident Management (PagerDuty, etc.)
+        - Chat/Communication Platform
+        - Cloud Platform Integration
+        - Self-hosted Service
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: upstream-status
+    attributes:
+      label: Upstream Python Apprise Support
+      description: Is this service supported in the Python version?
+      options:
+        - "Yes - fully supported in upstream"
+        - "Yes - but needs updates"
+        - "No - not in upstream"
+        - "Unknown"
+    validations:
+      required: true
+
+  - type: input
+    id: upstream-link
+    attributes:
+      label: Upstream Implementation Link
+      description: If supported in Python Apprise, link to the implementation
+      placeholder: https://github.com/caronc/apprise/blob/master/apprise/plugins/...
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Why do you need this service? How would you use it?
+      placeholder: |
+        I use this service for...
+        It would help me notify...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: authentication
+    attributes:
+      label: Authentication Method
+      description: How does the service authenticate requests?
+      options:
+        - API Key/Token
+        - Webhook URL
+        - OAuth
+        - Username/Password
+        - Certificate-based
+        - Multiple methods
+        - No authentication
+        - Unknown
+    validations:
+      required: true
+
+  - type: dropdown
+    id: attachments
+    attributes:
+      label: Attachment Support
+      description: Does the service support file attachments?
+      options:
+        - "Yes - supports attachments"
+        - "No - text only"
+        - "Unknown"
+    validations:
+      required: true
+
+  - type: textarea
+    id: api-details
+    attributes:
+      label: API Details
+      description: Provide any details about the API (endpoints, payload format, limits, etc.)
+      placeholder: |
+        API Endpoint: https://api.service.com/v1/notify
+        Method: POST
+        Payload: JSON
+        Rate limits: 100 requests/minute
+        Max message size: 10KB
+
+  - type: textarea
+    id: url-format
+    attributes:
+      label: Proposed URL Format
+      description: How should users configure this service?
+      placeholder: |
+        service://api_key@host/channel
+        service://user:pass@host:port/room
+    validations:
+      required: true
+
+  - type: textarea
+    id: example-payload
+    attributes:
+      label: Example API Request
+      description: Show an example of how to send a notification via this service's API
+      placeholder: |
+        POST https://api.service.com/notify
+        Content-Type: application/json
+        Authorization: Bearer <token>
+
+        {
+          "message": "Hello World",
+          "priority": "high"
+        }
+      render: json
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this service to you?
+      options:
+        - High - Critical for my workflow
+        - Medium - Would be very useful
+        - Low - Nice to have
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: Any other relevant information about the service
+      placeholder: Service popularity, cost (free/paid), regional availability, etc.
