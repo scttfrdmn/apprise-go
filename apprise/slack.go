@@ -23,18 +23,20 @@ type SlackService struct {
 	botToken string
 
 	// Common fields
-	channel   string
-	username  string
-	iconURL   string
-	iconEmoji string
-	client    *http.Client
-	mode      string // "webhook" or "bot"
+	channel          string
+	username         string
+	iconURL          string
+	iconEmoji        string
+	includeTimestamp bool   // Whether to include timestamp in messages (default: true)
+	client           *http.Client
+	mode             string // "webhook" or "bot"
 }
 
 // NewSlackService creates a new Slack service instance
 func NewSlackService() Service {
 	return &SlackService{
-		client: GetWebhookHTTPClient("slack"),
+		client:           GetWebhookHTTPClient("slack"),
+		includeTimestamp: true, // Default to including timestamps
 	}
 }
 
@@ -96,6 +98,15 @@ func (s *SlackService) ParseURL(serviceURL *url.URL) error {
 	}
 	if channel := query.Get("channel"); channel != "" {
 		s.channel = channel
+	}
+	if timestamp := query.Get("timestamp"); timestamp != "" {
+		// Parse timestamp parameter: "yes" or "no" (default: "yes")
+		if strings.EqualFold(timestamp, "no") || strings.EqualFold(timestamp, "false") {
+			s.includeTimestamp = false
+		} else if strings.EqualFold(timestamp, "yes") || strings.EqualFold(timestamp, "true") {
+			s.includeTimestamp = true
+		}
+		// If invalid value, keep the default (true)
 	}
 
 	return nil
@@ -174,11 +185,14 @@ func (s *SlackService) sendWebhook(ctx context.Context, req NotificationRequest)
 	// Create attachment if we have a title, otherwise use simple text
 	if req.Title != "" {
 		attachment := SlackAttachment{
-			Color:     color,
-			Title:     req.Title,
-			Text:      req.Body,
-			Footer:    fmt.Sprintf("Type: %s", req.NotifyType.String()),
-			Timestamp: req.GetUnixTimestamp(), // Use timezone-aware timestamp
+			Color:  color,
+			Title:  req.Title,
+			Text:   req.Body,
+			Footer: fmt.Sprintf("Type: %s", req.NotifyType.String()),
+		}
+		// Only include timestamp if enabled
+		if s.includeTimestamp {
+			attachment.Timestamp = req.GetUnixTimestamp() // Use timezone-aware timestamp
 		}
 		payload.Attachments = []SlackAttachment{attachment}
 	} else {
@@ -202,11 +216,14 @@ func (s *SlackService) sendBot(ctx context.Context, req NotificationRequest) err
 	// Create attachment if we have a title, otherwise use simple text
 	if req.Title != "" {
 		attachment := SlackAttachment{
-			Color:     color,
-			Title:     req.Title,
-			Text:      req.Body,
-			Footer:    fmt.Sprintf("Type: %s", req.NotifyType.String()),
-			Timestamp: req.GetUnixTimestamp(), // Use timezone-aware timestamp
+			Color:  color,
+			Title:  req.Title,
+			Text:   req.Body,
+			Footer: fmt.Sprintf("Type: %s", req.NotifyType.String()),
+		}
+		// Only include timestamp if enabled
+		if s.includeTimestamp {
+			attachment.Timestamp = req.GetUnixTimestamp() // Use timezone-aware timestamp
 		}
 		payload.Attachments = []SlackAttachment{attachment}
 	} else {
