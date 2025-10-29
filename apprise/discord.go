@@ -131,6 +131,7 @@ func (d *DiscordService) Send(ctx context.Context, req NotificationRequest) erro
 			Title:       req.Title,
 			Description: req.Body,
 			Color:       color,
+			Timestamp:   req.GetTimestamp(), // Use timezone-aware timestamp
 		}
 
 		// Add notification type as footer

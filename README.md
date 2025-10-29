@@ -74,12 +74,16 @@ import (
 func main() {
     // Create a new Apprise instance
     app := apprise.New()
-    
+
     // Add notification services
     app.Add("discord://webhook_id/webhook_token")
-    
+
     // Send a notification
-    app.Notify("Hello World!", "This is a test notification")
+    app.Notify("Hello World!", "This is a test notification", apprise.NotifyTypeInfo)
+
+    // Send with timezone support (new in v1.9.5)
+    app.Notify("Server Alert", "CPU usage high", apprise.NotifyTypeWarning,
+        apprise.WithTimezone("America/New_York"))
 }
 ```
 
