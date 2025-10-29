@@ -174,10 +174,11 @@ func (s *SlackService) sendWebhook(ctx context.Context, req NotificationRequest)
 	// Create attachment if we have a title, otherwise use simple text
 	if req.Title != "" {
 		attachment := SlackAttachment{
-			Color:  color,
-			Title:  req.Title,
-			Text:   req.Body,
-			Footer: fmt.Sprintf("Type: %s", req.NotifyType.String()),
+			Color:     color,
+			Title:     req.Title,
+			Text:      req.Body,
+			Footer:    fmt.Sprintf("Type: %s", req.NotifyType.String()),
+			Timestamp: req.GetUnixTimestamp(), // Use timezone-aware timestamp
 		}
 		payload.Attachments = []SlackAttachment{attachment}
 	} else {
@@ -201,10 +202,11 @@ func (s *SlackService) sendBot(ctx context.Context, req NotificationRequest) err
 	// Create attachment if we have a title, otherwise use simple text
 	if req.Title != "" {
 		attachment := SlackAttachment{
-			Color:  color,
-			Title:  req.Title,
-			Text:   req.Body,
-			Footer: fmt.Sprintf("Type: %s", req.NotifyType.String()),
+			Color:     color,
+			Title:     req.Title,
+			Text:      req.Body,
+			Footer:    fmt.Sprintf("Type: %s", req.NotifyType.String()),
+			Timestamp: req.GetUnixTimestamp(), // Use timezone-aware timestamp
 		}
 		payload.Attachments = []SlackAttachment{attachment}
 	} else {

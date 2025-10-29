@@ -51,8 +51,9 @@ type NotificationRequest struct {
 	Attachments   []Attachment       // Legacy attachment support
 	AttachmentMgr *AttachmentManager // Modern attachment support
 	Tags          []string
-	BodyFormat    string // html, markdown, text
-	URL           string // The service URL that will handle this notification
+	BodyFormat    string      // html, markdown, text
+	URL           string      // The service URL that will handle this notification
+	Timezone      *time.Location // Timezone for timestamps (nil = system default)
 }
 
 // NotificationResponse contains the result of a notification attempt
@@ -336,6 +337,40 @@ func WithBodyFormat(format string) NotifyOption {
 	return func(req *NotificationRequest) {
 		req.BodyFormat = format
 	}
+}
+
+// WithTimezone sets the timezone for timestamp display in notifications
+// Accepts timezone name (e.g., "America/New_York", "UTC", "Europe/London")
+func WithTimezone(tz string) NotifyOption {
+	return func(req *NotificationRequest) {
+		if tz == "" {
+			req.Timezone = time.Local
+			return
+		}
+
+		loc, err := time.LoadLocation(tz)
+		if err != nil {
+			// If timezone is invalid, fall back to system local time
+			req.Timezone = time.Local
+			return
+		}
+		req.Timezone = loc
+	}
+}
+
+// GetTimestamp returns the current time in the request's timezone
+// Returns RFC3339 formatted timestamp for use in Discord, Slack, etc.
+func (req *NotificationRequest) GetTimestamp() string {
+	tz := req.Timezone
+	if tz == nil {
+		tz = time.Local
+	}
+	return time.Now().In(tz).Format(time.RFC3339)
+}
+
+// GetUnixTimestamp returns the current Unix timestamp (for Slack, etc.)
+func (req *NotificationRequest) GetUnixTimestamp() int64 {
+	return time.Now().Unix()
 }
 
 // registerBuiltinServices registers all built-in notification services

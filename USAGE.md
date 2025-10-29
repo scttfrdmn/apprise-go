@@ -1134,6 +1134,53 @@ app.Notify("Title", "<b>Bold</b> and <i>italic</i> text", apprise.NotifyTypeInfo
     apprise.WithBodyFormat("html"))
 ```
 
+### Timezone Support
+
+Control the timezone used for timestamps in notifications. This is useful for ensuring notifications display times in the appropriate timezone for your team or application.
+
+```go
+// Send notification with UTC timezone
+app.Notify("Server Alert", "CPU usage high", apprise.NotifyTypeWarning,
+    apprise.WithTimezone("UTC"))
+
+// Send notification with specific timezone
+app.Notify("Meeting Reminder", "Team standup in 15 minutes", apprise.NotifyTypeInfo,
+    apprise.WithTimezone("America/New_York"))
+
+// Multiple timezone examples
+app.Notify("Title", "Message", apprise.NotifyTypeInfo,
+    apprise.WithTimezone("Europe/London"))
+
+app.Notify("Title", "Message", apprise.NotifyTypeInfo,
+    apprise.WithTimezone("Asia/Tokyo"))
+
+// Invalid timezone falls back to system local time
+app.Notify("Title", "Message", apprise.NotifyTypeInfo,
+    apprise.WithTimezone("Invalid/Timezone"))  // Uses time.Local
+```
+
+**Supported Timezone Names:**
+- IANA timezone database names (e.g., "America/New_York", "Europe/London", "Asia/Tokyo")
+- "UTC" for Coordinated Universal Time
+- "" (empty string) or invalid names fall back to system local time
+
+**Services Using Timestamps:**
+- **Discord**: Uses RFC3339 format (ISO 8601) in embed timestamps
+- **Slack**: Uses Unix timestamps in message attachments
+- **Other services**: May use timestamps in footers or metadata
+
+**Example with Multiple Services:**
+```go
+app := apprise.New()
+app.Add("discord://webhook_id/webhook_token")
+app.Add("slack://TokenA/TokenB/TokenC/general")
+
+// All services receive notifications with UTC timestamps
+app.Notify("Deploy Complete", "Version 1.2.3 deployed successfully",
+    apprise.NotifyTypeSuccess,
+    apprise.WithTimezone("UTC"))
+```
+
 ## Security Best Practices
 
 1. **Never commit tokens to source code** - Use environment variables or config files
