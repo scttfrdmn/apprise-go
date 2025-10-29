@@ -265,3 +265,291 @@ func GetServiceFriendlyName(serviceID string) string {
 		return fmt.Sprintf("Unknown Service (%s)", serviceID)
 	}
 }
+
+
+package apprise
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
+	"time"
+)
+
+const (
+	// BarkScheme is the URL scheme for Bark notifications.
+	BarkScheme = "bark"
+	// BarksScheme is the secure URL scheme for Bark notifications.
+	BarksScheme = "barks"
+
+	// BarkDefaultPort is the default port for insecure Bark connections.
+	BarkDefaultPort = 80
+	// BarksDefaultPort is the default port for secure Bark connections.
+	BarksDefaultPort = 443
+
+	// BarkAPIPushPath is the API path for sending push notifications.
+	BarkAPIPushPath = "/push"
+
+	// ObscuredDeviceKey is a placeholder for obscured device keys in URLs.
+	ObscuredDeviceKey = "******"
+)
+
+// BarkService implements the Service interface for Bark notifications.
+type BarkService struct {
+	Scheme    string
+	Host      string
+	Port      int
+	DeviceKey string
+
+	// Optional parameters from URL query or SendOptions, with URL query acting as defaults
+	// that can be overridden by SendOptions.
+	IconURL   string
+	Sound     string
+	Badge     int
+	ActionURL string // 'url' in Bark API for action URL
+	Category  string
+	Title     string // 'title' from Apprise options or URL query
+
+	client *http.Client
+}
+
+// NewBarkService creates a new BarkService instance from a URL.
+// It parses the URL to extract Bark-specific parameters.
+// URL formats supported:
+// - bark://{device_key}@{hostname}/{path}
+// - bark://{hostname}/{device_key}/{path}
+// - barks://{device_key}@{hostname}:{port}/{path}
+func NewBarkService(serviceURL *url.URL) (Service, error) {
+	if serviceURL == nil {
+		return nil, fmt.Errorf("BarkService: serviceURL cannot be nil")
+	}
+
+	service := &BarkService{
+		Scheme: serviceURL.Scheme,
+		Host:   serviceURL.Hostname(),
+		client: &http.Client{
+			Timeout: 10 * time.Second, // Default HTTP client timeout
+		},
+	}
+
+	// Determine port
+	portStr := serviceURL.Port()
+	if portStr != "" {
+		port, err := strconv.Atoi(portStr)
+		if err != nil {
+			return nil, fmt.Errorf("BarkService: invalid port specified: %s", portStr)
+		}
+		service.Port = port
+	} else {
+		switch service.Scheme {
+		case BarksScheme:
+			service.Port = BarksDefaultPort
+		case BarkScheme:
+			service.Port = BarkDefaultPort
+		default:
+			return nil, fmt.Errorf("BarkService: unsupported scheme: %s", service.Scheme)
+		}
+	}
+
+	// DeviceKey can be in UserInfo (device_key@host) or as the first path segment (host/device_key).
+	// UserInfo takes precedence if both are present, as per common URL parsing conventions.
+	if serviceURL.User != nil {
+		service.DeviceKey = serviceURL.User.Username()
+	} else {
+		// If no UserInfo, check the first path segment
+		pathSegments := strings.Split(strings.TrimPrefix(serviceURL.Path, "/"), "/")
+		if len(pathSegments) > 0 && pathSegments[0] != "" {
+			service.DeviceKey = pathSegments[0]
+		}
+	}
+
+	// Parse query parameters, which act as defaults
+	query := serviceURL.Query()
+	service.IconURL = query.Get("icon")
+	service.Sound = query.Get("sound")
+	if badgeStr := query.Get("badge"); badgeStr != "" {
+		badge, err := strconv.Atoi(badgeStr)
+		if err != nil {
+			return nil, fmt.Errorf("BarkService: invalid badge specified: %s", badgeStr)
+		}
+		service.Badge = badge
+	}
+	service.ActionURL = query.Get("url") // 'url' is a Bark specific parameter for action URL
+	service.Category = query.Get("category")
+	service.Title = query.Get("title") // 'title' from URL query
+
+	return service, service.ValidateURL()
+}
+
+// ValidateURL ensures the BarkService has all required fields to send a notification.
+func (s *BarkService) ValidateURL() error {
+	if s.Host == "" {
+		return fmt.Errorf("BarkService: host is required")
+	}
+	if s.DeviceKey == "" {
+		return fmt.Errorf("BarkService: device key is required")
+	}
+	return nil
+}
+
+// Send sends a notification to the Bark server.
+func (s *BarkService) Send(message string, options *SendOptions) error {
+	if err := s.ValidateURL(); err != nil {
+		return err
+	}
+
+	endpointScheme := "http"
+	if s.Scheme == BarksScheme {
+		endpointScheme = "https"
+	}
+
+	// Construct the full Bark API endpoint URL.
+	// Example: https://my.bark.server:443/push
+	endpointURL := fmt.Sprintf("%s://%s", endpointScheme, s.Host)
+	// Only append port if it's non-default for the scheme
+	if (s.Scheme == BarkScheme && s.Port != BarkDefaultPort) ||
+		(s.Scheme == BarksScheme && s.Port != BarksDefaultPort) {
+		endpointURL += fmt.Sprintf(":%d", s.Port)
+	}
+	endpointURL += BarkAPIPushPath
+
+	// Prepare the JSON payload for the Bark API.
+	payload := map[string]interface{}{
+		"device_key": s.DeviceKey,
+		"body":       message,
+	}
+
+	// Add 'title', prioritizing SendOptions over URL query parameter.
+	if options != nil && options.Title != "" {
+		payload["title"] = options.Title
+	} else if s.Title != "" {
+		payload["title"] = s.Title
+	}
+
+	// Add 'icon', prioritizing SendOptions over URL query parameter.
+	if options != nil && options.IconURL != "" {
+		payload["icon"] = options.IconURL
+	} else if s.IconURL != "" {
+		payload["icon"] = s.IconURL
+	}
+
+	// Add 'sound', prioritizing SendOptions over URL query parameter.
+	if options != nil && options.Sound != "" {
+		payload["sound"] = options.Sound
+	} else if s.Sound != "" {
+		payload["sound"] = s.Sound
+	}
+
+	// Add 'badge', prioritizing SendOptions over URL query parameter.
+	if options != nil && options.Badge != 0 {
+		payload["badge"] = options.Badge
+	} else if s.Badge != 0 {
+		payload["badge"] = s.Badge
+	}
+
+	// Add 'url' (action URL), prioritizing SendOptions over URL query parameter.
+	if options != nil && options.ActionURL != "" {
+		payload["url"] = options.ActionURL
+	} else if s.ActionURL != "" {
+		payload["url"] = s.ActionURL
+	}
+
+	// Add 'category', prioritizing SendOptions over URL query parameter.
+	if options != nil && options.Category != "" {
+		payload["category"] = options.Category
+	} else if s.Category != "" {
+		payload["category"] = s.Category
+	}
+
+	// Incorporate other Bark-specific parameters from SendOptions.CustomData,
+	// ensuring not to overwrite fields already explicitly set.
+	if options != nil && options.CustomData != nil {
+		for k, v := range options.CustomData {
+			// Only add if not already explicitly set (e.g., title, icon, etc.)
+			if _, exists := payload[k]; !exists {
+				payload[k] = v
+			}
+		}
+	}
+
+	jsonPayload, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("BarkService: failed to marshal JSON payload: %w", err)
+	}
+
+	req, err := http.NewRequest("POST", endpointURL, bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		return fmt.Errorf("BarkService: failed to create request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("BarkService: failed to send request to Bark server: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		var barkError struct {
+			Code int    `json:"code"`
+			Msg  string `json:"message"`
+		}
+		// Attempt to parse Bark's specific error response for more details.
+		if err := json.NewDecoder(resp.Body).Decode(&barkError); err == nil && barkError.Msg != "" {
+			return fmt.Errorf("BarkService: Bark server returned error %d: %s", resp.StatusCode, barkError.Msg)
+		}
+		// Fallback to generic error if Bark's error message cannot be parsed.
+		return fmt.Errorf("BarkService: Bark server returned non-200 status code: %d", resp.StatusCode)
+	}
+
+	return nil
+}
+
+// GetURL reconstructs a sanitized Bark URL for logging or display purposes.
+// The DeviceKey is obscured for security reasons.
+func (s *BarkService) GetURL() string {
+	u := &url.URL{
+		Scheme: s.Scheme,
+		Host:   s.Host,
+	}
+
+	// Add port if it's non-default for the scheme.
+	if (s.Scheme == BarkScheme && s.Port != BarkDefaultPort) ||
+		(s.Scheme == BarksScheme && s.Port != BarksDefaultPort) {
+		u.Host = fmt.Sprintf("%s:%d", s.Host, s.Port)
+	}
+
+	// Obscure the device key for security when reconstructing the URL.
+	u.User = url.User(ObscuredDeviceKey)
+
+	// Append query parameters if they exist, to reflect the service configuration.
+	query := url.Values{}
+	if s.IconURL != "" {
+		query.Set("icon", s.IconURL)
+	}
+	if s.Sound != "" {
+		query.Set("sound", s.Sound)
+	}
+	if s.Badge != 0 {
+		query.Set("badge", strconv.Itoa(s.Badge))
+	}
+	if s.ActionURL != "" {
+		query.Set("url", s.ActionURL)
+	}
+	if s.Category != "" {
+		query.Set("category", s.Category)
+	}
+	if s.Title != "" {
+		query.Set("title", s.Title)
+	}
+
+	if len(query) > 0 {
+		u.RawQuery = query.Encode()
+	}
+
+	return u.String()
+}

@@ -162,6 +162,18 @@ func New() *Apprise {
 	}
 }
 
+// registerBuiltinServices registers all the services that are part of the core library.
+func registerBuiltinServices(r *ServiceRegistry) {
+	// Register the Bark service for both 'bark' and 'barks' schemes.
+	// The factory returns a new, unconfigured instance of the service.
+	// The configuration is then handled by the ParseURL method.
+	barkFactory := func() Service { return &BarkService{} }
+	r.Register("bark", barkFactory)
+	r.Register("barks", barkFactory)
+
+	// Other built-in services would be registered here as well.
+}
+
 // Add adds a notification service by URL
 func (a *Apprise) Add(serviceURL string, tags ...string) error {
 	parsedURL, err := url.Parse(serviceURL)
@@ -179,10 +191,10 @@ func (a *Apprise) Add(serviceURL string, tags ...string) error {
 	}
 
 	a.services = append(a.services, service)
-	
+
 	// Update metrics
 	a.metrics.UpdateServicesConfigured(len(a.services))
-	
+
 	return nil
 }
 
@@ -228,7 +240,7 @@ func (a *Apprise) NotifyAll(req NotificationRequest) []NotificationResponse {
 				Duration:   duration,
 				ServiceID:  svc.GetServiceID(),
 			}
-			
+
 			// Record metrics
 			status := "success"
 			if err != nil {
@@ -240,227 +252,9 @@ func (a *Apprise) NotifyAll(req NotificationRequest) []NotificationResponse {
 	}
 
 	wg.Wait()
-	
+
 	// Record batch size
 	a.metrics.RecordBatchSize(len(a.services))
-	
+
 	return responses
-}
-
-// SetTimeout sets the timeout for notification requests
-func (a *Apprise) SetTimeout(timeout time.Duration) {
-	a.timeout = timeout
-}
-
-// SetTags sets default tags for all notifications
-func (a *Apprise) SetTags(tags ...string) {
-	a.tags = tags
-}
-
-// Clear removes all configured services
-func (a *Apprise) Clear() {
-	a.services = a.services[:0]
-	// Update metrics
-	a.metrics.UpdateServicesConfigured(0)
-}
-
-// Count returns the number of configured services
-func (a *Apprise) Count() int {
-	return len(a.services)
-}
-
-// AddAttachment adds an attachment from a file path or URL
-func (a *Apprise) AddAttachment(source string, name ...string) error {
-	return a.attachmentMgr.Add(source, name...)
-}
-
-// AddAttachmentData adds an attachment from raw data
-func (a *Apprise) AddAttachmentData(data []byte, filename, mimeType string) error {
-	return a.attachmentMgr.AddData(data, filename, mimeType)
-}
-
-// GetMetrics returns the metrics manager for accessing Prometheus metrics
-func (a *Apprise) GetMetrics() *MetricsManager {
-	return a.metrics
-}
-
-// GetServiceMetrics returns metrics for a specific service
-func (a *Apprise) GetServiceMetrics(serviceID string) *PrometheusServiceMetrics {
-	return a.metrics.GetServiceMetrics(serviceID)
-}
-
-// GetAllServiceMetrics returns metrics for all services
-func (a *Apprise) GetAllServiceMetrics() map[string]*PrometheusServiceMetrics {
-	return a.metrics.GetAllServiceMetrics()
-}
-
-// GetAttachments returns all attachments
-func (a *Apprise) GetAttachments() []AttachmentInterface {
-	return a.attachmentMgr.GetAll()
-}
-
-// AttachmentCount returns the number of attachments
-func (a *Apprise) AttachmentCount() int {
-	return a.attachmentMgr.Count()
-}
-
-// ClearAttachments removes all attachments
-func (a *Apprise) ClearAttachments() {
-	a.attachmentMgr.Clear()
-}
-
-// GetAttachmentManager returns the attachment manager for advanced operations
-func (a *Apprise) GetAttachmentManager() *AttachmentManager {
-	return a.attachmentMgr
-}
-
-// NotifyOption allows customization of notification requests
-type NotifyOption func(*NotificationRequest)
-
-// WithAttachments adds attachments to the notification
-func WithAttachments(attachments ...Attachment) NotifyOption {
-	return func(req *NotificationRequest) {
-		req.Attachments = append(req.Attachments, attachments...)
-	}
-}
-
-// WithTags adds tags to the notification
-func WithTags(tags ...string) NotifyOption {
-	return func(req *NotificationRequest) {
-		req.Tags = append(req.Tags, tags...)
-	}
-}
-
-// WithBodyFormat sets the body format (html, markdown, text)
-func WithBodyFormat(format string) NotifyOption {
-	return func(req *NotificationRequest) {
-		req.BodyFormat = format
-	}
-}
-
-// registerBuiltinServices registers all built-in notification services
-func registerBuiltinServices(registry *ServiceRegistry) {
-	// Messaging/Chat platforms
-	registry.Register("discord", func() Service { return NewDiscordService() })
-	registry.Register("slack", func() Service { return NewSlackService() })
-	registry.Register("telegram", func() Service { return NewTelegramService() })
-	registry.Register("tgram", func() Service { return NewTelegramService() })
-
-	// Email services
-	registry.Register("mailto", func() Service { return NewEmailService() })
-	registry.Register("mailtos", func() Service { return NewEmailService() })
-	registry.Register("sendgrid", func() Service { return NewSendGridService() })
-	registry.Register("mailgun", func() Service { return NewMailgunService() })
-
-	// Webhook services
-	registry.Register("webhook", func() Service { return NewWebhookService() })
-	registry.Register("webhooks", func() Service { return NewWebhookService() })
-	registry.Register("json", func() Service { return NewJSONService() })
-
-	// Push notification services
-	registry.Register("pushover", func() Service { return NewPushoverService() })
-	registry.Register("pover", func() Service { return NewPushoverService() })
-	registry.Register("pushbullet", func() Service { return NewPushbulletService() })
-	registry.Register("pball", func() Service { return NewPushbulletService() })
-
-	// Mobile push services
-	registry.Register("fcm", func() Service { return NewFCMService() })
-	registry.Register("apns", func() Service { return NewAPNSService() })
-	registry.Register("rich-mobile-push", func() Service { return NewRichMobilePushService() })
-	registry.Register("batch-mobile-push", func() Service { return NewBatchMobilePushService() })
-
-	// Enterprise messaging
-	registry.Register("msteams", func() Service { return NewMSTeamsService() })
-	registry.Register("mattermost", func() Service { return NewMattermostService() })
-	registry.Register("mmosts", func() Service { return NewMattermostService() })
-	registry.Register("rocketchat", func() Service { return NewRocketChatService() })
-	registry.Register("rocket", func() Service { return NewRocketChatService() })
-
-	// Incident management
-	registry.Register("pagerduty", func() Service { return NewPagerDutyService() })
-	registry.Register("opsgenie", func() Service { return NewOpsgenieService() })
-
-	// Decentralized messaging
-	registry.Register("matrix", func() Service { return NewMatrixService() })
-	
-	// Social platforms
-	registry.Register("reddit", func() Service { return NewRedditService() })
-	registry.Register("mastodon", func() Service { return NewMastodonService() })
-	registry.Register("facebook", func() Service { return NewFacebookService() })
-	registry.Register("instagram", func() Service { return NewInstagramService() })
-	registry.Register("youtube", func() Service { return NewYouTubeService() })
-	registry.Register("tiktok", func() Service { return NewTikTokService() })
-
-	// SMS services
-	registry.Register("twilio", func() Service { return NewTwilioService() })
-	registry.Register("bulksms", func() Service { return NewBulkSMSService() })
-	registry.Register("clicksend", func() Service { return NewClickSendService() })
-	registry.Register("messagebird", func() Service { return NewMessageBirdService() })
-	registry.Register("nexmo", func() Service { return NewNexmoService() })
-	registry.Register("vonage", func() Service { return NewNexmoService() }) // Alias for Nexmo
-	registry.Register("plivo", func() Service { return NewPlivoService() })
-	registry.Register("textmagic", func() Service { return NewTextMagicService() })
-	registry.Register("aws-sns-sms", func() Service { return NewAWSSNSSMSService() })
-	registry.Register("signal", func() Service { return NewSignalService() })
-	registry.Register("whatsapp", func() Service { return NewWhatsAppService() })
-	
-	// Voice services
-	registry.Register("twilio-voice", func() Service { return NewTwilioVoiceService() })
-	registry.Register("polly", func() Service { return NewPollyService() })
-
-	// IoT and webhook platforms
-	registry.Register("ifttt", func() Service { return NewIFTTTService() })
-	registry.Register("zapier", func() Service { return NewZapierService() })
-	registry.Register("homeassistant", func() Service { return NewHomeAssistantService() })
-	registry.Register("hass", func() Service { return NewHomeAssistantService() }) // Alias
-	registry.Register("nodered", func() Service { return NewNodeREDService() })
-	
-	// IoT services
-	registry.Register("aws-iot", func() Service { return NewAWSIoTService() })
-	registry.Register("gcp-iot", func() Service { return NewGCPIoTService() })
-
-	// Self-hosted services
-	registry.Register("gotify", func() Service { return NewGotifyService() })
-	registry.Register("gotifys", func() Service { return NewGotifyService() })
-	registry.Register("ntfy", func() Service { return NewNtfyService() })
-	registry.Register("ntfys", func() Service { return NewNtfyService() })
-
-	// Cloud services
-	registry.Register("sns", func() Service { return NewAWSSNSService() })
-	registry.Register("ses", func() Service { return NewAWSSESService() })
-	registry.Register("azuresb", func() Service { return NewAzureServiceBusService() })
-	registry.Register("pubsub", func() Service { return NewGCPPubSubService() })
-
-	// Monitoring services
-	registry.Register("datadog", func() Service { return NewDatadogService() })
-	registry.Register("newrelic", func() Service { return NewNewRelicService() })
-
-	// DevOps & CI/CD services
-	registry.Register("gitlab", func() Service { return NewGitLabService() })
-	registry.Register("github", func() Service { return NewGitHubService() })
-	registry.Register("jira", func() Service { return NewJiraService() })
-
-	// Social media services
-	registry.Register("twitter", func() Service { return NewTwitterService() })
-	registry.Register("linkedin", func() Service { return NewLinkedInService() })
-
-	// Note: Cloud services use webhook proxy patterns for secure credential management
-
-	// Desktop notification services
-	registry.Register("desktop", func() Service { return NewDesktopService() })
-	registry.Register("macosx", func() Service { return NewDesktopService() })
-	registry.Register("windows", func() Service { return NewDesktopService() })
-	registry.Register("linux", func() Service { return NewDesktopService() })
-	registry.Register("dbus", func() Service { return NewLinuxDBusService() })
-	registry.Register("gnome", func() Service { return NewLinuxDBusService() })
-	registry.Register("kde", func() Service { return NewLinuxDBusService() })
-	registry.Register("glib", func() Service { return NewLinuxDBusService() })
-	registry.Register("qt", func() Service { return NewLinuxDBusService() })
-	
-	// Advanced desktop notification services
-	registry.Register("desktop-advanced", func() Service { return NewAdvancedDesktopService() })
-	registry.Register("desktop-interactive", func() Service { return NewInteractiveDesktopService() })
-	registry.Register("desktop-persistent", func() Service { return NewPersistentDesktopService() })
-
-	// Add more services as needed...
 }
