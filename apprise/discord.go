@@ -9,6 +9,13 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"strconv"
+)
+
+// Discord message flags (bitmask values)
+const (
+	DiscordFlagSuppressEmbeds        = 1 << 2  // 4 - Suppress embeds
+	DiscordFlagSuppressNotifications = 1 << 12 // 4096 - Do not send push notification
 )
 
 // DiscordService implements Discord webhook notifications
@@ -17,6 +24,7 @@ type DiscordService struct {
 	webhookToken string
 	avatar       string
 	username     string
+	flags        int // Discord message flags (bitmask)
 	client       *http.Client
 }
 
@@ -66,6 +74,13 @@ func (d *DiscordService) ParseURL(serviceURL *url.URL) error {
 	if avatar := query.Get("avatar"); avatar != "" {
 		d.avatar = avatar
 	}
+	if flagsStr := query.Get("flags"); flagsStr != "" {
+		// Parse flags as integer (can be decimal or combined flags)
+		if flags, err := strconv.Atoi(flagsStr); err == nil {
+			d.flags = flags
+		}
+		// If parsing fails, silently ignore and use default (0 = no flags)
+	}
 
 	if d.webhookID == "" || d.webhookToken == "" {
 		return fmt.Errorf("discord webhook ID and token are required")
@@ -80,6 +95,7 @@ type DiscordWebhookPayload struct {
 	Username  string         `json:"username,omitempty"`
 	AvatarURL string         `json:"avatar_url,omitempty"`
 	Embeds    []DiscordEmbed `json:"embeds,omitempty"`
+	Flags     int            `json:"flags,omitempty"` // Message flags (bitmask)
 }
 
 // DiscordEmbed represents a Discord embed object
@@ -123,6 +139,7 @@ func (d *DiscordService) Send(ctx context.Context, req NotificationRequest) erro
 	payload := DiscordWebhookPayload{
 		Username:  d.username,
 		AvatarURL: d.avatar,
+		Flags:     d.flags, // Include message flags if set
 	}
 
 	// Create embed if we have a title, otherwise use simple content

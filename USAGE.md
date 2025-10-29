@@ -32,13 +32,30 @@ Discord webhook notifications with rich embeds and custom formatting.
 discord://webhook_id/webhook_token
 discord://avatar@webhook_id/webhook_token
 discord://webhook_id/webhook_token?username=MyBot&avatar=https://example.com/avatar.png
+
+# With message flags (v1.9.5+)
+discord://webhook_id/webhook_token?flags=4              # Suppress embeds
+discord://webhook_id/webhook_token?flags=4096           # Suppress notifications
+discord://webhook_id/webhook_token?flags=4100           # Both (4 + 4096)
 ```
+
+**Query Parameters:**
+- `username=string` - Custom bot name
+- `avatar=url` - Custom bot avatar URL
+- `flags=int` - Discord message flags (bitmask, v1.9.5+)
+
+**Message Flags (v1.9.5+):**
+- `4` (SUPPRESS_EMBEDS) - Suppress embeds in the message
+- `4096` (SUPPRESS_NOTIFICATIONS) - Do not send push notification
+- Combined: `4100` - Both suppress embeds and notifications
+- `0` or omit - Normal message (default)
 
 **Features:**
 - Rich embeds with titles and colors
 - Custom avatar and username
 - Notification type-based color coding
 - Support for attachments
+- Message flags control (suppress embeds, notifications)
 
 ### Slack  
 
