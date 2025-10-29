@@ -95,7 +95,7 @@ func main() {
 - **Telegram** - Bot API with multiple chat support
 - **Email (SMTP)** - Full SMTP support with TLS/STARTTLS
 - **Webhook/JSON** - Generic HTTP webhooks with custom templates
-- **Microsoft Teams** - Enterprise messaging with adaptive cards
+- **Microsoft Teams** - Enterprise messaging with adaptive cards (includes Power Automate / Workflows support)
 - **Mattermost** - Open-source team collaboration with API v4
 - **PagerDuty** - Incident management with Events API v2 (US/EU regions)
 - **Opsgenie** - Atlassian's incident management and alerting (US/EU regions)

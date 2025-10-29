@@ -174,7 +174,7 @@ webhook://api.example.com/notify?method=PUT&content_type=text/plain
 
 ### Microsoft Teams
 
-Enterprise messaging with rich card formatting and theme colors.
+Enterprise messaging with rich card formatting and theme colors, including support for Microsoft Power Automate and Workflows.
 
 **URL Formats:**
 ```
@@ -189,6 +189,11 @@ msteams://token_a/token_b/token_c
 
 # With options
 msteams://team_name/token_a/token_b/token_c?image=no
+
+# Power Automate / Workflows format
+powerautomate://prod-01.eastus.logic.azure.com/workflows/abc123/triggers/manual/paths/invoke?params
+workflows://prod-02.westus.logic.azure.com:443/workflows/def456/triggers/manual/paths/invoke
+msflow://prod-03.centralus.logic.azure.com/workflows/ghi789/triggers/manual/paths/invoke
 ```
 
 **Query Parameters:**
@@ -200,6 +205,32 @@ msteams://team_name/token_a/token_b/token_c?image=no
 - Activity images for visual context
 - Support for all Teams webhook versions
 - Markdown text formatting support
+- **Power Automate / Workflows integration** (new in v1.9.5-1)
+- Microsoft Flow support (legacy)
+
+**Power Automate / Workflows:**
+
+Microsoft Power Automate (formerly Flow) and Workflows use Azure Logic Apps webhooks that accept the same MessageCard format as Teams. Use the `powerautomate://`, `workflows://`, or `msflow://` URL schemes with your Logic Apps webhook URL.
+
+```go
+// Power Automate example
+app.Add("powerautomate://prod-01.eastus.logic.azure.com/workflows/abc123def456/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xyz789")
+
+// Workflows example
+app.Add("workflows://prod-02.westus.logic.azure.com:443/workflows/def456/triggers/manual/paths/invoke")
+
+// MS Flow (legacy) example
+app.Add("msflow://prod-03.centralus.logic.azure.com/workflows/ghi789/triggers/manual/paths/invoke")
+
+app.Notify("Automation Alert", "Workflow triggered successfully", apprise.NotifyTypeSuccess)
+```
+
+**Getting Your Power Automate Webhook URL:**
+1. Create a new Flow/Workflow in Power Automate
+2. Add a "When a HTTP request is received" trigger
+3. Save the Flow to generate the webhook URL
+4. Copy the full webhook URL (e.g., `https://prod-01.eastus.logic.azure.com/workflows/.../`)
+5. Use it with the `powerautomate://` scheme (remove `https://` and use the scheme instead)
 
 ### Mattermost
 

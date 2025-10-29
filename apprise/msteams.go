@@ -47,9 +47,53 @@ func (m *MSTeamsService) GetDefaultPort() int {
 // Legacy format: msteams://token_a/token_b/token_c
 // Modern format: msteams://team_name/token_a/token_b/token_c
 // Version 3 format: msteams://team_name/token_a/token_b/token_c/token_d
+// Power Automate format: powerautomate://prod-XX.region.logic.azure.com/workflows/.../triggers/manual/paths/invoke?params
+// Workflows format: workflows://prod-XX.region.logic.azure.com/workflows/.../triggers/manual/paths/invoke
+// MS Flow format: msflow://prod-XX.region.logic.azure.com/workflows/.../triggers/manual/paths/invoke
 func (m *MSTeamsService) ParseURL(serviceURL *url.URL) error {
-	if serviceURL.Scheme != "msteams" {
-		return fmt.Errorf("invalid scheme: expected 'msteams', got '%s'", serviceURL.Scheme)
+	validSchemes := []string{"msteams", "powerautomate", "workflows", "msflow"}
+	validScheme := false
+	for _, scheme := range validSchemes {
+		if serviceURL.Scheme == scheme {
+			validScheme = true
+			break
+		}
+	}
+
+	if !validScheme {
+		return fmt.Errorf("invalid scheme: expected 'msteams', 'powerautomate', 'workflows', or 'msflow', got '%s'", serviceURL.Scheme)
+	}
+
+	// Check if this is a Power Automate/Workflows URL
+	// Format: powerautomate://prod-XX.region.logic.azure.com/workflows/abc123/triggers/manual/paths/invoke
+	// We detect this by checking if the scheme is one of the Power Automate aliases
+	// and if the hostname contains logic.azure.com
+	if (serviceURL.Scheme == "powerautomate" || serviceURL.Scheme == "workflows" || serviceURL.Scheme == "msflow") {
+		// Construct full webhook URL from hostname and path
+		if serviceURL.Host == "" {
+			return fmt.Errorf("power Automate webhook URL requires hostname")
+		}
+
+		// Build the full webhook URL (use HTTPS)
+		m.webhookURL = fmt.Sprintf("https://%s%s", serviceURL.Host, serviceURL.Path)
+
+		// Handle query parameters
+		query := serviceURL.Query()
+
+		// Extract our control parameters
+		if includeImage := query.Get("image"); includeImage != "" {
+			m.includeImage = strings.ToLower(includeImage) == "yes" || strings.ToLower(includeImage) == "true"
+			// Remove image parameter from webhook URL query
+			query.Del("image")
+		}
+
+		// Add remaining query parameters to webhook URL (if any)
+		if len(query) > 0 {
+			m.webhookURL = fmt.Sprintf("%s?%s", m.webhookURL, query.Encode())
+		}
+
+		m.version = 4 // Use version 4 to indicate Power Automate/Workflows
+		return nil
 	}
 
 	// Extract tokens from path
@@ -115,6 +159,9 @@ func (m *MSTeamsService) buildWebhookURL() string {
 		// Version 3 with additional token
 		return fmt.Sprintf("https://%s.webhook.office.com/webhookb2/%s/IncomingWebhook/%s/%s/%s",
 			m.teamName, m.tokenA, m.tokenB, m.tokenC, m.tokenD)
+	case 4:
+		// Version 4: Power Automate/Workflows - URL already set in ParseURL
+		return m.webhookURL
 	default:
 		return ""
 	}
@@ -482,3 +529,6 @@ func (m *MSTeamsService) getEmojiForNotifyType(notifyType NotifyType) string {
 // msteams://team_name/token_a/token_b/token_c/token_d (version 3)
 // msteams://token_a/token_b/token_c (legacy)
 // msteams://team_name/token_a/token_b/token_c?image=no
+// powerautomate://prod-XX.region.logic.azure.com:443/workflows/.../triggers/manual/paths/invoke?params
+// workflows://prod-XX.region.logic.azure.com/workflows/.../triggers/manual/paths/invoke
+// msflow://prod-XX.region.logic.azure.com/workflows/.../triggers/manual/paths/invoke
