@@ -1,0 +1,109 @@
+name: 📚 Documentation
+description: Improvements or additions to documentation
+title: "[Docs]: "
+labels: ["documentation", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve our documentation! Clear docs help everyone use Apprise-Go effectively.
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Documentation Type
+      description: What kind of documentation needs work?
+      options:
+        - README/Getting Started
+        - Service Documentation
+        - API Reference
+        - Usage Examples
+        - Configuration Guide
+        - CLI Documentation
+        - REST API Documentation
+        - Code Comments/GoDoc
+        - Architecture/Design Docs
+        - Migration Guide
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Issue Type
+      description: What needs to be done?
+      options:
+        - Missing documentation
+        - Incorrect/outdated information
+        - Unclear explanation
+        - Missing examples
+        - Typo/formatting
+        - New feature needs docs
+        - Translation needed
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: location
+    attributes:
+      label: Documentation Location
+      description: Where is the documentation that needs work?
+      placeholder: |
+        File: README.md, line 123
+        Or: Missing from docs/services/discord.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      description: What's wrong or missing?
+      placeholder: The current documentation says X, but it should say Y because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested Improvement
+      description: How should the documentation be improved?
+      placeholder: |
+        Add a section explaining...
+        Update the example to show...
+        Clarify that...
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example/Reference
+      description: Provide examples or references for the improved documentation
+      placeholder: |
+        Example code:
+        ```go
+        app := apprise.New()
+        ```
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this documentation fix?
+      options:
+        - Critical - Blocks users from using feature
+        - High - Confusing without fix
+        - Medium - Would help clarity
+        - Low - Minor improvement
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any other relevant information
+      placeholder: This came up when trying to...

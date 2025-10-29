@@ -38,5 +38,5 @@ require (
 	google.golang.org/protobuf v1.36.6 // indirect
 )
 
-// Tracks upstream Apprise v1.9.4
-// This version: 1.9.4-1
+// Tracks upstream Apprise v1.9.5
+// This version: 1.9.5-1

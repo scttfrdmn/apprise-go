@@ -1,0 +1,119 @@
+name: 🐛 Bug Report
+description: Report a bug or unexpected behavior
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the information below to help us diagnose and fix the issue.
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of Apprise-Go is affected?
+      options:
+        - Notification Service (Discord, Slack, etc.)
+        - Core Library
+        - CLI Tool
+        - REST API Server
+        - Configuration System
+        - Attachment Handling
+        - Documentation
+        - Build/Deployment
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: service
+    attributes:
+      label: Affected Service (if applicable)
+      description: Which notification service has the issue?
+      placeholder: e.g., Discord, Slack, Telegram, Email, etc.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of the bug
+      placeholder: What happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Configure service with URL 'discord://...'
+        2. Send notification with message '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: The notification should be sent successfully...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Instead, got error...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Apprise-Go Version
+      description: What version are you using?
+      placeholder: v1.9.5-1
+    validations:
+      required: true
+
+  - type: input
+    id: go-version
+    attributes:
+      label: Go Version
+      description: Run `go version`
+      placeholder: go1.25
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: What operating system?
+      options:
+        - Linux
+        - macOS
+        - Windows
+        - Docker
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs/Error Messages
+      description: Include any relevant log output or error messages
+      placeholder: |
+        Error: failed to send notification...
+      render: shell
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any other information that might help
+      placeholder: This started happening after upgrading from...

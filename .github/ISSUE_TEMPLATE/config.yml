@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/scttfrdmn/apprise-go/discussions
+    about: Ask questions or discuss ideas with the community
+  - name: 📚 Documentation
+    url: https://github.com/scttfrdmn/apprise-go/blob/main/README.md
+    about: Read the documentation and usage guides
+  - name: 🐍 Upstream Apprise
+    url: https://github.com/caronc/apprise
+    about: Issues related to the original Python Apprise project

@@ -8,31 +8,31 @@ import (
 
 func TestVersion(t *testing.T) {
 	version := GetVersion()
-	if version != "1.9.4-3" {
-		t.Errorf("Expected version 1.9.4-3, got %s", version)
+	if version != "1.9.5-1" {
+		t.Errorf("Expected version 1.9.5-1, got %s", version)
 	}
 }
 
 func TestUpstreamVersion(t *testing.T) {
 	upstreamVersion := GetUpstreamVersion()
-	if upstreamVersion != "1.9.4" {
-		t.Errorf("Expected upstream version 1.9.4, got %s", upstreamVersion)
+	if upstreamVersion != "1.9.5" {
+		t.Errorf("Expected upstream version 1.9.5, got %s", upstreamVersion)
 	}
 }
 
 func TestVersionInfo(t *testing.T) {
 	info := GetVersionInfo()
 
-	if info.Version != "1.9.4-3" {
-		t.Errorf("Expected version 1.9.4-3, got %s", info.Version)
+	if info.Version != "1.9.5-1" {
+		t.Errorf("Expected version 1.9.5-1, got %s", info.Version)
 	}
 
-	if info.UpstreamVersion != "1.9.4" {
-		t.Errorf("Expected upstream version 1.9.4, got %s", info.UpstreamVersion)
+	if info.UpstreamVersion != "1.9.5" {
+		t.Errorf("Expected upstream version 1.9.5, got %s", info.UpstreamVersion)
 	}
 
-	if info.PortVersion != "3" {
-		t.Errorf("Expected port version 3, got %s", info.PortVersion)
+	if info.PortVersion != "1" {
+		t.Errorf("Expected port version 1, got %s", info.PortVersion)
 	}
 
 	if info.GoVersion == "" {
@@ -52,8 +52,8 @@ func TestGetUserAgent(t *testing.T) {
 	userAgent := GetUserAgent()
 
 	// Should contain our version
-	if !strings.Contains(userAgent, "Apprise-Go/1.9.4-3") {
-		t.Errorf("User agent should contain Apprise-Go/1.9.4-3, got %s", userAgent)
+	if !strings.Contains(userAgent, "Apprise-Go/1.9.5-1") {
+		t.Errorf("User agent should contain Apprise-Go/1.9.5-1, got %s", userAgent)
 	}
 
 	// Should contain Go version
@@ -62,7 +62,7 @@ func TestGetUserAgent(t *testing.T) {
 	}
 
 	// Should contain upstream version
-	if !strings.Contains(userAgent, "based-on-Apprise/1.9.4") {
+	if !strings.Contains(userAgent, "based-on-Apprise/1.9.5") {
 		t.Errorf("User agent should contain upstream version, got %s", userAgent)
 	}
 
@@ -78,30 +78,30 @@ func TestVersionInfoString(t *testing.T) {
 	versionString := info.String()
 
 	// Should contain all key information
-	if !strings.Contains(versionString, "Apprise-Go 1.9.4-3") {
-		t.Errorf("Version string should contain Apprise-Go 1.9.4-3, got %s", versionString)
+	if !strings.Contains(versionString, "Apprise-Go 1.9.5-1") {
+		t.Errorf("Version string should contain Apprise-Go 1.9.5-1, got %s", versionString)
 	}
 
-	if !strings.Contains(versionString, "based on Apprise 1.9.4") {
+	if !strings.Contains(versionString, "based on Apprise 1.9.5") {
 		t.Errorf("Version string should contain upstream version, got %s", versionString)
 	}
 
-	if !strings.Contains(versionString, "port revision 3") {
+	if !strings.Contains(versionString, "port revision 1") {
 		t.Errorf("Version string should contain port revision, got %s", versionString)
 	}
 }
 
 func TestVersionConstants(t *testing.T) {
 	// Test that constants are correctly defined
-	if Version != "1.9.4-3" {
-		t.Errorf("Version constant should be 1.9.4-3, got %s", Version)
+	if Version != "1.9.5-1" {
+		t.Errorf("Version constant should be 1.9.5-1, got %s", Version)
 	}
 
-	if UpstreamVersion != "1.9.4" {
-		t.Errorf("UpstreamVersion constant should be 1.9.4, got %s", UpstreamVersion)
+	if UpstreamVersion != "1.9.5" {
+		t.Errorf("UpstreamVersion constant should be 1.9.5, got %s", UpstreamVersion)
 	}
 
-	if PortVersion != "3" {
-		t.Errorf("PortVersion constant should be 3, got %s", PortVersion)
+	if PortVersion != "1" {
+		t.Errorf("PortVersion constant should be 1, got %s", PortVersion)
 	}
 }

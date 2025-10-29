@@ -1,175 +1,204 @@
-# 🚀 Apprise-Go Service Expansion Roadmap
+# 🚀 Apprise-Go Roadmap
 
-## 📊 Current Status
-- **Implemented Services**: 13/123 (10.6% of upstream)
-- **Coverage Strategy**: Quality over quantity - focus on high-impact services
-- **Market Position**: Core 80/20 services that handle majority of real-world use cases
+> **Note**: As of v1.9.5-1, this project has transitioned to using GitHub Projects and Issues for roadmap tracking. This document provides a high-level overview. For detailed planning, see our [GitHub Project Board](https://github.com/scttfrdmn/apprise-go/projects) and [Milestones](https://github.com/scttfrdmn/apprise-go/milestones).
 
-## ✅ Current Services (13)
-| Service | Status | Use Case |
-|---------|--------|----------|
-| Discord | ✅ | Gaming/developer communities |
-| Slack | ✅ | Enterprise team communication |
-| Telegram | ✅ | Personal/secure messaging |
-| Email (SMTP) | ✅ | Universal communication |
-| Webhook/JSON | ✅ | Custom integrations |
-| Pushover | ✅ | Personal push notifications |
-| Pushbullet | ✅ | Cross-device notifications |
-| Microsoft Teams | ✅ | Enterprise collaboration |
-| Twilio SMS | ✅ | SMS messaging |
-| Desktop | ✅ | Local system notifications |
-| DBus | ✅ | Linux desktop integration |
-| Gotify | ✅ | Self-hosted push notifications |
+## 📊 Current Status (v1.9.5-1)
 
----
+- **Implemented Services**: **64+** notification services
+- **Upstream Tracking**: Synced with Apprise v1.9.5
+- **Go Version**: 1.25+
+- **Code Quality**: A-grade (Go Report Card)
+- **Test Coverage**: Comprehensive service coverage
 
-## 🎯 Phase 1: Core Enterprise Services
-**Goal**: Reach 18 services (+5) - Target enterprise DevOps market
+### ✅ Implemented Services (64+)
 
-### 🚨 1. PagerDuty
-- **Priority**: HIGHEST
-- **Market**: Enterprise incident management
-- **API**: REST API with routing keys
-- **Complexity**: Medium
-- **Impact**: Critical for DevOps teams
+<details>
+<summary>Click to expand full service list</summary>
 
-### 💬 2. Matrix  
-- **Priority**: HIGH
-- **Market**: Decentralized/privacy-focused teams
-- **API**: Matrix protocol with access tokens
-- **Complexity**: Medium
-- **Impact**: Growing adoption in government/privacy sectors
+**Messaging & Chat**
+- Discord, Slack, Telegram, Microsoft Teams, Matrix, Mattermost
+- RocketChat, Mastodon, Signal, WhatsApp
+- Facebook, Instagram, LinkedIn, Reddit, TikTok, Twitter, YouTube
 
-### 📱 3. Ntfy
-- **Priority**: HIGH  
-- **Market**: Self-hosted push notifications
-- **API**: Simple HTTP POST with topics
-- **Complexity**: Low
-- **Impact**: Popular in self-hosting community
+**Email Services**
+- SMTP (Generic), SendGrid, Mailgun, AWS SES, Office365
 
-### 🔥 4. Opsgenie
-- **Priority**: HIGH
-- **Market**: Enterprise incident management (Atlassian)
-- **API**: REST API with team routing
-- **Complexity**: Medium
-- **Impact**: Enterprise DevOps complement to PagerDuty
+**Push Notifications**
+- Pushover, Pushbullet, APNS, FCM (Firebase), Ntfy, Gotify
 
-### 👥 5. Mattermost
-- **Priority**: MEDIUM-HIGH
-- **Market**: Open-source Slack alternative
-- **API**: Webhook-based (similar to Slack)
-- **Complexity**: Low
-- **Impact**: Self-hosted enterprise teams
+**SMS Services**
+- Twilio (SMS & Voice), AWS SNS SMS, Nexmo, Plivo
+- BulkSMS, ClickSend, MessageBird, TextMagic
+
+**Incident Management**
+- PagerDuty, Opsgenie
+
+**Cloud Platforms**
+- AWS (SNS, SES, IoT), Azure Service Bus, GCP (Pub/Sub, IoT)
+
+**Monitoring & DevOps**
+- Datadog, NewRelic, Jira, GitHub, GitLab, Grafana
+
+**Desktop Notifications**
+- Linux (DBus), macOS, Windows
+- Advanced/Interactive/Persistent variants
+
+**Automation & Integration**
+- HomeAssistant, IFTTT, NodeRED, Zapier
+- Generic Webhook/JSON
+
+**And more...**
+
+See [USAGE.md](USAGE.md) for detailed service documentation.
+
+</details>
 
 ---
 
-## 🚀 Phase 2: Popular Platforms  
-**Goal**: Reach 28 services (+10) - Cover 95% of common use cases
+## 🎯 Active Milestones
 
-### Communication & Social
-- **🏠 Home Assistant** - Home automation notifications
-- **🎮 Mastodon** - Open-source social media
-- **💬 Signal** - Secure messaging
-- **🚀 RocketChat** - Team collaboration
-- **💬 Zulip** - Team communication
+Track our progress on [GitHub Milestones](https://github.com/scttfrdmn/apprise-go/milestones):
 
-### Email & Cloud Services  
-- **📧 SendGrid** - Transactional email service
-- **📧 Office365** - Microsoft email integration
-- **💬 Google Chat** - Google Workspace messaging
-- **📱 FCM (Firebase)** - Mobile push notifications
-- **📧 Amazon SES** - AWS email service
+### v1.9.5-1 (Current Release)
+**Focus**: Upstream sync with Apprise v1.9.5
 
----
+Key features from upstream to implement:
+- [x] Version tracking update
+- [ ] Global timezone support ([#1](https://github.com/scttfrdmn/apprise-go/issues/1))
+- [ ] Discord flags enhancement ([#2](https://github.com/scttfrdmn/apprise-go/issues/2))
+- [ ] Twilio phone calls ([#3](https://github.com/scttfrdmn/apprise-go/issues/3))
+- [ ] Power Automate support ([#4](https://github.com/scttfrdmn/apprise-go/issues/4))
+- [ ] Bark service implementation ([#5](https://github.com/scttfrdmn/apprise-go/issues/5))
 
-## 🌟 Phase 3: Specialized Services
-**Goal**: Reach 43 services (+15) - Cover niche but popular services
+**Status**: In Development
+**Target**: November 2025
 
-### Mobile & Regional
-- **📱 WhatsApp Business** - Business messaging
-- **📱 LINE** - Popular in Asia
-- **🍎 Bark** - iOS push notifications
-- **🌌 BlueSky** - Twitter alternative
-- **📧 Mailgun** - Email service
+### v1.9.5-2 (Next Iteration)
+**Focus**: Documentation, testing, and quality improvements
 
-### Development & Monitoring  
-- **📊 Grafana** - Monitoring alerts
-- **🔔 AlertManager** - Prometheus alerts
-- **🏠 IFTTT** - Automation platform
-- **📱 Pushsafer** - Push notification service
-- **📧 Postmark** - Email service
+- [ ] Service documentation audit ([#6](https://github.com/scttfrdmn/apprise-go/issues/6))
+- [ ] Test coverage improvements ([#7](https://github.com/scttfrdmn/apprise-go/issues/7))
+- [ ] Performance benchmarking ([#8](https://github.com/scttfrdmn/apprise-go/issues/8))
+- [ ] Upstream sync automation ([#9](https://github.com/scttfrdmn/apprise-go/issues/9))
 
-### Enterprise & Business
-- **💼 Webex Teams** - Cisco collaboration
-- **📊 Splunk** - Enterprise monitoring
-- **🔔 VictorOps** - Incident management
-- **📱 Pushy** - Mobile push service
-- **📧 SparkPost** - Email service
+**Status**: Planned
+**Target**: Q1 2026
+
+### v1.10.0 (Future)
+**Focus**: Next upstream sync + API enhancements
+
+- Track next upstream Apprise release
+- REST API v2 features
+- GraphQL support
+- Enhanced observability
+
+**Status**: Planning
+**Target**: TBD (based on upstream releases)
 
 ---
 
-## 📈 Success Metrics
+## 📋 Project Tracking
 
-### Phase 1 Success Criteria
-- **Market Coverage**: 90% of enterprise DevOps use cases
-- **Service Count**: 18 total services
-- **Quality**: Maintain A-grade code quality
-- **Tests**: >65% test coverage maintained
+We use GitHub for all project management:
 
-### Phase 2 Success Criteria  
-- **Market Coverage**: 95% of common notification needs
-- **Service Count**: 28 total services
-- **Community**: Attract enterprise Go developers
-- **Documentation**: Comprehensive service examples
+### 🗂️ GitHub Projects
+**[Apprise-Go Development](https://github.com/scttfrdmn/apprise-go/projects)**: Main kanban board for tracking all work
 
-### Phase 3 Success Criteria
-- **Market Coverage**: 98% of notification use cases
-- **Service Count**: 43 total services  
-- **Ecosystem**: Active community contributions
-- **Performance**: Benchmark advantages over Python
+### 🏷️ Issue Labels
+- **Type**: `bug`, `enhancement`, `documentation`, `technical-debt`, `service-request`
+- **Priority**: `priority: critical/high/medium/low`
+- **Area**: `area: core/services/cli/api/config/attachments/http/tests/docs/build`
+- **Service**: `service: discord/slack/telegram/email/teams/webhook/cloud/other`
+- **Status**: `triage`, `needs-info`, `blocked`, `ready`, `in-progress`, `in-review`, `awaiting-merge`
+- **Special**: `good first issue`, `help wanted`, `upstream-sync`, `breaking-change`
 
----
-
-## 🎯 Implementation Strategy
-
-### Development Approach
-1. **Research** API documentation and examples
-2. **Structure** service following established patterns
-3. **Implement** URL parsing and sending logic
-4. **Test** comprehensive test coverage
-5. **Document** usage examples and configuration
-6. **Integration** test with real services where possible
-
-### Quality Standards
-- **Code Quality**: Maintain Go Report Card A grade
-- **Test Coverage**: >65% coverage for all services
-- **Documentation**: Complete examples for each service
-- **Error Handling**: Comprehensive error scenarios
-- **Performance**: Efficient HTTP client usage
-
-### Release Strategy
-- **Minor Releases**: Each 5 services added
-- **Documentation**: Update examples and README
-- **Changelog**: Detailed service additions
-- **Community**: Announce new services and gather feedback
+### 📝 Issue Templates
+Use our structured templates for:
+- 🐛 [Bug Reports](.github/ISSUE_TEMPLATE/bug_report.yml)
+- ✨ [Feature Requests](.github/ISSUE_TEMPLATE/feature_request.yml)
+- 🔌 [New Service Requests](.github/ISSUE_TEMPLATE/service_request.yml)
+- 📚 [Documentation](.github/ISSUE_TEMPLATE/documentation.yml)
+- 🔧 [Technical Debt](.github/ISSUE_TEMPLATE/technical_debt.yml)
 
 ---
 
-## 🤝 Community & Contributions
+## 🎯 Strategic Goals
 
-### Encourage Contributions
-- **Service Requests**: GitHub issues for new services
-- **Implementation**: Community can contribute new services
-- **Testing**: Real-world usage feedback
-- **Documentation**: Service-specific examples
+### Quality & Reliability
+- Maintain A-grade code quality (Go Report Card)
+- >80% test coverage for critical services
+- Comprehensive error handling
+- Regular security audits
 
-### Maintenance Strategy  
-- **Upstream Tracking**: Monitor original Apprise for updates
-- **Service Updates**: Keep up with API changes
-- **Deprecation**: Handle service shutdowns gracefully
-- **Security**: Regular dependency updates
+### Performance
+- Faster than Python Apprise for all services
+- Efficient HTTP connection pooling
+- Minimal memory footprint
+- Optimized for concurrent notifications
+
+### Developer Experience
+- Clear, comprehensive documentation
+- Easy-to-use CLI and REST API
+- Excellent GoDoc coverage
+- Active community engagement
+
+### Upstream Compatibility
+- Track upstream Apprise versions
+- Maintain API compatibility where possible
+- Document Go-specific enhancements
+- Contribute improvements back to upstream community
 
 ---
 
-*Last Updated: 2025-08-15*  
-*Current Phase: Phase 1 - Starting with PagerDuty implementation*
+## 🤝 Contributing
+
+Want to help? Check out:
+- [Good First Issues](https://github.com/scttfrdmn/apprise-go/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+- [Help Wanted](https://github.com/scttfrdmn/apprise-go/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+- [Service Requests](https://github.com/scttfrdmn/apprise-go/issues?q=is%3Aissue+is%3Aopen+label%3Aservice-request)
+
+### Ways to Contribute
+- **Implement new services**: Use our [service request template](.github/ISSUE_TEMPLATE/service_request.yml)
+- **Improve documentation**: Help document our 64+ services
+- **Write tests**: Increase coverage for existing services
+- **Fix bugs**: Tackle issues labeled `bug`
+- **Performance**: Optimize and benchmark
+- **Examples**: Add real-world usage examples
+
+---
+
+## 📊 Success Metrics
+
+### Code Quality
+- ✅ Go Report Card A-grade
+- ✅ No critical security vulnerabilities
+- ✅ Comprehensive test coverage
+- ✅ Regular dependency updates
+
+### Community
+- Active issue and PR engagement
+- Growing adoption in Go ecosystem
+- Community service contributions
+- Positive upstream collaboration
+
+### Performance
+- Documented performance advantages over Python
+- Efficient resource usage
+- Fast notification delivery
+- Scalable for enterprise use
+
+---
+
+## 🔗 Links
+
+- **[GitHub Project Board](https://github.com/scttfrdmn/apprise-go/projects)**: View current work
+- **[Milestones](https://github.com/scttfrdmn/apprise-go/milestones)**: Track release progress
+- **[Issues](https://github.com/scttfrdmn/apprise-go/issues)**: View all issues
+- **[Pull Requests](https://github.com/scttfrdmn/apprise-go/pulls)**: See ongoing work
+- **[Releases](https://github.com/scttfrdmn/apprise-go/releases)**: Version history
+- **[Upstream Apprise](https://github.com/caronc/apprise)**: Python original
+
+---
+
+*Last Updated: 2025-10-28*
+*This roadmap is maintained through GitHub Projects and Issues. Please check there for the most current status.*

@@ -7,6 +7,65 @@ and this project follows upstream version tracking with Go-specific port revisio
 
 **Versioning Strategy**: `{upstream-version}-{port-revision}` (e.g., `1.9.4-1`)
 
+## [1.9.5-1] - 2025-10-28
+
+### Changed - Upstream Version Sync 🔄
+- **Upstream Tracking**: Updated to track [Apprise v1.9.5](https://github.com/caronc/apprise/releases/tag/v1.9.5)
+  - Version references updated across all project files
+  - User agent strings now report v1.9.5 base version
+  - Documentation synchronized with upstream release
+
+### Upstream v1.9.5 Changes (September 30, 2024)
+The upstream release is described as "a small release to bundle accumulated changes since v1.9.4". Most changes are Python-specific or incremental improvements. Below are the relevant items for potential future Go port implementation:
+
+#### Upstream Features (For Future Implementation)
+- **Global Timezone Support**: Upstream added `tz=` parameter for timezone configuration
+  - *Status*: Not yet implemented in Go port
+  - *Note*: Would require adding timezone parameter support to notification options
+- **Discord Flags**: Upstream added `flags=` kwarg for Discord notifications
+  - *Status*: Need to evaluate if additional flags beyond current embed support are needed
+- **Twilio Phone Calls**: Upstream extended Twilio to support outbound phone calls
+  - *Status*: Go port currently supports SMS only; calls would be a new feature
+- **Power Automate Support**: Upstream added alternative URL support for Power Automate
+  - *Status*: May already be compatible with existing Teams implementation
+- **Bark Icon Field**: Upstream added icon field to Bark service
+  - *Status*: Bark service not yet implemented in Go port
+
+#### Upstream Bug Fixes (Python-Specific)
+- PyObject availability issue in glib testing (not applicable to Go)
+- URL ID comparison fixes (implementation-specific)
+- Slack `timestamp=yes/no` kwarg support (for future consideration)
+- AppriseURLTester metadata handling (testing framework differences)
+- Timezone info edge cases (if implementing timezone support)
+
+### Technical Details
+- **Port Revision**: Reset to `1` for new upstream version tracking
+- **Go Version**: Continues to require Go 1.21+
+- **Backward Compatibility**: All existing functionality maintained
+- **Breaking Changes**: None
+
+### Project Management Transition 🎯
+
+This release marks a significant shift in how we track and plan development:
+
+- **GitHub Issues & Projects**: All planning now tracked via GitHub (not local docs)
+- **Upstream Sync Strategy**: Documented systematic approach in [UPSTREAM_SYNC.md](UPSTREAM_SYNC.md)
+- **Multi-Release Plan**: Features implemented across multiple -X releases
+- **Issue Templates**: 5 structured templates for consistent tracking
+- **50+ Labels**: Organized by type, priority, area, service, status
+
+### Planned Releases
+
+**v1.9.5 Series** (Upstream parity across 5 releases):
+- **v1.9.5-1**: Core v1.9.5 features (6 items) - IN DEVELOPMENT
+- **v1.9.5-2**: Documentation & quality (4 initiatives)
+- **v1.9.5-3**: High-priority v1.9.4 services (Lark, SMPP, WebPush)
+- **v1.9.5-4**: Medium-priority v1.9.4 services (Spike.sh, SIGNL4, SendPulse)
+- **v1.9.5-5**: Remaining v1.9.4 services (Spug, QQ Push, Clickatell)
+
+### Notes
+This release establishes infrastructure for systematic upstream tracking. The Go port maintains its own feature set (64 services, connection pooling, REST API, etc.) while methodically catching up to upstream's 109+ services. Future port revisions will implement upstream features appropriate for the Go ecosystem.
+
 ## [1.9.4-3] - 2025-01-15
 
 ### Added - Phase 2 Cloud & Performance Expansion 🚀

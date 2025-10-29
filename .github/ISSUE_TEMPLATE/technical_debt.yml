@@ -1,0 +1,159 @@
+name: 🔧 Technical Debt
+description: Code refactoring or improvement needed
+title: "[Tech Debt]: "
+labels: ["technical-debt", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the codebase quality! Technical debt tracking helps us maintain a healthy, maintainable project.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What type of technical debt is this?
+      options:
+        - Code Refactoring
+        - Architecture Improvement
+        - Performance Optimization
+        - Test Coverage
+        - Error Handling
+        - Code Duplication
+        - Dependency Management
+        - Build/CI System
+        - Code Comments/Documentation
+        - Type Safety
+        - Security Improvement
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of the codebase?
+      options:
+        - Core Library (apprise/)
+        - Notification Services
+        - CLI Tool
+        - REST API
+        - Configuration System
+        - Attachment System
+        - HTTP Client
+        - Tests
+        - Build System
+        - All/Multiple Components
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      description: What technical debt exists and why is it a problem?
+      placeholder: |
+        The current implementation of X has Y problem...
+        This makes it difficult to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: location
+    attributes:
+      label: Code Location
+      description: Where in the codebase is this issue?
+      placeholder: |
+        File: apprise/discord.go:123-456
+        Package: apprise/services
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: What is the impact of this technical debt?
+      placeholder: |
+        - Makes it harder to add new features
+        - Causes confusion for contributors
+        - Potential performance issues
+        - Makes testing difficult
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How should this be addressed?
+      placeholder: |
+        Refactor to use...
+        Extract into separate package...
+        Add interfaces for...
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example/Proof of Concept
+      description: Show how the improved version would look
+      placeholder: |
+        Current:
+        ```go
+        // messy code
+        ```
+
+        Proposed:
+        ```go
+        // clean code
+        ```
+      render: go
+
+  - type: dropdown
+    id: breaking
+    attributes:
+      label: Breaking Change
+      description: Would this require breaking changes?
+      options:
+        - No breaking changes (internal only)
+        - Minor breaking changes (with migration)
+        - Major breaking changes
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How urgent is addressing this?
+      options:
+        - Critical - Blocking development
+        - High - Should be addressed soon
+        - Medium - Nice to have
+        - Low - Can wait
+    validations:
+      required: true
+
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Estimated Effort
+      description: How much work is this?
+      options:
+        - Small - Few hours
+        - Medium - Few days
+        - Large - Week or more
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any other relevant information
+      placeholder: Related issues, upstream considerations, etc.
