@@ -229,3 +229,86 @@ func TestDiscordSendMethodExists(t *testing.T) {
 		t.Errorf("Error should be network-related or API validation error, got: %v", err)
 	}
 }
+
+func TestDiscordFlagsParameter(t *testing.T) {
+	testCases := []struct {
+		name          string
+		url           string
+		expectedFlags int
+	}{
+		{
+			name:          "No flags parameter",
+			url:           "discord://webhook_id/webhook_token",
+			expectedFlags: 0,
+		},
+		{
+			name:          "Suppress embeds flag",
+			url:           "discord://webhook_id/webhook_token?flags=4",
+			expectedFlags: 4, // DiscordFlagSuppressEmbeds
+		},
+		{
+			name:          "Suppress notifications flag",
+			url:           "discord://webhook_id/webhook_token?flags=4096",
+			expectedFlags: 4096, // DiscordFlagSuppressNotifications
+		},
+		{
+			name:          "Combined flags",
+			url:           "discord://webhook_id/webhook_token?flags=4100",
+			expectedFlags: 4100, // Both suppress embeds (4) and suppress notifications (4096)
+		},
+		{
+			name:          "Flags with other parameters",
+			url:           "discord://webhook_id/webhook_token?username=Bot&flags=4&avatar=https://example.com/avatar.png",
+			expectedFlags: 4,
+		},
+		{
+			name:          "Invalid flags value (non-numeric)",
+			url:           "discord://webhook_id/webhook_token?flags=invalid",
+			expectedFlags: 0, // Should default to 0
+		},
+		{
+			name:          "Zero flags",
+			url:           "discord://webhook_id/webhook_token?flags=0",
+			expectedFlags: 0,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			service := NewDiscordService().(*DiscordService)
+			parsedURL, err := url.Parse(tc.url)
+			if err != nil {
+				t.Fatalf("Failed to parse URL: %v", err)
+			}
+
+			err = service.ParseURL(parsedURL)
+			if err != nil {
+				t.Fatalf("Failed to parse URL: %v", err)
+			}
+
+			if service.flags != tc.expectedFlags {
+				t.Errorf("Expected flags %d, got %d", tc.expectedFlags, service.flags)
+			}
+		})
+	}
+}
+
+func TestDiscordFlagConstants(t *testing.T) {
+	// Verify that the flag constants match Discord's API specification
+	if DiscordFlagSuppressEmbeds != 4 {
+		t.Errorf("DiscordFlagSuppressEmbeds should be 4, got %d", DiscordFlagSuppressEmbeds)
+	}
+
+	if DiscordFlagSuppressNotifications != 4096 {
+		t.Errorf("DiscordFlagSuppressNotifications should be 4096, got %d", DiscordFlagSuppressNotifications)
+	}
+
+	// Test that the bit shifts are correct
+	if 1<<2 != 4 {
+		t.Error("Bit shift for SUPPRESS_EMBEDS is incorrect")
+	}
+
+	if 1<<12 != 4096 {
+		t.Error("Bit shift for SUPPRESS_NOTIFICATIONS is incorrect")
+	}
+}
