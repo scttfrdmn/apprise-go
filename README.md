@@ -19,8 +19,10 @@
 A Go port of the [Apprise notification library](https://github.com/caronc/apprise) by [Chris Caron](https://github.com/caronc). Apprise allows you to send a notification to almost all of the most popular notification services available to us today such as: Telegram, Discord, Slack, Amazon SNS, Gotify, etc.
 
 > **Upstream Project**: This is a Go implementation inspired by the original [Apprise v1.9.5](https://github.com/caronc/apprise/releases/tag/v1.9.5) (⭐ 14,186) Python library. While maintaining API compatibility and feature parity, this Go version offers improved performance, static compilation, and native cross-platform support.
-> 
-> **Version Strategy**: This project tracks the upstream version with a Go-specific suffix (e.g., `1.9.4-1` tracks upstream `1.9.4` with Go port revision `1`).
+>
+> **Version Strategy**: This project tracks the upstream version with a Go-specific suffix (e.g., `1.9.5-2` tracks upstream `1.9.5` with Go port revision `2`).
+>
+> **Current Status**: **78 services implemented** (69% upstream parity) - See [USAGE.md](USAGE.md) for complete service list
 
 ## Features
 
@@ -89,31 +91,100 @@ func main() {
 
 ## Supported Services
 
-### ✅ Fully Implemented
+### ✅ 78 Services Fully Implemented (69% Upstream Parity)
+
+**DevOps & Observability:**
+- **Prometheus AlertManager** - Kubernetes monitoring webhook receiver (API v4)
+- **Grafana** - Monitoring alert webhooks
+- **Sentry** - Error tracking and application monitoring
+- **Elasticsearch/OpenSearch** - Log aggregation and document indexing
+- **Datadog** - Cloud monitoring and analytics
+- **New Relic** - Application performance monitoring
+
+**Team Collaboration:**
 - **Discord** - Webhook notifications with rich embeds
 - **Slack** - Webhook and bot API support
-- **Telegram** - Bot API with multiple chat support
-- **Email (SMTP)** - Full SMTP support with TLS/STARTTLS
-- **Webhook/JSON** - Generic HTTP webhooks with custom templates
 - **Microsoft Teams** - Enterprise messaging with adaptive cards (includes Power Automate / Workflows support)
 - **Mattermost** - Open-source team collaboration with API v4
-- **PagerDuty** - Incident management with Events API v2 (US/EU regions)
-- **Opsgenie** - Atlassian's incident management and alerting (US/EU regions)
+- **Rocket.Chat** - Self-hosted team collaboration
 - **Matrix** - Decentralized messaging with Client-Server API v3
-- **Pushover** - Mobile push notifications with priority levels
-- **Pushbullet** - Cross-platform push notifications
-- **Twilio SMS** - SMS/MMS messaging with rate limiting
-- **Twilio Voice** - Voice call notifications with text-to-speech (multi-language support)
-- **Desktop Notifications** - Cross-platform desktop notifications (macOS, Windows, Linux)
-- **Gotify** - Self-hosted push notifications
-- **Ntfy** - Simple HTTP push notifications with priority levels
-- **Bark** - iOS push notifications with custom icons and sounds
+- **Lark/Feishu** - ByteDance enterprise platform (500M+ users)
+- **DingTalk** - Alibaba enterprise platform (500M+ users)
 
-### 🚧 Coming Soon
-- AWS SNS
-- Signal
-- WhatsApp Business
-- And many more...
+**Incident Management:**
+- **PagerDuty** - Events API v2 (US/EU regions)
+- **Opsgenie** - Atlassian incident management (US/EU regions)
+
+**Messaging & Communication:**
+- **Telegram** - Bot API with multiple chat support
+- **Email (SMTP)** - Full SMTP support with TLS/STARTTLS
+- **SendGrid** - Cloud email delivery
+- **Mailgun** - Email API service
+- **Twilio SMS** - SMS/MMS messaging
+- **Twilio Voice** - Voice call notifications with TTS
+
+**Push Notifications:**
+- **Pushover** - Mobile push with priority levels
+- **Pushbullet** - Cross-platform push
+- **Pushsafer** - GDPR-compliant European push (176 icons, 60 sounds)
+- **OneSignal** - Mobile push for iOS/Android
+- **APNS** - Apple Push Notification Service
+- **FCM** - Firebase Cloud Messaging
+
+**Desktop Notifications:**
+- **Desktop Notifications** - Cross-platform (macOS, Windows, Linux)
+- **Gotify** - Self-hosted push
+- **Ntfy** - Simple HTTP push
+- **Bark** - iOS push notifications
+
+**IoT & Messaging:**
+- **MQTT/MQTTS** - IoT messaging protocol with QoS and TLS
+
+**Webhooks & Automation:**
+- **Webhook/JSON** - Generic HTTP webhooks
+- **IFTTT** - Webhook automation
+- **Zapier** - Workflow automation
+- **Home Assistant** - Smart home integration
+- **Node-RED** - Flow-based automation
+
+**Social Media:**
+- **Reddit** - Subreddit posting
+- **Mastodon** - Fediverse social network
+- **Facebook** - Page posting
+- **Instagram** - Photo sharing
+- **Twitter** - Tweet posting
+- **YouTube** - Video management
+- **TikTok** - Video posting
+- **LinkedIn** - Professional network
+
+**Cloud Services:**
+- **AWS SNS** - Amazon Simple Notification Service
+- **AWS SES** - Amazon Simple Email Service
+- **GCP Pub/Sub** - Google Cloud messaging
+- **Azure Service Bus** - Microsoft cloud messaging
+
+**Development Platforms:**
+- **GitHub** - Repository notifications
+- **GitLab** - DevOps platform notifications
+- **Jira** - Issue tracking and project management
+
+**SMS Providers:**
+- **BulkSMS** - International SMS
+- **ClickSend** - Multi-channel messaging
+- **MessageBird** - SMS/Voice API
+- **Nexmo/Vonage** - Communications API
+- **Plivo** - Voice and SMS API
+- **TextMagic** - SMS marketing
+
+**And 25+ more services** - See [USAGE.md](USAGE.md) for the complete list with examples
+
+### 🚧 Coming Soon (Tier 3 Priority)
+- Signal Messenger
+- WhatsApp Business API
+- AWS IoT Core / GCP IoT Core
+- Amazon Polly (text-to-speech)
+- Additional SMS providers
+- And more...
 
 ## License
 
@@ -158,8 +229,8 @@ This Go port follows a structured versioning approach that tracks the upstream P
 
 | Feature | Original Python | This Go Port |
 |---------|----------------|--------------|
-| **Language** | Python 3.6+ | Go 1.21+ |
-| **Current Version** | v1.9.5 | v1.9.5-1 |
+| **Language** | Python 3.6+ | Go 1.25+ |
+| **Current Version** | v1.9.5 | v1.9.5-2 |
 | **Deployment** | pip install + dependencies | Single static binary |
 | **Performance** | ~1ms per notification | ~0.88ms per notification |
 | **Memory Usage** | ~50MB runtime | ~10MB runtime |
@@ -167,7 +238,7 @@ This Go port follows a structured versioning approach that tracks the upstream P
 | **Attachments** | Basic file support | Advanced multi-source framework |
 | **CLI Tool** | `apprise` command | `apprise-cli` binary |
 | **Configuration** | YAML/Text files | YAML/Text files ✅ |
-| **Services** | 109+ services | 36 core services (expanding) |
+| **Services** | 113+ services | 78 services (69% parity) |
 | **Type Safety** | Runtime validation | Compile-time validation |
 
 **Go Port Advantages:**
