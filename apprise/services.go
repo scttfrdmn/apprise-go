@@ -9,12 +9,12 @@ import (
 func GetSupportedServices() []string {
 	return []string{
 		"discord", "slack", "telegram", "email", "sendgrid", "mailgun", "webhook", "msteams",
-		"pushover", "pushbullet", "twilio", "bulksms", "clicksend", "messagebird", "nexmo", "vonage", "plivo", "textmagic", "aws-sns-sms", "signal", "whatsapp",
+		"pushover", "pushbullet", "pushsafer", "psafer", "twilio", "bulksms", "clicksend", "messagebird", "nexmo", "vonage", "plivo", "textmagic", "aws-sns-sms", "signal", "whatsapp",
 		"desktop", "desktop-advanced", "desktop-interactive", "desktop-persistent", "gotify", "ntfy", "matrix", "reddit", "mastodon", "facebook", "instagram", "youtube", "tiktok",
-		"mattermost", "pagerduty", "opsgenie",
+		"mattermost", "pagerduty", "opsgenie", "sentry", "sentries", "prometheus", "prometheusam", "grafana", "lark", "feishu", "dingtalk", "dingding",
 		"aws-sns", "aws-ses", "gcp-pubsub", "azure-servicebus", "github", "gitlab",
-		"jira", "datadog", "newrelic", "linkedin", "twitter", "apns", "fcm", "rich-mobile-push", "batch-mobile-push",
-		"aws-iot", "gcp-iot", "polly", "twilio-voice", "rocketchat",
+		"jira", "datadog", "newrelic", "elasticsearch", "opensearch", "es", "linkedin", "twitter", "onesignal", "apns", "fcm", "rich-mobile-push", "batch-mobile-push",
+		"mqtt", "mqtts", "aws-iot", "gcp-iot", "polly", "twilio-voice", "rocketchat",
 		"ifttt", "zapier", "homeassistant", "hass", "nodered",
 	}
 }
@@ -42,6 +42,8 @@ func CreateService(serviceID string) Service {
 		return &PushoverService{}
 	case "pushbullet":
 		return &PushbulletService{}
+	case "pushsafer", "psafer":
+		return &PushsaferService{}
 	case "twilio":
 		return &TwilioService{}
 	case "bulksms":
@@ -90,6 +92,16 @@ func CreateService(serviceID string) Service {
 		return &PagerDutyService{}
 	case "opsgenie":
 		return &OpsgenieService{}
+	case "sentry", "sentries":
+		return &SentryService{}
+	case "prometheus", "prometheusam":
+		return &PrometheusService{}
+	case "grafana":
+		return &GrafanaService{}
+	case "lark", "feishu":
+		return &LarkService{}
+	case "dingtalk", "dingding":
+		return &DingTalkService{}
 	case "github":
 		return &GitHubService{}
 	case "gitlab":
@@ -100,10 +112,14 @@ func CreateService(serviceID string) Service {
 		return &DatadogService{}
 	case "newrelic":
 		return &NewRelicService{}
+	case "elasticsearch", "opensearch", "es":
+		return &ElasticsearchService{}
 	case "linkedin":
 		return &LinkedInService{}
 	case "twitter":
 		return &TwitterService{}
+	case "onesignal":
+		return &OneSignalService{}
 	case "apns":
 		return &APNSService{}
 	case "fcm":
@@ -112,6 +128,8 @@ func CreateService(serviceID string) Service {
 		return NewRichMobilePushService()
 	case "batch-mobile-push":
 		return NewBatchMobilePushService()
+	case "mqtt", "mqtts":
+		return &MQTTService{}
 	case "rocketchat":
 		return &RocketChatService{}
 	case "ifttt":
@@ -163,6 +181,10 @@ func GetServiceFriendlyName(serviceID string) string {
 		return "Pushover"
 	case "pushbullet":
 		return "Pushbullet"
+	case "pushsafer":
+		return "Pushsafer"
+	case "psafer":
+		return "Pushsafer"
 	case "twilio":
 		return "Twilio SMS"
 	case "bulksms":
@@ -213,6 +235,24 @@ func GetServiceFriendlyName(serviceID string) string {
 		return "PagerDuty"
 	case "opsgenie":
 		return "Opsgenie"
+	case "sentry":
+		return "Sentry"
+	case "sentries":
+		return "Sentry (HTTPS)"
+	case "prometheus":
+		return "Prometheus AlertManager"
+	case "prometheusam":
+		return "Prometheus AlertManager"
+	case "grafana", "grafanas":
+		return "Grafana Alerting"
+	case "lark":
+		return "Lark (ByteDance)"
+	case "feishu":
+		return "Feishu (飞书)"
+	case "dingtalk":
+		return "DingTalk (钉钉)"
+	case "dingding":
+		return "DingTalk (钉钉)"
 	case "aws-sns":
 		return "Amazon SNS"
 	case "aws-ses":
@@ -231,10 +271,18 @@ func GetServiceFriendlyName(serviceID string) string {
 		return "Datadog"
 	case "newrelic":
 		return "New Relic"
+	case "elasticsearch":
+		return "Elasticsearch"
+	case "opensearch":
+		return "OpenSearch"
+	case "es":
+		return "Elasticsearch"
 	case "linkedin":
 		return "LinkedIn"
 	case "twitter":
 		return "Twitter"
+	case "onesignal":
+		return "OneSignal"
 	case "apns":
 		return "Apple Push Notification Service"
 	case "fcm":
@@ -243,6 +291,10 @@ func GetServiceFriendlyName(serviceID string) string {
 		return "Rich Mobile Push Notifications"
 	case "batch-mobile-push":
 		return "Batch Mobile Push Notifications"
+	case "mqtt":
+		return "MQTT"
+	case "mqtts":
+		return "MQTT (TLS/SSL)"
 	case "aws-iot":
 		return "AWS IoT Core"
 	case "gcp-iot":

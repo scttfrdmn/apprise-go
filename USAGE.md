@@ -345,6 +345,440 @@ pagerduty://integration_key?region=eu&source=server-01&component=database&group=
 app.Add("pagerduty://r1234567890abcdef1234567890abcdef@eu?source=db-cluster&component=primary")
 ```
 
+### Grafana
+
+Grafana Alerting webhook notifications for the leading open-source observability platform.
+
+**URL Formats:**
+```
+grafana://alerts.example.com/webhook
+grafanas://alerts.example.com/webhook
+grafana://username:password@alerts.example.com/webhook
+grafana://token@alerts.example.com/webhook?method=PUT&max_alerts=100
+
+# With HMAC signature verification
+grafana://alerts.example.com/webhook?hmac_secret=yoursecret
+
+# With custom headers
+grafana://alerts.example.com/webhook?header_X-Environment=prod
+```
+
+**Query Parameters:**
+- `method=POST|PUT` - HTTP method (default: POST)
+- `max_alerts=N` - Limit number of alerts in payload (default: unlimited)
+- `hmac_secret=secret` - Shared secret for HMAC-SHA256 signature generation
+- `header_X-Custom=value` - Custom HTTP headers
+
+**Authentication:**
+- HTTP Basic Auth: `grafana://user:pass@host/path`
+- Bearer Token: `grafana://token@host/path`
+
+**Features:**
+- Full Grafana webhook payload format support
+- Alert status mapping (firing/resolved)
+- Severity levels (info, warning, critical, ok)
+- Tag support as alert labels
+- HMAC signature for webhook validation
+- Custom headers for routing/filtering
+- Alert truncation with configurable limits
+- Compatible with Grafana v9.0+ Alerting
+
+**Severity Mapping:**
+- `NotifyTypeInfo` → severity: "info"
+- `NotifyTypeWarning` → severity: "warning"
+- `NotifyTypeError` → severity: "critical"
+- `NotifyTypeSuccess` → severity: "ok" (alert resolved)
+
+**Example Usage:**
+```go
+app := apprise.New()
+app.Add("grafana://alerts.example.com/api/webhooks/apprise?hmac_secret=secret")
+
+// Send firing alert
+app.Notify("High CPU Usage", "CPU at 92%", apprise.NotifyTypeError,
+    apprise.WithTags("production", "web-server"))
+
+// Send resolved alert
+app.Notify("CPU Normal", "CPU back to normal", apprise.NotifyTypeSuccess)
+```
+
+**Grafana Setup:**
+1. In Grafana: Alerts & IRM → Alerting → Contact points
+2. Click "+ Add contact point"
+3. Select "Webhook" integration
+4. Enter your apprise-go webhook URL
+5. Configure authentication if needed
+6. Test the contact point
+
+### Prometheus AlertManager
+
+Prometheus AlertManager webhook notifications for routing and managing alerts from Prometheus monitoring.
+
+**URL Formats:**
+```
+prometheus://alertmanager.example.com/api/v1/webhook
+prometheus://alertmanager.example.com:9093/webhook
+prometheusam://alertmanager.example.com/alerts
+
+# With HTTPS
+prometheus://alertmanager.example.com:443/alerts
+prometheus://alertmanager.example.com/webhook?secure=true
+
+# With options
+prometheus://alertmanager.example.com/webhook?send_resolved=false
+```
+
+**Query Parameters:**
+- `send_resolved=true|false` - Send resolved alerts (default: true)
+- `secure=true` - Use HTTPS (default: auto-detect from port 443)
+
+**Features:**
+- Full AlertManager webhook payload format (API v4)
+- Alert status mapping (firing/resolved)
+- Severity mapping (critical, warning, info)
+- Tag support as alert labels
+- Auto-generated alert fingerprints
+- Timestamps in RFC3339 format
+- Compatible with Prometheus AlertManager v0.20+
+
+**Severity Mapping:**
+- `NotifyTypeError` → severity: "critical" (high priority)
+- `NotifyTypeWarning` → severity: "warning"
+- `NotifyTypeInfo` → severity: "info"
+- `NotifyTypeSuccess` → status: "resolved" (alert cleared)
+
+**Alert Status:**
+- `firing` - Active alert (Error, Warning, Info types)
+- `resolved` - Cleared alert (Success type)
+
+**Webhook Payload Structure:**
+```json
+{
+  "receiver": "apprise-go",
+  "status": "firing",
+  "alerts": [{
+    "status": "firing",
+    "labels": {
+      "alertname": "apprise_notification",
+      "severity": "critical",
+      "source": "apprise-go"
+    },
+    "annotations": {
+      "summary": "High CPU Usage",
+      "description": "CPU at 95%"
+    },
+    "startsAt": "2025-01-15T10:30:00Z",
+    "fingerprint": "abc123"
+  }],
+  "version": "4"
+}
+```
+
+**Example Usage:**
+```go
+app := apprise.New()
+app.Add("prometheus://alertmanager.example.com:9093/webhook")
+
+// Send firing alert
+app.Notify("Database Down", "Connection timeout after 30s",
+    apprise.NotifyTypeError,
+    apprise.WithTags("production", "database"))
+
+// Send resolved alert
+app.Notify("Database Restored", "Connection re-established",
+    apprise.NotifyTypeSuccess)
+```
+
+**AlertManager Setup:**
+1. Configure AlertManager `alertmanager.yml`:
+```yaml
+route:
+  receiver: 'apprise-go'
+
+receivers:
+  - name: 'apprise-go'
+    webhook_configs:
+      - url: 'http://your-server:8080/prometheus-webhook'
+        send_resolved: true
+```
+
+2. In your apprise-go service, set up a webhook receiver:
+```go
+http.HandleFunc("/prometheus-webhook", func(w http.ResponseWriter, r *http.Request) {
+    var payload apprise.PrometheusWebhookPayload
+    json.NewDecoder(r.Body).Decode(&payload)
+
+    // Process alerts
+    for _, alert := range payload.Alerts {
+        fmt.Printf("Alert: %s - %s\n",
+            alert.Labels["alertname"],
+            alert.Annotations["summary"])
+    }
+
+    w.WriteHeader(http.StatusOK)
+})
+```
+
+**Why Use Go for AlertManager Integration:**
+- **Native Prometheus Ecosystem**: Perfect match for Prometheus/Go stack
+- **Type-Safe Payloads**: Compile-time validation of webhook structures
+- **High Throughput**: Handles thousands of alerts/second efficiently
+- **Low Latency**: Sub-millisecond alert processing overhead
+- **Kubernetes Native**: Deploy alongside Prometheus in k8s clusters
+- **Zero Dependencies**: No external libs needed for webhook handling
+- **Memory Efficient**: Minimal footprint compared to Python implementations
+
+### Elasticsearch / OpenSearch
+
+Elasticsearch/OpenSearch log aggregation and search engine notification indexing.
+
+**URL Formats:**
+```
+elasticsearch://localhost:9200/alerts
+elasticsearch://user:pass@es.example.com:9200/notifications
+elasticsearch://es.example.com/logs?apikey=abc123
+opensearch://opensearch.example.com:9200/apprise
+es://localhost:9200/security-alerts
+
+# With HTTPS
+elasticsearch://es.example.com/logs?secure=true
+elasticsearch://es.example.com/logs?ssl=true
+```
+
+**Query Parameters:**
+- `apikey=key` - API key authentication (preferred over basic auth)
+- `secure=true` - Use HTTPS (default: HTTP)
+- `ssl=true` - Use HTTPS (alias for secure)
+
+**Authentication Methods:**
+- **Basic Auth**: `elasticsearch://user:pass@host:9200/index`
+- **API Key**: `elasticsearch://host/index?apikey=your-api-key` (recommended)
+
+**Features:**
+- Document indexing for alert storage
+- Searchable notification history
+- Tag support for filtering
+- Severity level mapping
+- Timestamp in RFC3339 format
+- Compatible with Elasticsearch 7.x+ and OpenSearch 1.x+
+- Works with self-hosted and cloud instances
+
+**Document Structure:**
+```json
+{
+  "@timestamp": "2025-01-15T10:30:00Z",
+  "title": "High CPU Usage",
+  "message": "CPU at 95%",
+  "severity": "error",
+  "notify_type": "error",
+  "tags": ["production", "web-server"],
+  "source": "apprise-go",
+  "host": "web-01",
+  "environment": "production",
+  "application": "myapp"
+}
+```
+
+**Severity Mapping:**
+- `NotifyTypeError` → severity: "error"
+- `NotifyTypeWarning` → severity: "warning"
+- `NotifyTypeInfo` → severity: "info"
+- `NotifyTypeSuccess` → severity: "success"
+
+**Example Usage:**
+```go
+app := apprise.New()
+app.Add("elasticsearch://user:pass@localhost:9200/alerts")
+
+// Index an alert
+app.Notify("Database Connection Lost", "PostgreSQL connection timeout after 30s",
+    apprise.NotifyTypeError,
+    apprise.WithTags("production", "database"))
+
+// Success notification
+app.Notify("Database Restored", "Connection re-established",
+    apprise.NotifyTypeSuccess)
+```
+
+**Elasticsearch Setup:**
+1. Create index with mapping (optional but recommended):
+```bash
+curl -X PUT "localhost:9200/alerts" -H 'Content-Type: application/json' -d'
+{
+  "mappings": {
+    "properties": {
+      "@timestamp": { "type": "date" },
+      "title": { "type": "text" },
+      "message": { "type": "text" },
+      "severity": { "type": "keyword" },
+      "notify_type": { "type": "keyword" },
+      "tags": { "type": "keyword" },
+      "source": { "type": "keyword" },
+      "environment": { "type": "keyword" },
+      "application": { "type": "keyword" }
+    }
+  }
+}
+'
+```
+
+2. Create API key for authentication:
+```bash
+curl -X POST "localhost:9200/_security/api_key" -H 'Content-Type: application/json' -d'
+{
+  "name": "apprise-go-notifications",
+  "role_descriptors": {
+    "apprise_writer": {
+      "cluster": ["monitor"],
+      "index": [
+        {
+          "names": ["alerts*"],
+          "privileges": ["create_index", "write", "auto_configure"]
+        }
+      ]
+    }
+  }
+}
+'
+```
+
+**Query Indexed Alerts:**
+```bash
+# Get recent alerts
+curl "localhost:9200/alerts/_search?q=severity:error&sort=@timestamp:desc"
+
+# Get alerts by tag
+curl "localhost:9200/alerts/_search?q=tags:production"
+
+# Complex query with Kibana/OpenSearch Dashboards
+GET /alerts/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "term": { "severity": "error" } },
+        { "range": { "@timestamp": { "gte": "now-1h" } } }
+      ]
+    }
+  },
+  "sort": [{ "@timestamp": { "order": "desc" } }]
+}
+```
+
+**Why Use Go for Elasticsearch Integration:**
+- **Fast JSON Processing**: Native encoder 2-3x faster than Python
+- **Efficient Bulk Operations**: Better connection pooling
+- **Type-Safe Documents**: Compile-time validation
+- **Memory Efficient**: Lower overhead for high-volume indexing
+- **Native HTTP/2**: Better performance for cloud Elasticsearch
+- **Zero Dependencies**: No pip packages or version conflicts
+
+### MQTT
+
+MQTT (Message Queuing Telemetry Transport) is the standard protocol for IoT device communication. Perfect for home automation, industrial IoT, edge computing, and real-time telemetry.
+
+**URL Formats:**
+```
+# Basic MQTT (TCP)
+mqtt://broker.example.com/topic/path
+mqtt://user:password@broker.example.com:1883/notifications
+
+# Secure MQTT (TLS/SSL)
+mqtts://broker.example.com/secure/alerts
+mqtts://broker.example.com:8883/home/sensors
+
+# With authentication and QoS
+mqtt://user:pass@broker.local/alerts?qos=1&retained=true
+mqtt://broker/topic?clientid=my-app-001&qos=2
+
+# With Last Will and Testament
+mqtt://broker/topic?will_topic=offline&will_payload=disconnected&will_qos=1&will_retain=true
+```
+
+**Query Parameters:**
+- `qos=0|1|2` - Quality of Service level (default: 0)
+  - 0: At most once delivery (fire and forget)
+  - 1: At least once delivery (acknowledged)
+  - 2: Exactly once delivery (guaranteed)
+- `retained=true|false` - Retain message on broker (default: false)
+- `clientid=string` - MQTT client identifier (default: auto-generated as `apprise-go-{timestamp}`)
+- `clean=true|false` - Clean session flag (default: true)
+- `will_topic=string` - Last Will and Testament topic
+- `will_payload=string` - Last Will message content
+- `will_qos=0|1|2` - Last Will QoS level (default: 0)
+- `will_retain=true|false` - Retain Last Will message (default: false)
+
+**TLS/SSL Parameters (for mqtts://):**
+- `insecure=true|false` - Skip TLS certificate verification (default: false)
+- `ca_file=/path/to/ca.pem` - CA certificate file path
+- `cert_file=/path/to/client.pem` - Client certificate file path
+- `key_file=/path/to/client-key.pem` - Client key file path
+
+**Authentication:**
+- Username/Password: `mqtt://user:pass@broker/topic`
+- Client certificates: Use `cert_file` and `key_file` parameters for mutual TLS
+
+**Features:**
+- All 3 QoS levels (0, 1, 2) for delivery guarantees
+- TLS/SSL encryption with certificate validation
+- Last Will and Testament (LWT) for offline detection
+- Topic hierarchy support (e.g., `home/livingroom/temperature`)
+- Message retention on broker
+- Custom client IDs for persistent sessions
+- Auto-reconnection disabled (single-shot notifications)
+
+**Message Format:**
+Messages include notification type prefix and optional tags:
+```
+[INFO] System Update: Version 2.1.0 deployed
+[WARN] High Memory: Usage at 85%
+[ERROR] Service Down: API not responding [production, critical]
+[OK] Deployment Complete: All services running
+```
+
+**Example Usage:**
+```go
+app := apprise.New()
+
+// Basic IoT notification
+app.Add("mqtt://broker.local/home/alerts")
+
+// Industrial monitoring with guaranteed delivery
+app.Add("mqtt://user:pass@industrial.example.com/plant/sensors?qos=2")
+
+// Home automation with retained messages
+app.Add("mqtt://homeassistant.local/notifications?retained=true&qos=1")
+
+// Secure cloud MQTT with Last Will
+app.Add("mqtts://mqtt.cloud.com:8883/devices/alerts?will_topic=device/status&will_payload=offline")
+
+// Send notification
+app.Notify("Temperature Alert", "Sensor reading: 85°C", apprise.NotifyTypeWarning,
+    apprise.WithTags("zone-1", "temperature"))
+```
+
+**Use Cases:**
+- Home automation notifications (Home Assistant, OpenHAB)
+- Industrial IoT monitoring and alerts
+- Edge computing event distribution
+- Real-time telemetry and sensor data
+- Device status updates and health monitoring
+- Distributed system notifications
+
+**Popular MQTT Brokers:**
+- Mosquitto (open source, lightweight)
+- HiveMQ (enterprise, cloud-hosted)
+- EMQX (scalable, high-performance)
+- AWS IoT Core (managed cloud service)
+- Azure IoT Hub (Microsoft cloud service)
+
+**Go Advantages:**
+- Native binary protocol support (efficient for IoT)
+- Low memory footprint for edge devices
+- Fast connection handling
+- Built-in TLS/SSL support
+- Superior concurrency for multiple topics
+
 ### Opsgenie
 
 Atlassian's incident management and alerting service with comprehensive responder and priority management.
@@ -410,6 +844,142 @@ opsgenie://api_key@eu/oncall-team?priority=P2&teams=devops,backend&entity=web-se
 // Send P1 alert to EU region with team responders and custom metadata
 app.Add("opsgenie://abc123@eu/backend-team/devops?priority=P1&tags=production,database&entity=mysql-cluster&alias=db-performance")
 ```
+
+### Sentry
+
+Sentry is the leading application monitoring and error tracking platform trusted by 3M+ developers worldwide. Perfect for tracking errors, performance issues, and release health in production applications.
+
+**URL Formats:**
+```
+# Standard Sentry.io DSN
+sentry://public_key@o123456.ingest.sentry.io/789012
+sentries://public_key@o123456.ingest.sentry.io/789012
+
+# HTTPS format
+https://public_key@sentry.example.com/project_id
+
+# Self-hosted Sentry
+sentry://key@sentry.internal.com:8080/project-id
+http://key@localhost:9000/123
+
+# Regional Sentry ingestion
+sentry://key@o123456.ingest.us.sentry.io/789012
+sentry://key@o123456.ingest.eu.sentry.io/789012
+```
+
+**DSN Structure:**
+```
+protocol://public_key@host[:port]/project_id
+```
+
+**Components:**
+- `protocol`: `sentry`, `sentries` (HTTPS), `http`, or `https`
+- `public_key`: Your project's public DSN key (found in project settings)
+- `host`: Sentry host (e.g., `o123456.ingest.sentry.io` or self-hosted domain)
+- `project_id`: Your Sentry project ID
+
+**Features:**
+- Full Sentry envelope format support
+- Automatic severity level mapping
+- Event ID generation (UUID v4)
+- Tag support for categorization
+- Extra context metadata
+- Self-hosted and cloud (sentry.io) support
+- Multi-region ingestion endpoints
+- Error tracking with stack traces
+- Platform identification (go)
+
+**Severity Mapping:**
+- `NotifyTypeInfo` → Sentry level: "info"
+- `NotifyTypeSuccess` → Sentry level: "info"
+- `NotifyTypeWarning` → Sentry level: "warning"
+- `NotifyTypeError` → Sentry level: "error"
+
+**Event Structure:**
+All notifications are sent as Sentry events using the envelope format with:
+- Unique event ID (UUID v4)
+- Timestamp (ISO 8601)
+- Platform: "go"
+- Logger: "apprise-go"
+- Message with title and body
+- Tags from notification request
+- Extra context metadata
+
+**Finding Your DSN:**
+1. Log into [sentry.io](https://sentry.io) or your self-hosted instance
+2. Navigate to **Settings** → **Projects** → Select your project
+3. Go to **Client Keys (DSN)**
+4. Copy the DSN (format: `https://public_key@host/project_id`)
+5. Convert to `sentry://` format for apprise-go
+
+**Example Usage:**
+```go
+app := apprise.New()
+
+// Production error tracking
+app.Add("sentry://abc123def456@o123456.ingest.sentry.io/789012")
+
+// Send error event
+app.Notify("Database Connection Failed",
+    "Unable to connect to PostgreSQL on db.example.com:5432",
+    apprise.NotifyTypeError,
+    apprise.WithTags("database", "production", "critical"))
+
+// Send warning event
+app.Notify("High Memory Usage",
+    "Application memory usage at 85% of available",
+    apprise.NotifyTypeWarning,
+    apprise.WithTags("performance", "memory"))
+
+// Send info event (for non-errors)
+app.Notify("Deployment Complete",
+    "Version 2.1.0 deployed successfully to production",
+    apprise.NotifyTypeInfo,
+    apprise.WithTags("deployment", "production"))
+```
+
+**Self-Hosted Sentry:**
+```go
+// Self-hosted on-premises Sentry instance
+app.Add("http://my_key@sentry.internal.company.com:8080/project-42")
+
+// With HTTPS
+app.Add("https://key123@sentry.example.com/1")
+```
+
+**Multi-Region Deployment:**
+```go
+// US region ingestion
+app.Add("sentry://key@o123456.ingest.us.sentry.io/789012")
+
+// EU region ingestion
+app.Add("sentry://key@o123456.ingest.eu.sentry.io/789012")
+```
+
+**Use Cases:**
+- Production error monitoring
+- Application crash reporting
+- Performance issue detection
+- Release health tracking
+- User feedback collection
+- Integration with CI/CD pipelines
+- Real-time error alerts
+- Exception aggregation and grouping
+
+**Go Advantages:**
+- Native UUID generation (crypto/rand)
+- Efficient envelope format handling
+- Type-safe event structures
+- Compile-time validation
+- Fast JSON serialization
+- Built-in HTTP client pooling
+
+**Notes:**
+- DSNs are safe to keep public (they only allow event submission)
+- Events are deduplicated by Sentry based on stack trace and message
+- The public key is required; secret key is deprecated and not used
+- Notifications appear as "Issues" in Sentry dashboard
+- Tags help with filtering and searching in Sentry UI
 
 ### Matrix
 
@@ -524,6 +1094,109 @@ pball://access_token?device=device1,device2&email=user@domain.com
 - File attachment support
 - Cross-platform compatibility
 - Emoji indicators by notification type
+
+### Pushsafer
+
+GDPR-compliant European push notification service for iOS, Android, and Windows 10.
+
+**URL Formats:**
+```
+pushsafer://privatekey
+pushsafer://privatekey/a (all devices)
+pushsafer://privatekey/52 (specific device)
+pushsafer://privatekey/gs100 (device group)
+psafer://privatekey?sound=5&vibration=2&icon=33
+pushsafer://key?sound=10&vibration=2&icon=33&color=%23FF0000&priority=2
+```
+
+**Query Parameters:**
+- `device=id` - Device ID, device group (gs*), or "a" for all devices
+- `sound=0-60` - Sound ID (0=silent, 1-60=various sounds)
+- `vibration=1-3` - Vibration pattern (1=default, 2=once, 3=twice)
+- `icon=1-176` - Icon ID (1-176 icons available)
+- `color=#RRGGBB` - Icon color in hex format
+- `priority=-2 to 2` - Priority level (-2=lowest, 2=critical/ignores DND)
+- `ttl=minutes` - Time to live (0-43200 minutes, ~30 days)
+
+**Features:**
+- GDPR-compliant (European servers)
+- iOS, Android, Windows 10 support
+- Priority levels with Do Not Disturb override
+- 176 built-in icons with custom colors
+- 60+ notification sounds
+- Device groups for targeted notifications
+- Image attachments (up to 3 images)
+- BBCode formatting support
+- Time-to-live for message expiration
+
+**Priority Mapping:**
+- `NotifyTypeError` → Priority 2 (Critical - ignores Do Not Disturb)
+- `NotifyTypeWarning` → Priority 1 (High)
+- `NotifyTypeInfo` → Priority 0 (Normal)
+- `NotifyTypeSuccess` → Priority 0 (Normal)
+
+**Example Usage:**
+```go
+app := apprise.New()
+app.Add("pushsafer://a1b2c3d4e5f6/a?sound=5&icon=33&color=%23FF0000")
+
+// Critical error notification
+app.Notify("Database Down", "PostgreSQL connection lost",
+    apprise.NotifyTypeError) // Priority 2 - ignores DND
+
+// Normal notification to specific device
+app.Add("pushsafer://key/52?sound=10")
+app.Notify("Backup Complete", "Daily backup finished successfully",
+    apprise.NotifyTypeSuccess)
+
+// Device group notification
+app.Add("pushsafer://key/gs100?vibration=2")
+app.Notify("Server Alert", "CPU usage above 90%",
+    apprise.NotifyTypeWarning)
+```
+
+**Pushsafer Setup:**
+1. Sign up at [https://www.pushsafer.com](https://www.pushsafer.com)
+2. Get your Private Key from the dashboard
+3. Install Pushsafer app on your devices
+4. Devices automatically register to your account
+5. Optionally create device groups for targeted notifications
+
+**Device Groups:**
+Create device groups in the Pushsafer dashboard to send notifications to specific sets of devices. Use `gs` prefix followed by the group ID: `pushsafer://key/gs100`
+
+**Icon Examples:**
+- Icon 1: Information
+- Icon 8: Warning triangle
+- Icon 10: Error/Stop sign
+- Icon 33: Mail/Email
+- Icon 50: Database
+- Icon 100: Server
+- Icon 150: Calendar
+- Full list: [https://www.pushsafer.com/en/pushapi_ext#API-I](https://www.pushsafer.com/en/pushapi_ext#API-I)
+
+**Sound Examples:**
+- Sound 0: Silent
+- Sound 1: Default
+- Sound 5: Climb
+- Sound 10: Persistent
+- Sound 25: Space
+- Full list: [https://www.pushsafer.com/en/pushapi_ext#API-S](https://www.pushsafer.com/en/pushapi_ext#API-S)
+
+**Why Use Pushsafer:**
+- **GDPR Compliance**: European servers, ideal for EU businesses
+- **Privacy Focused**: Data stored in Germany, EU data protection laws
+- **Multi-Platform**: Works on iOS, Android, Windows 10
+- **Pushover Alternative**: Similar features, better European coverage
+- **Rich Customization**: 176 icons, 60 sounds, custom colors
+- **Reliable**: Established service with strong European user base
+
+**Why Use Go for Pushsafer:**
+- **Fast JSON Encoding**: 2-3x faster than Python for API requests
+- **Type-Safe Payloads**: Compile-time validation prevents errors
+- **Efficient HTTP Pooling**: Reuses connections for better performance
+- **Zero Dependencies**: No pip packages, single binary deployment
+- **Memory Efficient**: Lower overhead for high-volume notifications
 
 ### Twilio SMS
 

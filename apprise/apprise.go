@@ -397,8 +397,11 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("pover", func() Service { return NewPushoverService() })
 	registry.Register("pushbullet", func() Service { return NewPushbulletService() })
 	registry.Register("pball", func() Service { return NewPushbulletService() })
+	registry.Register("pushsafer", func() Service { return NewPushsaferService() })
+	registry.Register("psafer", func() Service { return NewPushsaferService() }) // Short alias
 
 	// Mobile push services
+	registry.Register("onesignal", func() Service { return NewOneSignalService() })
 	registry.Register("fcm", func() Service { return NewFCMService() })
 	registry.Register("apns", func() Service { return NewAPNSService() })
 	registry.Register("rich-mobile-push", func() Service { return NewRichMobilePushService() })
@@ -414,9 +417,21 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("rocketchat", func() Service { return NewRocketChatService() })
 	registry.Register("rocket", func() Service { return NewRocketChatService() })
 
-	// Incident management
+	// Incident management & observability
 	registry.Register("pagerduty", func() Service { return NewPagerDutyService() })
 	registry.Register("opsgenie", func() Service { return NewOpsgenieService() })
+	registry.Register("sentry", func() Service { return NewSentryService() })
+	registry.Register("sentries", func() Service { return NewSentryService() }) // Alias for SSL variant
+	registry.Register("prometheus", func() Service { return NewPrometheusService() })
+	registry.Register("prometheusam", func() Service { return NewPrometheusService() }) // Alias for AlertManager
+	registry.Register("grafana", func() Service { return NewGrafanaService() })
+	registry.Register("grafanas", func() Service { return NewGrafanaService() })
+
+	// Asian enterprise platforms
+	registry.Register("lark", func() Service { return NewLarkService() })
+	registry.Register("feishu", func() Service { return NewLarkService() })     // Alias for China market
+	registry.Register("dingtalk", func() Service { return NewDingTalkService() })
+	registry.Register("dingding", func() Service { return NewDingTalkService() }) // Alternative name
 
 	// Decentralized messaging
 	registry.Register("matrix", func() Service { return NewMatrixService() })
@@ -454,6 +469,8 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	registry.Register("nodered", func() Service { return NewNodeREDService() })
 	
 	// IoT services
+	registry.Register("mqtt", func() Service { return NewMQTTService() })
+	registry.Register("mqtts", func() Service { return NewMQTTService() }) // TLS/SSL variant
 	registry.Register("aws-iot", func() Service { return NewAWSIoTService() })
 	registry.Register("gcp-iot", func() Service { return NewGCPIoTService() })
 
@@ -474,6 +491,11 @@ func registerBuiltinServices(registry *ServiceRegistry) {
 	// Monitoring services
 	registry.Register("datadog", func() Service { return NewDatadogService() })
 	registry.Register("newrelic", func() Service { return NewNewRelicService() })
+
+	// Log aggregation & search
+	registry.Register("elasticsearch", func() Service { return NewElasticsearchService() })
+	registry.Register("opensearch", func() Service { return NewElasticsearchService() }) // OpenSearch alias
+	registry.Register("es", func() Service { return NewElasticsearchService() })         // Short alias
 
 	// DevOps & CI/CD services
 	registry.Register("gitlab", func() Service { return NewGitLabService() })
