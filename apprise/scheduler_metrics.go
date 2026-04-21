@@ -143,13 +143,19 @@ func (mc *MetricsCollector) getOverallStats(report *MetricsReport, startTime, en
 
 	row := mc.db.QueryRow(query, startTime, endTime)
 
+	var successful, failed sql.NullInt64
 	var avgDuration sql.NullFloat64
-	err := row.Scan(&report.TotalNotifications, &report.SuccessfulNotifications, 
-		&report.FailedNotifications, &avgDuration)
+	err := row.Scan(&report.TotalNotifications, &successful, &failed, &avgDuration)
 	if err != nil {
 		return fmt.Errorf("failed to scan overall stats: %w", err)
 	}
 
+	if successful.Valid {
+		report.SuccessfulNotifications = successful.Int64
+	}
+	if failed.Valid {
+		report.FailedNotifications = failed.Int64
+	}
 	if avgDuration.Valid {
 		report.AverageDurationMs = avgDuration.Float64
 	}

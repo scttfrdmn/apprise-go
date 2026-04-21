@@ -36,6 +36,7 @@ type MetricsManager struct {
 	mu              sync.RWMutex
 	serviceMetrics  map[string]*PrometheusServiceMetrics
 	registryCreated bool
+	registry        *prometheus.Registry
 }
 
 // PrometheusServiceMetrics tracks per-service statistics for Prometheus
@@ -57,6 +58,7 @@ func NewMetricsManager(namespace string) *MetricsManager {
 
 	mm := &MetricsManager{
 		serviceMetrics: make(map[string]*PrometheusServiceMetrics),
+		registry:       prometheus.NewRegistry(),
 	}
 
 	// Initialize counters
@@ -196,11 +198,8 @@ func (mm *MetricsManager) Register() error {
 	}
 
 	for _, collector := range collectors {
-		if err := prometheus.Register(collector); err != nil {
-			// If already registered, ignore the error
-			if _, ok := err.(prometheus.AlreadyRegisteredError); !ok {
-				return err
-			}
+		if err := mm.registry.Register(collector); err != nil {
+			return err
 		}
 	}
 
@@ -346,9 +345,9 @@ func (mm *MetricsManager) GetAllServiceMetrics() map[string]*PrometheusServiceMe
 	return result
 }
 
-// Handler returns an HTTP handler for serving Prometheus metrics
+// Handler returns an HTTP handler for serving Prometheus metrics from this instance's registry
 func (mm *MetricsManager) Handler() http.Handler {
-	return promhttp.Handler()
+	return promhttp.HandlerFor(mm.registry, promhttp.HandlerOpts{})
 }
 
 // HandlerWithGatherer returns an HTTP handler with custom gatherer

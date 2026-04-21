@@ -16,6 +16,7 @@ func GetSupportedServices() []string {
 		"jira", "datadog", "newrelic", "elasticsearch", "opensearch", "es", "linkedin", "twitter", "onesignal", "apns", "fcm", "rich-mobile-push", "batch-mobile-push",
 		"mqtt", "mqtts", "aws-iot", "gcp-iot", "polly", "twilio-voice", "rocketchat",
 		"ifttt", "zapier", "homeassistant", "hass", "nodered",
+		"zulip", "synology", "synologys", "revolt", "join", "signl4", "spush", "simplepush", "kodi", "kodis", "webex", "wxteams",
 	}
 }
 
@@ -140,6 +141,22 @@ func CreateService(serviceID string) Service {
 		return &HomeAssistantService{}
 	case "nodered":
 		return &NodeREDService{}
+	case "zulip":
+		return NewZulipService()
+	case "synology", "synologys":
+		return NewSynologyService()
+	case "revolt":
+		return NewRevoltService()
+	case "join":
+		return NewJoinService()
+	case "signl4":
+		return NewSIGNL4Service()
+	case "spush", "simplepush":
+		return NewSimplePushService()
+	case "kodi", "kodis":
+		return NewKodiService()
+	case "webex", "wxteams":
+		return NewWebexService()
 	default:
 		return nil
 	}
@@ -313,6 +330,22 @@ func GetServiceFriendlyName(serviceID string) string {
 		return "Home Assistant"
 	case "nodered":
 		return "Node-RED"
+	case "zulip":
+		return "Zulip"
+	case "synology", "synologys":
+		return "Synology Chat"
+	case "revolt":
+		return "Revolt"
+	case "join":
+		return "Join"
+	case "signl4":
+		return "SIGNL4"
+	case "spush", "simplepush":
+		return "SimplePush"
+	case "kodi", "kodis":
+		return "Kodi"
+	case "webex", "wxteams":
+		return "Cisco Webex"
 	default:
 		return fmt.Sprintf("Unknown Service (%s)", serviceID)
 	}

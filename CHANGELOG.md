@@ -7,6 +7,31 @@ and this project follows upstream version tracking with Go-specific port revisio
 
 **Versioning Strategy**: `{upstream-version}-{port-revision}` (e.g., `1.9.4-1`)
 
+## [1.9.5-3] - 2026-04-21
+
+### Added - New Services Tranche 🚀
+
+Eight new notification services bringing the Go port to **86 services (76% upstream parity)**:
+
+- **[Zulip](https://zulip.com/)** (`zulip://`) — Open-source team messaging with bot API support; streams and topics
+- **[Synology Chat](https://www.synology.com/en-global/dsm/feature/chat)** (`synology://`, `synologys://`) — Incoming webhook for Synology NAS Chat; HTTP and HTTPS support
+- **[Revolt](https://revolt.chat/)** (`revolt://`) — Open-source Discord alternative; webhook-based delivery
+- **[Join](https://joaoapps.com/join/)** (`join://`) — Android push notifications by Joaomgcd; multi-device support
+- **[SIGNL4](https://www.signl4.com/)** (`signl4://`) — Mobile on-call alerting for operational teams
+- **[SimplePush](https://simplepush.io/)** (`spush://`, `simplepush://`) — Lightweight self-hostable push notifications
+- **[Kodi](https://kodi.tv/)** (`kodi://`, `kodis://`) — Media center notifications via JSON-RPC; optional HTTP Basic auth
+- **[Cisco Webex](https://www.webex.com/)** (`webex://`, `wxteams://`) — Enterprise team messaging via Webex API; markdown support
+
+### Technical Details
+- All 8 services follow the standard `Service` interface pattern
+- All services include full test coverage with `httptest`-based mock servers
+- HTTP connection pools used: webhook pool for simple services, cloud pool for Webex, default pool for Kodi/Zulip/Join
+- Kodi service supports both `kodi://` (HTTP, port 8080) and `kodis://` (HTTPS, port 443)
+- Synology Chat uses form-encoded webhook payload matching the DSM Chat API
+- Zulip constructs bot email from `botname@domain` URL format
+
+---
+
 ## [1.9.5-1] - 2025-10-28
 
 ### Changed - Upstream Version Sync 🔄

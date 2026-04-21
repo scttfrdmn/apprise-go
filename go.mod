@@ -43,4 +43,4 @@ require (
 )
 
 // Tracks upstream Apprise v1.9.5
-// This version: 1.9.5-2
+// This version: 1.9.5-3

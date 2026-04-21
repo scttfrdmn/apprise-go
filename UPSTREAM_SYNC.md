@@ -7,9 +7,9 @@ This document outlines our strategy for maintaining parity with the upstream Pyt
 ## Current Status
 
 - **Upstream Version**: v1.9.5 (September 30, 2024)
-- **Our Version**: v1.9.5-1 (in development)
-- **Port Revision**: 1
-- **Services**: 64 implemented / 109+ in upstream (~59% parity)
+- **Our Version**: v1.9.5-3
+- **Port Revision**: 3
+- **Services**: 86 implemented / 113+ in upstream (~76% parity)
 
 ## Version Tracking Strategy
 

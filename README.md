@@ -22,7 +22,7 @@ A Go port of the [Apprise notification library](https://github.com/caronc/appris
 >
 > **Version Strategy**: This project tracks the upstream version with a Go-specific suffix (e.g., `1.9.5-2` tracks upstream `1.9.5` with Go port revision `2`).
 >
-> **Current Status**: **78 services implemented** (69% upstream parity) - See [USAGE.md](USAGE.md) for complete service list
+> **Current Status**: **86 services implemented** (76% upstream parity) - See [USAGE.md](USAGE.md) for complete service list
 
 ## Features
 
@@ -91,7 +91,7 @@ func main() {
 
 ## Supported Services
 
-### ✅ 78 Services Fully Implemented (69% Upstream Parity)
+### ✅ 86 Services Fully Implemented (76% Upstream Parity)
 
 **DevOps & Observability:**
 - **Prometheus AlertManager** - Kubernetes monitoring webhook receiver (API v4)
@@ -146,6 +146,20 @@ func main() {
 - **Zapier** - Workflow automation
 - **Home Assistant** - Smart home integration
 - **Node-RED** - Flow-based automation
+
+**Team Chat & Collaboration:**
+- **Zulip** - Open-source team messaging (streams + topics)
+- **Cisco Webex** - Enterprise team messaging with markdown support
+- **Revolt** - Open-source Discord alternative
+
+**Self-Hosted & Media:**
+- **Synology Chat** - Synology NAS integrated chat
+- **Kodi** - Media center notifications via JSON-RPC
+
+**Push & Alerting:**
+- **Join** - Android push notifications with multi-device support
+- **SIGNL4** - Mobile on-call alerting for operations teams
+- **SimplePush** - Lightweight self-hostable push notifications
 
 **Social Media:**
 - **Reddit** - Subreddit posting
@@ -238,7 +252,7 @@ This Go port follows a structured versioning approach that tracks the upstream P
 | **Attachments** | Basic file support | Advanced multi-source framework |
 | **CLI Tool** | `apprise` command | `apprise-cli` binary |
 | **Configuration** | YAML/Text files | YAML/Text files ✅ |
-| **Services** | 113+ services | 78 services (69% parity) |
+| **Services** | 113+ services | 86 services (76% parity) |
 | **Type Safety** | Runtime validation | Compile-time validation |
 
 **Go Port Advantages:**
